@@ -1,0 +1,46 @@
+# ==========================================
+# 1. .NET / Visual Studio
+# ==========================================
+bin/
+obj/
+out/
+.vs/
+.user/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Секреты и настройки (не светим ключи БД и JWT!)
+server/**/appsettings.Development.json
+server/**/appsettings.Local.json
+secrets.json
+
+# ==========================================
+# 2. Angular / Node.js
+# ==========================================
+client/node_modules/
+client/.angular/
+client/dist/
+client/.editorconfig
+client/.browserslistrc
+
+# Логи и кэш npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# ==========================================
+# 3. IDE / Editors
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.bak
+*.tmp
+
+# ==========================================
+# 4. OS Junk
+# ==========================================
+.DS_Store
+Thumbs.db

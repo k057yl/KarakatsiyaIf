@@ -1,0 +1,117 @@
+﻿using FluentValidation;
+using Karakatsiya.Constants;
+using Karakatsiya.Data;
+using Karakatsiya.Services;
+using Karakatsiya.Services.BackgroundServices;
+using Karakatsiya.Services.Behaviors;
+using Karakatsiya.Services.Interfaces;
+using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+namespace Karakatsiya.Extensions
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddCustomControllers();
+            services.AddCustomDatabase(config);
+            services.AddCustomCors(config);
+            services.AddCustomIdentity(config);
+            services.AddCustomAuth(config);
+
+            return services;
+        }
+
+        private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)
+        {
+            var jwtKey = config["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT Key is missing in configuration!");
+
+            var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = config["Jwt:Issuer"],
+                    ValidAudience = config["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+        }
+
+        private static void AddCustomIdentity(this IServiceCollection services, IConfiguration config)
+        {
+            // Пока просто оставляем пустым
+        }
+
+        public static IServiceCollection AddBusinessServices(this IServiceCollection services)
+        {
+            var assembly = typeof(ServiceCollectionExtensions).Assembly;
+
+            services.AddHostedService<UnconfirmedUserCleanupWorker>();
+
+            services.AddValidatorsFromAssembly(assembly);
+
+            services.AddSingleton<ISanitizerService, SanitizerService>();
+
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(assembly);
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            });
+
+            services.AddScoped<IFileService, LocalFileService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IEmailService, ConsoleEmailService>();
+
+            return services;
+        }
+
+        private static void AddCustomControllers(this IServiceCollection services)
+        {
+            services.AddControllers()
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
+        }
+
+        private static void AddCustomDatabase(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
+            );
+        }
+
+        private static void AddCustomCors(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(AppConstants.Shared.CORS_POLICY_NAME, policy =>
+                    policy.WithOrigins(
+                        AppConstants.Shared.LOCALHOST,
+                        AppConstants.Shared.DEV_DOMAIN,
+                        AppConstants.Shared.PWA_MOBILE
+                    )
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+        }
+    }
+}
