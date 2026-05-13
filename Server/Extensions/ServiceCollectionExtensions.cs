@@ -28,8 +28,8 @@ namespace Karakatsiya.Extensions
 
         private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)
         {
-            var jwtKey = config["Jwt:Key"]
-                ?? throw new InvalidOperationException("JWT Key is missing in configuration!");
+            var jwtKey = config[AppConstants.Config.JWT_KEY]
+                ?? throw new InvalidOperationException(AppConstants.Errors.CONFIG_MISSING_JWT);
 
             var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
@@ -46,8 +46,8 @@ namespace Karakatsiya.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = config["Jwt:Issuer"],
-                    ValidAudience = config["Jwt:Audience"],
+                    ValidIssuer = config[AppConstants.Config.JWT_ISSUER],
+                    ValidAudience = config[AppConstants.Config.JWT_AUDIENCE],
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
                     ClockSkew = TimeSpan.Zero
                 };
@@ -94,7 +94,7 @@ namespace Karakatsiya.Extensions
         private static void AddCustomDatabase(this IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
+                options.UseNpgsql(config.GetConnectionString(AppConstants.Config.DEFAULT_CONNECTION))
             );
         }
 

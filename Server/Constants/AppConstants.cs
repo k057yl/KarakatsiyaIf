@@ -16,6 +16,21 @@
             public const string CORS_POLICY_NAME = "AllowAngular";
         }
 
+        public static class Config
+        {
+            public const string DEFAULT_CONNECTION = "DefaultConnection";
+            public const string JWT_KEY = "Jwt:Key";
+            public const string JWT_ISSUER = "Jwt:Issuer";
+            public const string JWT_AUDIENCE = "Jwt:Audience";
+            public const string SEED_ADMIN_EMAIL = "SeedData:AdminEmail";
+            public const string SEED_ADMIN_PASSWORD = "SeedData:AdminPassword";
+        }
+
+        public static class MimeTypes
+        {
+            public const string APPLICATION_JSON = "application/json";
+        }
+
         public static class Security
         {
             public const int OTP_MIN_VALUE = 100000;
@@ -26,8 +41,12 @@
         public static class Email
         {
             public const string VERIF_SUBJECT = "Код подтверждения Каракатица";
-            // Используем {0} и {1} для string.Format
             public const string VERIF_BODY_TEMPLATE = "Твой код: {0}. У тебя есть {1} минут, потом превратишься в тыкву.";
+        }
+
+        public static class SeedData
+        {
+            public const string ADMIN_CREATED_LOG = "✅ Суперадмин успешно создан!";
         }
 
         public static class Validation
@@ -76,6 +95,10 @@
             public const string USER_NOT_FOUND_OR_ALREADY_VERIFIED = "ERRORS.USER_NOT_FOUND_OR_ALREADY_VERIFIED";
             public const string EMAIL_ALREADY_EXISTS = "ERRORS.EMAIL_ALREADY_EXISTS";
             public const string INVALID_CREDENTIALS = "ERRORS.INVALID_CREDENTIALS";
+            public const string VALIDATION_FAILED = "ERRORS.VALIDATION_FAILED";
+            public const string INTERNAL_SERVER_ERROR = "ERRORS.INTERNAL_SERVER_ERROR";
+            public const string CONFIG_MISSING_JWT = "JWT Key is missing in configuration!";
+            public const string MIDDLEWARE_FATAL_LOG = "Ахтунг! В контроллере пиздец: {Message}";
         }
 
         public static class Success

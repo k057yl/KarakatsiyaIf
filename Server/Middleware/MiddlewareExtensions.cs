@@ -4,7 +4,7 @@
     {
         public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<Karakatsiya.Middleware.ExceptionHandlingMiddleware>();
+            return app.UseMiddleware<ExceptionHandlingMiddleware>();
         }
     }
 }

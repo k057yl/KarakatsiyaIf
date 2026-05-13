@@ -1,0 +1,64 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2>Регистрация в Showcase</h2>
+
+    @if (errorMessage()) {
+      <div class="error-msg">{{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-control">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="Твой email" />
+        
+        @if (registerForm.controls.email.touched) {
+          @if (registerForm.controls.email.errors?.['required']) {
+            <span class="validation-error">Мы не умеем телепатически угадывать почту. Введи её.</span>
+          }
+          @if (registerForm.controls.email.errors?.['email']) {
+            <span class="validation-error">Похоже на кривую хуйню, а не на email.</span>
+          }
+        }
+      </div>
+
+      <div class="form-control">
+        <label>Пароль</label>
+        <input type="password" formControlName="password" placeholder="Минимум 6 символов" />
+        
+        @if (registerForm.controls.password.touched) {
+          @if (registerForm.controls.password.errors?.['required']) {
+            <span class="validation-error">Без пароля не пустим.</span>
+          }
+          @if (registerForm.controls.password.errors?.['minlength']) {
+            <span class="validation-error">Коротковат. Давай хотя бы 6 символов.</span>
+          }
+        }
+      </div>
+
+      <div class="form-control">
+        <label>Подтверждение пароля</label>
+        <input type="password" formControlName="confirmPassword" placeholder="Повтори пароль" />
+        
+        @if (registerForm.controls.confirmPassword.touched || registerForm.controls.password.touched) {
+          @if (registerForm.errors?.['passwordMismatch'] && registerForm.controls.confirmPassword.value) {
+            <span class="validation-error">Пароли не совпадают, ебаный рот!</span>
+          }
+        }
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="registerForm.invalid">
+        Зарегаться
+      </button>
+    </form>
+
+    <div class="divider">или</div>
+
+    <button type="button" class="btn-google" (click)="registerWithGoogle()">
+      Зайти через Google
+    </button>
+
+    <div class="auth-footer">
+      Уже есть аккаунт? <a routerLink="/auth/login">Войти</a>
+    </div>
+  </div>
+</div>

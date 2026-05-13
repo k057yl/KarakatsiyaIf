@@ -27,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Auth\Queries\" />
     <Folder Include="Models\Dtos\" />
     <Folder Include="Models\Validators\" />
-    <Folder Include="Services\BackgroundServices\" />
   </ItemGroup>
 
 </Project>

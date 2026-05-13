@@ -1,0 +1,102 @@
+.main-header {
+  height: 70px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary-color);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+
+  a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+
+    &:hover, &.active {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  .user-email {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+}
+
+.main-content {
+  min-height: calc(100vh - 70px - 60px); // Вычитаем хедер и футер
+  padding: 40px 0;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+}
+
+.main-footer {
+  height: 60px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+// Кнопки для хедера
+.btn-link {
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  &:hover { background-color: var(--primary-hover); }
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background-color: var(--input-bg); }
+}

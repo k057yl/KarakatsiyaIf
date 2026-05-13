@@ -2,12 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-
-export interface AuthResponse {
-  token: string;
-  email: string;
-  role: string;
-}
+import { AuthResponse, LoginRequest, RegisterRequest, VerifyCodeRequest } from '../models/dtos/auth.dto';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -18,33 +13,39 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor() {
-    const savedUser = localStorage.getItem('karakatsiya_user');
-    if (savedUser) this.currentUserSubject.next(JSON.parse(savedUser));
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('karakatsiya_user');
+      if (savedUser) this.currentUserSubject.next(JSON.parse(savedUser));
+    }
   }
 
-  register(email: string, password?: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { email, password }); 
+  register(data: RegisterRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
+  login(data: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
       tap(res => this.setSession(res))
     );
   }
 
-  verifyCode(email: string, code: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/verify-code`, { email, code }).pipe(
+  verifyCode(data: VerifyCodeRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/verify-code`, data).pipe(
       tap(res => this.setSession(res))
     );
   }
 
   private setSession(user: AuthResponse) {
-    localStorage.setItem('karakatsiya_user', JSON.stringify(user));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('karakatsiya_user', JSON.stringify(user));
+    }
     this.currentUserSubject.next(user);
   }
 
   logout() {
-    localStorage.removeItem('karakatsiya_user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('karakatsiya_user');
+    }
     this.currentUserSubject.next(null);
   }
 }

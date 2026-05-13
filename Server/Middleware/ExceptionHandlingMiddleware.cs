@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Karakatsiya.Constants;
 using System.Net;
 using System.Text.Json;
 
@@ -8,11 +9,7 @@ namespace Karakatsiya.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
-        private readonly JsonSerializerOptions _jsonOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
@@ -22,50 +19,35 @@ namespace Karakatsiya.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            try
-            {
-                await _next(context);
-            }
+            try { await _next(context); }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ахтунг! В контроллере пиздец: {Message}", ex.Message);
+                _logger.LogError(ex, AppConstants.Errors.MIDDLEWARE_FATAL_LOG, ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
         }
 
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = AppConstants.MimeTypes.APPLICATION_JSON;
 
             if (exception is ValidationException validationException)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                var details = validationException.Errors.Select(e => new { Field = e.PropertyName, ErrorKey = e.ErrorMessage });
 
-                var validationErrors = validationException.Errors
-                    .Select(e => new
-                    {
-                        Field = e.PropertyName,
-                        ErrorKey = e.ErrorMessage
-                    })
-                    .ToList();
-
-                var validationResult = JsonSerializer.Serialize(new
+                return context.Response.WriteAsync(JsonSerializer.Serialize(new
                 {
-                    error = "ERRORS.VALIDATION_FAILED",
-                    details = validationErrors
-                }, _jsonOptions);
-
-                return context.Response.WriteAsync(validationResult);
+                    error = AppConstants.Errors.VALIDATION_FAILED,
+                    details
+                }, _jsonOptions));
             }
 
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            var fatalResult = JsonSerializer.Serialize(new
+            return context.Response.WriteAsync(JsonSerializer.Serialize(new
             {
-                error = "ERRORS.INTERNAL_SERVER_ERROR"
-            }, _jsonOptions);
-
-            return context.Response.WriteAsync(fatalResult);
+                error = AppConstants.Errors.INTERNAL_SERVER_ERROR
+            }, _jsonOptions));
         }
     }
 }

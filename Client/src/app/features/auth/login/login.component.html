@@ -1,0 +1,46 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2>Вход в Showcase</h2>
+
+    @if (errorMessage()) {
+      <div class="error-msg">{{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-control">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="Твой email" />
+        
+        @if (loginForm.controls.email.touched && loginForm.controls.email.errors?.['required']) {
+          <span class="validation-error">Email обязателен хуле</span>
+        }
+        @if (loginForm.controls.email.touched && loginForm.controls.email.errors?.['email']) {
+          <span class="validation-error">Введи нормальный email</span>
+        }
+      </div>
+
+      <div class="form-control">
+        <label>Пароль</label>
+        <input type="password" formControlName="password" placeholder="******" />
+        
+        @if (loginForm.controls.password.touched && loginForm.controls.password.errors?.['required']) {
+          <span class="validation-error">Пароль тоже нужен</span>
+        }
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">
+        Войти
+      </button>
+    </form>
+
+    <div class="divider">или</div>
+
+    <button type="button" class="btn-google" (click)="loginWithGoogle()">
+      Войти через Google
+    </button>
+
+    <div class="auth-footer">
+      Нет аккаунта? <a routerLink="/auth/register">Зарегаться</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2>Подтверждение почты</h2>
+
+    @if (errorMessage()) {
+      <div class="error-msg">{{ errorMessage() }}</div>
+    }
+
+    @if (emailToVerify()) {
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">
+        Мы отправили 6-значный код на <b>{{ emailToVerify() }}</b>. Вводи его сюда.
+      </p>
+
+      <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-control">
+          <label>Код из письма</label>
+          <input 
+            type="text" 
+            formControlName="code" 
+            placeholder="123456" 
+            maxlength="6"
+            autocomplete="off" 
+          />
+          
+          @if (verifyForm.controls.code.touched) {
+            @if (verifyForm.controls.code.errors?.['required']) {
+              <span class="validation-error">Код сам себя не введет.</span>
+            }
+            @if (verifyForm.controls.code.errors?.['minlength']) {
+              <span class="validation-error">Код должен состоять из 6 ебучих цифр.</span>
+            }
+          }
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="verifyForm.invalid">
+          Подтвердить
+        </button>
+      </form>
+    }
+
+    <div class="auth-footer">
+      <a routerLink="/auth/login">Вернуться ко входу</a>
+    </div>
+  </div>
+</div>
