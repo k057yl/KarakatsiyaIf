@@ -1,43 +1,78 @@
 ﻿using Karakatsiya.Data;
+using Karakatsiya.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using Karakatsiya.Constants;
 
 namespace Karakatsiya.Services.BackgroundServices
 {
     public class UnconfirmedUserCleanupWorker : BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _services;
         private readonly ILogger<UnconfirmedUserCleanupWorker> _logger;
 
-        public UnconfirmedUserCleanupWorker(IServiceProvider serviceProvider, ILogger<UnconfirmedUserCleanupWorker> logger)
+        public UnconfirmedUserCleanupWorker(IServiceProvider services, ILogger<UnconfirmedUserCleanupWorker> logger)
         {
-            _serviceProvider = serviceProvider;
+            _services = services;
             _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Воркер очистки запущен и готов к карательным операциям...");
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Ассасин вышел на охоту за 'половинчатыми' юзерами...");
-
-                using (var scope = _serviceProvider.CreateScope())
+                try
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    var cutOffTime = DateTime.UtcNow.AddDays(-1);
+                    using var scope = _services.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                    var unconfirmedUsers = await db.Users
-                        .Where(u => !u.IsEmailVerified && u.CreatedAt < cutOffTime)
+                    var now = DateTime.UtcNow;
+                    var emailCutoff = now.AddHours(-24);
+                    var pendingCutoff = now.AddDays(-7);
+                    var usersToDelete = await context.Users
+                        .Where(u => !u.IsEmailVerified && u.CreatedAt < emailCutoff)
                         .ToListAsync(stoppingToken);
 
-                    if (unconfirmedUsers.Any())
+                    if (usersToDelete.Any())
                     {
-                        db.Users.RemoveRange(unconfirmedUsers);
-                        await db.SaveChangesAsync(stoppingToken);
-                        _logger.LogWarning("Удалено {Count} мусорных аккаунтов.", unconfirmedUsers.Count);
+                        context.Users.RemoveRange(usersToDelete);
+                        _logger.LogInformation("Удалено {Count} неподтвержденных аккаунтов (боты/мусор).", usersToDelete.Count);
+                    }
+
+                    var usersToDowngrade = await context.Users
+                        .Include(u => u.OrganizerProfile)
+                        .Where(u => u.Role == UserRole.PendingOrganizer
+                                    && u.OrganizerProfile != null
+                                    && u.OrganizerProfile.CreatedAt < pendingCutoff)
+                        .ToListAsync(stoppingToken);
+
+                    if (usersToDowngrade.Any())
+                    {
+                        foreach (var user in usersToDowngrade)
+                        {
+                            _logger.LogInformation("Юзер {Email} не прошел фейсконтроль вовремя. Понижаем до Visitor.", user.Email);
+
+                            user.Role = UserRole.Visitor;
+
+                            if (user.OrganizerProfile != null)
+                            {
+                                context.Set<Karakatsiya.Models.Entities.Showcase.Organizer>().Remove(user.OrganizerProfile);
+                            }
+                        }
+                    }
+
+                    if (usersToDelete.Any() || usersToDowngrade.Any())
+                    {
+                        await context.SaveChangesAsync(stoppingToken);
                     }
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Ой, бля! Ошибка во время зачистки базы.");
+                }
 
-                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
             }
         }
     }

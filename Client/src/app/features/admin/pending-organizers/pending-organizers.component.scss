@@ -1,0 +1,58 @@
+.admin-container {
+  padding: 20px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+}
+
+.win98-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th, td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--input-bg);
+    color: var(--text-muted);
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+.btn-approve {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover { background-color: #218838; }
+}
+
+.btn-reject {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover { background-color: #c82333; }
+}
+
+.info-msg {
+  padding: 10px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}

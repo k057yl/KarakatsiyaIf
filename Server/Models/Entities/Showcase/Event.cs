@@ -15,11 +15,20 @@ namespace Karakatsiya.Models.Entities.Showcase
 
         public Guid LocationId { get; set; }
         public Location? Location { get; set; }
+
         public Guid OrganizerId { get; set; }
         public Organizer? Organizer { get; set; }
 
+        public string? ExternalTicketUrl { get; set; }
+        public string? ContactLinks { get; set; }
+
+        public bool IsVip { get; set; } = false;
+        public DateTime? VipExpiresAt { get; set; }
+
         public List<EventServiceRequest> ServiceRequests { get; set; } = new();
+
         public List<Ticket> Tickets { get; set; } = new();
+
         public List<Comment> Comments { get; set; } = new();
         public List<EventPhoto> Photos { get; set; } = new();
     }

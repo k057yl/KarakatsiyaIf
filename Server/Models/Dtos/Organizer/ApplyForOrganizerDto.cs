@@ -1,6 +1,7 @@
-﻿namespace Karakatsiya.Models.Entities.ValueObjects
+﻿namespace Karakatsiya.Models.Dtos.Organizer
 {
-    public record ContactInfo(
+    public record ApplyForOrganizerDto(
+        string Name,
         string? Phone,
         string? Email,
         string? Website,

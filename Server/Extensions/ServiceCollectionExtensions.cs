@@ -5,10 +5,12 @@ using Karakatsiya.Services;
 using Karakatsiya.Services.BackgroundServices;
 using Karakatsiya.Services.Behaviors;
 using Karakatsiya.Services.Interfaces;
+using Karakatsiya.Services.Tracker;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace Karakatsiya.Extensions
@@ -49,7 +51,20 @@ namespace Karakatsiya.Extensions
                     ValidIssuer = config[AppConstants.Config.JWT_ISSUER],
                     ValidAudience = config[AppConstants.Config.JWT_AUDIENCE],
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = ClaimTypes.Role
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Cookies.ContainsKey("X-Access-Token"))
+                        {
+                            context.Token = context.Request.Cookies["X-Access-Token"];
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }
@@ -67,12 +82,18 @@ namespace Karakatsiya.Extensions
 
             services.AddValidatorsFromAssembly(assembly);
 
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheTracker, CacheTracker>();
+
             services.AddSingleton<ISanitizerService, SanitizerService>();
 
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(assembly);
+
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(SanitizationBehavior<,>));
                 cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
             });
 
             services.AddScoped<IFileService, LocalFileService>();

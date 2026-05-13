@@ -3,6 +3,7 @@ using System;
 using Karakatsiya.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Karakatsiya.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260513111718_UpdateEventModel")]
+    partial class UpdateEventModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -561,16 +564,10 @@ namespace Karakatsiya.Migrations
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("Contact_Email");
 
-                            b1.Property<string>("Instagram")
-                                .HasColumnType("text");
-
                             b1.Property<string>("Phone")
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
                                 .HasColumnName("Contact_Phone");
-
-                            b1.Property<string>("Telegram")
-                                .HasColumnType("text");
 
                             b1.Property<string>("Website")
                                 .HasColumnType("text");

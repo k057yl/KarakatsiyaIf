@@ -7,16 +7,18 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const apiUrl = environment.apiUrl;
 
-  let currentUser: any;
-  authService.currentUser$.subscribe(user => currentUser = user).unsubscribe();
+  let token: string | null = null;
 
-  const isLoggedIn = currentUser && currentUser.token;
+  authService.currentUser$.subscribe(user => {
+    token = user?.token || null;
+  }).unsubscribe();
+
   const isApiUrl = req.url.startsWith(apiUrl);
 
-  if (isLoggedIn && isApiUrl) {
+  if (token && isApiUrl) {
     req = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${currentUser.token}`
+        Authorization: `Bearer ${token}`
       }
     });
   }

@@ -3,6 +3,7 @@
     public enum UserRole
     {
         Visitor,
+        PendingOrganizer,
         Organizer,
         SuperAdmin
     }

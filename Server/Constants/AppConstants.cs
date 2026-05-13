@@ -22,6 +22,7 @@
             public const string JWT_KEY = "Jwt:Key";
             public const string JWT_ISSUER = "Jwt:Issuer";
             public const string JWT_AUDIENCE = "Jwt:Audience";
+            public const string JWT_EXPIRE_DAYS = "Jwt:ExpireDays";
             public const string SEED_ADMIN_EMAIL = "SeedData:AdminEmail";
             public const string SEED_ADMIN_PASSWORD = "SeedData:AdminPassword";
         }
@@ -99,6 +100,12 @@
             public const string INTERNAL_SERVER_ERROR = "ERRORS.INTERNAL_SERVER_ERROR";
             public const string CONFIG_MISSING_JWT = "JWT Key is missing in configuration!";
             public const string MIDDLEWARE_FATAL_LOG = "Ахтунг! В контроллере пиздец: {Message}";
+            public const string USER_NOT_FOUND = "ERRORS.USER_NOT_FOUND";
+            public const string ALREADY_APPLIED_OR_ADMIN = "ERRORS.ALREADY_APPLIED_OR_ADMIN";
+            public const string NO_CONTACTS_PROVIDED = "ERRORS.NO_CONTACTS_PROVIDED";
+            public const string INVALID_EMAIL = "ERRORS.INVALID_EMAIL";
+            public const string INVALID_TOKEN = "ERRORS.INVALID_TOKEN";
+            public const string NOT_PENDING_ORGANIZER = "ERRORS.NOT_PENDING_ORGANIZER";
         }
 
         public static class Success
@@ -106,6 +113,8 @@
             public const string EVENT_CREATED = "SUCCESS.EVENT_CREATED";
             public const string REQUEST_APPROVED = "SUCCESS.REQUEST_APPROVED";
             public const string VERIFICATION_CODE_SENT = "SUCCESS.VERIFICATION_CODE_SENT";
+            public const string APPLICATION_SUBMITTED = "SUCCESS.APPLICATION_SUBMITTED";
+            public const string ORGANIZER_APPROVED = "SUCCESS.ORGANIZER_APPROVED";
         }
     }
 }

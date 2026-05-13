@@ -1,0 +1,43 @@
+<div class="admin-container">
+  <h2>Заявки на Организаторов (Модерация)</h2>
+
+    @if (message()) {
+    <div class="info-msg">{{ message() }}</div>
+  }
+
+  @if (isLoading()) {
+    <p>Грузим данные, погодь...</p>
+  } @else {
+    @if (organizers().length === 0) {
+      <p class="empty-state">Никто не хочет делать ивенты. Заявок нет.</p>
+    } @else {
+      <table class="win98-table">
+        <thead>
+          <tr>
+            <th>Название (Name)</th>
+            <th>Контакты</th>
+            <th>Дата заявки</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (org of organizers(); track org.organizerId) {
+            <tr>
+              <td><strong>{{ org.name }}</strong></td>
+              <td>
+                <div>📱 {{ org.phone || '—' }}</div>
+                <div>📧 {{ org.email || '—' }}</div>
+                <div>✈️ {{ org.telegram || '—' }}</div>
+              </td>
+              <td>{{ org.appliedAt | date:'dd.MM.yyyy HH:mm' }}</td>
+              <td class="actions">
+                <button class="btn-approve" (click)="approve(org.organizerId)">Одобрить</button>
+                <button class="btn-reject" (click)="reject(org.organizerId)">Нахуй</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>

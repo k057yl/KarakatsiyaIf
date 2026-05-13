@@ -7,7 +7,7 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace Karakatsiya.Features.Auth.Commands.LoginUser
 {
-    public class LoginUserHandler : IRequestHandler<LoginUserCommand, (bool Success, string? Token, string MessageKey)>
+    public class LoginUserHandler : IRequestHandler<LoginUserCommand, (bool Success, string? Token, string? Email, string? Role, string MessageKey)>
     {
         private readonly AppDbContext _db;
         private readonly ITokenService _tokenService;
@@ -18,23 +18,23 @@ namespace Karakatsiya.Features.Auth.Commands.LoginUser
             _tokenService = tokenService;
         }
 
-        public async Task<(bool Success, string? Token, string MessageKey)> Handle(LoginUserCommand request, CancellationToken ct)
+        public async Task<(bool Success, string? Token, string? Email, string? Role, string MessageKey)> Handle(LoginUserCommand request, CancellationToken ct)
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email, ct);
 
             if (user == null || !user.IsEmailVerified)
             {
-                return (false, null, AppConstants.Errors.INVALID_CREDENTIALS);
+                return (false, null, null, null, AppConstants.Errors.INVALID_CREDENTIALS);
             }
 
             if (string.IsNullOrEmpty(user.PasswordHash) || !BC.Verify(request.Password, user.PasswordHash))
             {
-                return (false, null, AppConstants.Errors.INVALID_CREDENTIALS);
+                return (false, null, null, null, AppConstants.Errors.INVALID_CREDENTIALS);
             }
 
             var token = _tokenService.GenerateToken(user);
 
-            return (true, token, AppConstants.Success.REQUEST_APPROVED);
+            return (true, token, user.Email, user.Role.ToString(), AppConstants.Success.REQUEST_APPROVED);
         }
     }
 }
