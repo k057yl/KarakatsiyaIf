@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageReference Include="brevo_csharp" Version="1.1.2" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="MediatR" Version="14.1.0" />
@@ -29,6 +30,21 @@
   <ItemGroup>
     <Folder Include="Features\Auth\Queries\" />
     <Folder Include="Models\Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\SharedResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SharedResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\SharedResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

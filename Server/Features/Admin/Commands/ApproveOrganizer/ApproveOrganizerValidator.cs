@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Karakatsiya.Constants;
 
-namespace Karakatsiya.Features.Admin.Commands
+namespace Karakatsiya.Features.Admin.Commands.ApproveOrganizer
 {
     public class ApproveOrganizerValidator : AbstractValidator<ApproveOrganizerCommand>
     {

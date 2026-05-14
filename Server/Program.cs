@@ -20,6 +20,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+var supportedCultures = new[] { "en", "ru", "uk" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("uk")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 app.UseHttpsRedirection();
 
 app.UseCors(AppConstants.Shared.CORS_POLICY_NAME);

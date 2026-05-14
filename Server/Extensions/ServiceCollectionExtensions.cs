@@ -19,6 +19,8 @@ namespace Karakatsiya.Extensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
             services.AddCustomControllers();
             services.AddCustomDatabase(config);
             services.AddCustomCors(config);
@@ -98,7 +100,7 @@ namespace Karakatsiya.Extensions
 
             services.AddScoped<IFileService, LocalFileService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IEmailService, ConsoleEmailService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

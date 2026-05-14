@@ -1,7 +1,6 @@
 ﻿using Karakatsiya.Data;
 using Karakatsiya.Models.Enums;
 using Microsoft.EntityFrameworkCore;
-using Karakatsiya.Constants;
 
 namespace Karakatsiya.Services.BackgroundServices
 {
@@ -31,7 +30,9 @@ namespace Karakatsiya.Services.BackgroundServices
                     var emailCutoff = now.AddHours(-24);
                     var pendingCutoff = now.AddDays(-7);
                     var usersToDelete = await context.Users
-                        .Where(u => !u.IsEmailVerified && u.CreatedAt < emailCutoff)
+                        .Where(u => !u.IsEmailVerified 
+                                    && u.CreatedAt < emailCutoff
+                                    && u.Role != UserRole.SuperAdmin)
                         .ToListAsync(stoppingToken);
 
                     if (usersToDelete.Any())

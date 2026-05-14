@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Constants;
-using Karakatsiya.Features.Admin.Commands;
+using Karakatsiya.Features.Admin.Commands.ApproveOrganizer;
+using Karakatsiya.Features.Admin.Commands.RejectOrganizer;
 using Karakatsiya.Features.Admin.Queries.GetPendingOrganizers;
 using Karakatsiya.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,15 @@ namespace Karakatsiya.Controllers
             await Mediator.Send(command);
 
             return Ok(new { Message = AppConstants.Success.ORGANIZER_APPROVED });
+        }
+
+        [HttpPost("organizers/{id}/reject")]
+        public async Task<IActionResult> RejectOrganizer(Guid id, [FromBody] string reason)
+        {
+            var command = new RejectOrganizerCommand(id, reason);
+            await Mediator.Send(command);
+
+            return Ok(new { Message = AppConstants.Success.ORGANIZER_REJECTED });
         }
     }
 }

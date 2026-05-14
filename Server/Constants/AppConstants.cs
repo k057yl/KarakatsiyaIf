@@ -38,13 +38,13 @@
             public const int OTP_MAX_VALUE = 999999;
             public const int OTP_EXPIRY_MINUTES = 15;
         }
-
+        /*
         public static class Email
         {
             public const string VERIF_SUBJECT = "Код подтверждения Каракатица";
             public const string VERIF_BODY_TEMPLATE = "Твой код: {0}. У тебя есть {1} минут, потом превратишься в тыкву.";
         }
-
+        */
         public static class SeedData
         {
             public const string ADMIN_CREATED_LOG = "✅ Суперадмин успешно создан!";
@@ -115,6 +115,7 @@
             public const string VERIFICATION_CODE_SENT = "SUCCESS.VERIFICATION_CODE_SENT";
             public const string APPLICATION_SUBMITTED = "SUCCESS.APPLICATION_SUBMITTED";
             public const string ORGANIZER_APPROVED = "SUCCESS.ORGANIZER_APPROVED";
+            public const string ORGANIZER_REJECTED = "SUCCESS.ORGANIZER_REJECTED";
         }
     }
 }
