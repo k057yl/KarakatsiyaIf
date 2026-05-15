@@ -1,0 +1,46 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="modal-window" (click)="$event.stopPropagation()">
+    <header>
+      <h3>Создать событие</h3>
+      <button class="close-x" (click)="close()">×</button>
+    </header>
+
+    <form [formGroup]="eventForm" (ngSubmit)="submit()">
+      <div class="field">
+        <label>Заголовок</label>
+        <input formControlName="title" placeholder="Название ивента" />
+      </div>
+
+      <div class="field">
+        <label>Описание</label>
+        <textarea formControlName="description" rows="3"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Когда начинаем?</label>
+        <input type="datetime-local" formControlName="startDate" />
+      </div>
+
+      <div class="divider"><span>Локация</span></div>
+
+      <div class="field">
+        <label>Где это будет? (Поиск по карте)</label>
+        <input formControlName="locationName" placeholder="Название клуба или адрес..." />
+        
+        </div>
+
+      <div class="field-row">
+        <input formControlName="city" placeholder="Город" />
+        <input formControlName="street" placeholder="Улица" />
+        <input formControlName="houseNumber" placeholder="Дом" class="small" />
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-secondary" (click)="close()">Отмена</button>
+        <button type="submit" class="btn-primary" [disabled]="eventForm.invalid">
+          Создать черновик
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

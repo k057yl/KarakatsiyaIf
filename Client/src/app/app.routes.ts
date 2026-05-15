@@ -18,11 +18,11 @@ export const routes: Routes = [
     path: 'organizer/dashboard',
     loadComponent: () => import('./features/organizer/dashboard/organizer-dashboard.component').then(m => m.OrganizerDashboardComponent)
   },
-/*
-  { path: '', redirectTo: 'events', pathMatch: 'full' },
+
   { 
     path: 'events', 
     loadComponent: () => import('./features/events/event-list/event-list.component').then(m => m.EventListComponent) 
-  }
-    */
+  },
+  { path: '', redirectTo: 'events', pathMatch: 'full' },
+  { path: '**', redirectTo: 'events' }
 ];

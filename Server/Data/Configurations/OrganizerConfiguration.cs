@@ -24,6 +24,15 @@ namespace Karakatsiya.Data.Configurations
                 c.Property(p => p.Email)
                     .HasMaxLength(AppConstants.Validation.MAX_EMAIL_LENGTH)
                     .HasColumnName(AppConstants.Columns.CONTACT_EMAIL);
+
+                c.Property(p => p.Website)
+                    .HasMaxLength(255);
+
+                c.Property(p => p.Telegram)
+                    .HasMaxLength(100);
+
+                c.Property(p => p.Instagram)
+                    .HasMaxLength(100);
             });
         }
     }

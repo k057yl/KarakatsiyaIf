@@ -20,13 +20,14 @@ namespace Karakatsiya.Features.Organizers.Commands.ApplyForOrganizer
         public async Task<Guid> Handle(ApplyForOrganizerCommand request, CancellationToken cancellationToken)
         {
             var user = await _context.Users
+                .IgnoreQueryFilters()
                 .Include(u => u.OrganizerProfile)
                 .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 
             if (user == null)
                 throw new Exception(AppConstants.Errors.USER_NOT_FOUND);
 
-            if (user.Role != UserRole.Visitor)
+            if (user.Role == UserRole.Organizer || user.Role == UserRole.PendingOrganizer)
                 throw new Exception(AppConstants.Errors.ALREADY_APPLIED_OR_ADMIN);
 
             var contactInfo = new ContactInfo(
@@ -37,19 +38,32 @@ namespace Karakatsiya.Features.Organizers.Commands.ApplyForOrganizer
                 Instagram: request.Instagram
             );
 
-            var newOrganizer = new Organizer
+            if (user.OrganizerProfile != null)
             {
-                UserId = request.UserId,
-                Name = request.Name,
-                Contacts = contactInfo
-            };
+                user.OrganizerProfile.Name = request.Name;
+                user.OrganizerProfile.Contacts = contactInfo;
+                user.OrganizerProfile.IsDeleted = false;
+                user.OrganizerProfile.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                var newOrganizer = new Organizer
+                {
+                    UserId = request.UserId,
+                    Name = request.Name,
+                    Contacts = contactInfo,
+                    IsDeleted = false
+                };
 
-            user.OrganizerProfile = newOrganizer;
+                _context.Organizers.Add(newOrganizer);
+                user.OrganizerProfile = newOrganizer;
+            }
+
             user.Role = UserRole.PendingOrganizer;
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return newOrganizer.Id;
+            return user.OrganizerProfile.Id;
         }
     }
 }
