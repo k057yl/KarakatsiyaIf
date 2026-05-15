@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Features.Auth.Commands.LoginUser;
 using Karakatsiya.Features.Auth.Commands.RegisterUser;
+using Karakatsiya.Features.Auth.Commands.VerifyCode;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,19 @@ namespace Karakatsiya.Controllers
             }
 
             return Ok(new { Message = result.MessageKey });
+        }
+
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeCommand command)
+        {
+            var (success, token, messageKey) = await Mediator.Send(command);
+
+            if (!success)
+            {
+                return BadRequest(new { Message = messageKey });
+            }
+
+            return Ok(new { Token = token, Message = messageKey });
         }
     }
 }

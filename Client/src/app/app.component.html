@@ -7,15 +7,37 @@
 
       <div class="auth-buttons">
         @if (authService.currentUser$ | async; as user) {
-          @if (user.role === 'SuperAdmin') {
-            <a routerLink="/admin/pending" 
-               class="btn-admin" 
-               routerLinkActive="active">
-               👑 Админка
-            </a>
+          
+          @switch (user.role) {
+            
+            @case ('SuperAdmin') {
+              <a routerLink="/admin/pending" class="btn-admin" routerLinkActive="active">
+                👑 Админка
+              </a>
+            }
+
+            @case ('Organizer') {
+              <a routerLink="/organizer/dashboard" class="btn-dashboard" routerLinkActive="active">
+                🚀 Мой Кабинет
+              </a>
+            }
+
+            @case ('PendingOrganizer') {
+              <span class="status-badge" title="Твоя заявка на проверке у админа">
+                ⏳ На модерации
+              </span>
+            }
+
+            @case ('Visitor') {
+              <a routerLink="/become-organizer" class="btn-highlight">
+                Стать организатором
+              </a>
+            }
           }
+
           <span class="user-email">{{ user.email }}</span>
           <button (click)="logout()" class="btn-outline">Выйти</button>
+
         } @else {
           <a routerLink="/auth/login" class="btn-link">Вход</a>
           <a routerLink="/auth/register" class="btn-primary">Регистрация</a>

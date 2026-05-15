@@ -19,7 +19,7 @@ namespace Karakatsiya.Data
             await context.Database.MigrateAsync();
 
             await SeedAdmin(context, config);
-            await SeedPendingOrganizers(context);
+            //await SeedPendingOrganizers(context);
         }
 
         private static async Task SeedAdmin(AppDbContext context, IConfiguration config)
@@ -45,7 +45,7 @@ namespace Karakatsiya.Data
                 Console.WriteLine(AppConstants.SeedData.ADMIN_CREATED_LOG);
             }
         }
-
+        /*
         private static async Task SeedPendingOrganizers(AppDbContext context)
         {
             if (await context.Users.AnyAsync(u => u.Role == UserRole.PendingOrganizer))
@@ -55,19 +55,19 @@ namespace Karakatsiya.Data
 
             var technoUser = new User
             {
-                Email = "techno.raver@example.com",
+                Email = "galablackcat2020@gmail.com",
                 PasswordHash = testPassword,
                 Role = UserRole.PendingOrganizer,
                 IsEmailVerified = true,
                 OrganizerProfile = new Organizer
                 {
-                    Name = "Kyiv Techno Community",
+                    Name = "Gala",
                     Contacts = new ContactInfo(
                         Phone: "+380931112233",
-                        Email: "rave@kyiv.ua",
-                        Website: "https://techno-kyiv.com",
-                        Telegram: "@techno_admin",
-                        Instagram: "kyiv_techno_pulse"
+                        Email: "galablackcat2020@gmail.com",
+                        Website: "https://gala.com",
+                        Telegram: "@gala_admin",
+                        Instagram: "gala_techno_pulse"
                     )
                 }
             };
@@ -83,7 +83,7 @@ namespace Karakatsiya.Data
                     Name = "Арт-Простір 'Своя Стеля'",
                     Contacts = new ContactInfo(
                         Phone: "+380509998877",
-                        Email: "art@space.ua",
+                        Email: "art@111.ua",
                         Website: null,
                         Telegram: "@art_manager",
                         Instagram: "svoya_stelya_art"
@@ -96,5 +96,6 @@ namespace Karakatsiya.Data
 
             Console.WriteLine("✅ Тестовые организаторы (петрушки) успешно добавлены в очередь на модерацию!");
         }
+        */
     }
 }   

@@ -9,5 +9,20 @@ export const routes: Routes = [
     path: 'admin/pending',
     loadComponent: () => import('./features/admin/pending-organizers/pending-organizers.component').then(m => m.PendingOrganizersComponent)
   },
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' }
+
+  {
+    path: 'become-organizer',
+    loadComponent: () => import('./features/organizer/become-organizer/become-organizer.component').then(m => m.BecomeOrganizerComponent)
+  },
+  {
+    path: 'organizer/dashboard',
+    loadComponent: () => import('./features/organizer/dashboard/organizer-dashboard.component').then(m => m.OrganizerDashboardComponent)
+  },
+/*
+  { path: '', redirectTo: 'events', pathMatch: 'full' },
+  { 
+    path: 'events', 
+    loadComponent: () => import('./features/events/event-list/event-list.component').then(m => m.EventListComponent) 
+  }
+    */
 ];

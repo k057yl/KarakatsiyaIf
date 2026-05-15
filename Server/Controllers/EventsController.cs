@@ -1,0 +1,35 @@
+﻿using Karakatsiya.Constants;
+using Karakatsiya.Features.Events.Commands.CreateEvent;
+using Karakatsiya.Models.Dtos.Event;
+using Karakatsiya.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace Karakatsiya.Controllers
+{
+    [Route("api/[controller]")]
+    public class EventsController : BaseController
+    {
+        [HttpPost]
+        [Authorize(Roles = nameof(UserRole.Organizer))]
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto payload)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
+            }
+
+            var command = new CreateEventCommand(userId, payload);
+            var eventId = await Mediator.Send(command);
+
+            return Ok(new
+            {
+                Message = AppConstants.Success.EVENT_CREATED,
+                EventId = eventId
+            });
+        }
+    }
+}

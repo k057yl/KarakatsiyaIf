@@ -49,7 +49,22 @@ export class PendingOrganizersComponent implements OnInit {
   }
 
   reject(organizerId: string) {
-    // Тут будет аналогичная логика для эндпоинта /reject
-    console.log('Пошел нахуй:', organizerId);
+    const reason = window.prompt('За что посылаем нахуй? (Причина отказа)');
+
+    if (!reason) {
+      console.log('Отмена реджекта, админ передумал или не ввел причину.');
+      return; 
+    }
+
+    this.adminService.rejectOrganizer(organizerId, reason).subscribe({
+      next: (res) => {
+        this.organizers.update(list => list.filter(o => o.organizerId !== organizerId));
+        this.message.set('Заявка успешно послана нахуй (отклонена)!');
+        setTimeout(() => this.message.set(''), 3000);
+      },
+      error: (err) => {
+        this.message.set(err.error?.message || 'Не удалось отклонить. Бэк капризничает.');
+      }
+    });
   }
 }

@@ -29,10 +29,8 @@ export class AuthService {
     );
   }
 
-  verifyCode(data: VerifyCodeRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/verify-code`, data).pipe(
-      tap(res => this.setSession(res))
-    );
+  verifyCode(data: VerifyCodeRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/verify-code`, data);
   }
 
   private setSession(user: AuthResponse) {

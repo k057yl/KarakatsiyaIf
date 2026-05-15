@@ -1,0 +1,20 @@
+<div class="dashboard-container">
+  <h2>Кабинет Организатора 👑</h2>
+  
+  <div class="actions">
+    <button class="btn-primary" (click)="isModalOpen.set(true)">
+      + Создать Ивент
+    </button>
+  </div>
+
+  <div class="events-list">
+    <p>Тут будут твои ивенты, но пока тут нихуя нет.</p>
+  </div>
+
+  @if (isModalOpen()) {
+    <app-create-event-modal 
+      (closeModal)="isModalOpen.set(false)"
+      (eventCreated)="onEventCreated($event)">
+    </app-create-event-modal>
+  }
+</div>

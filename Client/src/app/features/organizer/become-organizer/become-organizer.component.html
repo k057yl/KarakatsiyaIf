@@ -1,0 +1,21 @@
+<div class="apply-container">
+  @if (isSuccess()) {
+    <div class="success-box">
+      <h3>Заявка улетела! 🚀</h3>
+      <p>Теперь жди, пока админ тебя зааппрувит. Тебе придет письмо.</p>
+    </div>
+  } @else {
+    <h2>Хочешь мутить свои ивенты?</h2>
+    <p>Заполни инфу о себе, и мы сделаем тебя организатором.</p>
+    
+    <form [formGroup]="applyForm" (ngSubmit)="submit()">
+      <input formControlName="name" placeholder="Название организации / Твоё имя" />
+      <input formControlName="phone" placeholder="Телефон" />
+      <input formControlName="email" placeholder="Email для контактов" />
+      <input formControlName="telegram" placeholder="@telegram" />
+      <button type="submit" [disabled]="applyForm.invalid || isSubmitting()">
+        Подать заявку
+      </button>
+    </form>
+  }
+</div>

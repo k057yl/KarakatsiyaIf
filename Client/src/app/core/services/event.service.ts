@@ -1,0 +1,17 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+import { CreateEventDto } from '../models/dtos/event.dto';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EventService {
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/events`;
+
+  createEvent(payload: CreateEventDto): Observable<{ message: string, eventId: string }> {
+    return this.http.post<{ message: string, eventId: string }>(this.apiUrl, payload);
+  }
+}

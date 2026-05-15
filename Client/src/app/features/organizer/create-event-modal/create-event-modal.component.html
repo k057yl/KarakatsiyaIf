@@ -1,0 +1,60 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3>Новая тусовка 🚀</h3>
+      <button class="close-btn" (click)="close()">✖</button>
+    </div>
+
+    <form [formGroup]="eventForm" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>Название</label>
+        <input formControlName="title" placeholder="Крутая рейв-туса" />
+      </div>
+      
+      <div class="form-group">
+        <label>Описание</label>
+        <textarea formControlName="description" rows="3" placeholder="Будет разъеб..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Дата начала</label>
+        <input type="datetime-local" formControlName="startDate" />
+      </div>
+
+      <hr>
+      <h4>Локация (Пока ручками)</h4>
+      
+      <div class="form-group">
+        <label>Название места</label>
+        <input formControlName="locationName" placeholder="Например: Клуб Atlas" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Город</label>
+          <input formControlName="city" placeholder="Киев" />
+        </div>
+        <div class="form-group">
+          <label>Улица</label>
+          <input formControlName="street" placeholder="Нижнеюрковская" />
+        </div>
+        <div class="form-group">
+          <label>Дом</label>
+          <input formControlName="houseNumber" placeholder="31" />
+        </div>
+      </div>
+
+      @if (errorMsg()) {
+        <div class="error-msg">{{ errorMsg() }}</div>
+      }
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="close()">Отмена</button>
+        <button type="submit" class="btn-submit" [disabled]="eventForm.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Отправка...' : 'Создать' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

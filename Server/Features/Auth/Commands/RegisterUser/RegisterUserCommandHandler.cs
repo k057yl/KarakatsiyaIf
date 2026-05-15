@@ -30,7 +30,7 @@ namespace Karakatsiya.Features.Auth.Commands.RegisterUser
 
             var code = new Random().Next(
                 AppConstants.Security.OTP_MIN_VALUE,
-                AppConstants.Security.OTP_MAX_VALUE).ToString();
+                AppConstants.Security.OTP_MAX_VALUE + 1).ToString();
 
             var user = new User
             {
