@@ -6,8 +6,20 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
-    path: 'admin/pending',
-    loadComponent: () => import('./features/admin/pending-organizers/pending-organizers.component').then(m => m.PendingOrganizersComponent)
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
+    children: [
+      { path: '', redirectTo: 'organizers', pathMatch: 'full' },
+      {
+        path: 'organizers',
+        loadComponent: () => import('./features/admin/pending-organizers/pending-organizers.component').then(m => m.PendingOrganizersComponent)
+      },
+      {
+        path: 'events',
+        // Этот компонент нужно будет создать по аналогии с оргами
+        loadComponent: () => import('./features/admin/pending-events/pending-events.component').then(m => m.PendingEventsComponent)
+      }
+    ]
   },
 
   {

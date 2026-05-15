@@ -28,3 +28,19 @@ header {
 }
 
 .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+.leaflet-map-container {
+  height: 250px; 
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 15px;
+  z-index: 1;
+}
+
+::ng-deep .leaflet-layer,
+::ng-deep .leaflet-control-zoom-in,
+::ng-deep .leaflet-control-zoom-out,
+::ng-deep .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}

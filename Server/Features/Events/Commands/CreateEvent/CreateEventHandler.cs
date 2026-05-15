@@ -61,7 +61,7 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 Slug = GenerateSlug(p.Title),
                 Description = p.Description,
                 StartDate = p.StartDate.ToUniversalTime(),
-                Status = EventStatus.Draft,
+                Status = EventStatus.Pending,
                 Location = location,
                 OrganizerId = organizer.Id,
                 ExternalTicketUrl = p.ExternalTicketUrl,

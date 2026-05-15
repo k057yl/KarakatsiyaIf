@@ -5,12 +5,28 @@
   </div>
 
   <div class="events-grid">
-    <div class="empty-placeholder">
-      <span>🏜️</span>
-      <p>Событий пока нет. Будь первым, кто создаст движ!</p>
-      @if (isVisitor()) {
-        <a routerLink="/become-organizer" class="btn-primary">Стать организатором</a>
+    @if (isLoading()) {
+      <p>Ищем, где сегодня можно нажраться...</p>
+    } @else if (events().length === 0) {
+      <div class="empty-placeholder">
+        <span>🏜️</span>
+        <p>Событий пока нет. Будь первым, кто создаст движ!</p>
+        @if (isVisitor()) {
+          <a routerLink="/become-organizer" class="btn-primary">Стать организатором</a>
+        }
+      </div>
+    } @else {
+      @for (event of events(); track event.id) {
+        <div class="event-card">
+          <div class="card-image">🖼️ Тут будет обложка</div>
+          <div class="card-content">
+            <h3>{{ event.title }}</h3>
+            <p class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
+            <p class="location">📍 {{ event.locationName }}, {{ event.street }} {{ event.houseNumber }}</p>
+            <a [routerLink]="['/events', event.id]" class="btn-outline">Подробнее</a>
+          </div>
+        </div>
       }
-    </div>
+    }
   </div>
 </div>

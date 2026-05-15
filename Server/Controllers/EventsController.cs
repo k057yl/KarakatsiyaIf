@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Features.Events.Commands.CreateEvent;
+using Karakatsiya.Features.Events.Queries.GetApprovedEvents;
 using Karakatsiya.Models.Dtos.Event;
 using Karakatsiya.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,13 @@ namespace Karakatsiya.Controllers
                 Message = AppConstants.Success.EVENT_CREATED,
                 EventId = eventId
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetApprovedEvents()
+        {
+            var events = await Mediator.Send(new GetApprovedEventsQuery());
+            return Ok(events);
         }
     }
 }

@@ -34,7 +34,6 @@ namespace Karakatsiya.Features.Auth.Commands.VerifyCode
 
             if (!string.Equals(user.VerificationCode, request.Code?.Trim(), StringComparison.Ordinal))
             {
-                Console.WriteLine($"[ОТЛАДКА ВЕРИФИКАЦИИ] Ожидали: '{user.VerificationCode}', а фронт высрал: '{request.Code}'");
                 return (false, null, AppConstants.Errors.INVALID_VERIFICATION_CODE);
             }
 

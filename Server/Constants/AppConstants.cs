@@ -6,6 +6,7 @@
         {
             public const string DEFAULT_CURRENCY = "UAH";
             public const int MAX_TITLE_LENGTH = 300;
+            public const string NOT_NAME = "Без названия";
         }
 
         public static class Shared
@@ -38,13 +39,7 @@
             public const int OTP_MAX_VALUE = 999999;
             public const int OTP_EXPIRY_MINUTES = 15;
         }
-        /*
-        public static class Email
-        {
-            public const string VERIF_SUBJECT = "Код подтверждения Каракатица";
-            public const string VERIF_BODY_TEMPLATE = "Твой код: {0}. У тебя есть {1} минут, потом превратишься в тыкву.";
-        }
-        */
+
         public static class SeedData
         {
             public const string ADMIN_CREATED_LOG = "✅ Суперадмин успешно создан!";
@@ -64,6 +59,8 @@
             public const int MAX_COMMENT_LENGTH = 1000;
             public const int MAX_URL_LENGTH = 500;
             public const int MAX_SLUG_LENGTH = 150;
+            public const int MIN_REASON_LENGTH = 5;
+            public const int MAX_REASON_LENGTH = 500;
         }
 
         public static class Columns
@@ -106,6 +103,10 @@
             public const string INVALID_EMAIL = "ERRORS.INVALID_EMAIL";
             public const string INVALID_TOKEN = "ERRORS.INVALID_TOKEN";
             public const string NOT_PENDING_ORGANIZER = "ERRORS.NOT_PENDING_ORGANIZER";
+            public const string EVENT_ID_REQUIRED = "ERRORS.EVENT_ID_REQUIRED";
+            public const string REASON_REQUIRED = "ERRORS.REASON_REQUIRED";
+            public const string REASON_TOO_SHORT = "ERRORS.REASON_TOO_SHORT";
+            public const string REASON_TOO_LONG = "ERRORS.REASON_TOO_LONG";
         }
 
         public static class Success

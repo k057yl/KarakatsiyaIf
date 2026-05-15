@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CreateEventModalComponent } from '../create-event-modal/create-event-modal.component';
+import { CreateEventModalComponent } from '../../events/create-event/create-event-modal.component';
 
 @Component({
   selector: 'app-organizer-dashboard',
@@ -15,6 +15,5 @@ export class OrganizerDashboardComponent {
   onEventCreated(eventId: string) {
     console.log('Заебись, ивент создан! ID:', eventId);
     this.isModalOpen.set(false);
-    // TODO: обновить список ивентов
   }
 }

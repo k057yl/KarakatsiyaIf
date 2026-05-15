@@ -1,14 +1,14 @@
 <div class="modal-backdrop" (click)="close()">
   <div class="modal-window" (click)="$event.stopPropagation()">
     <header>
-      <h3>Создать событие</h3>
+      <h3>Создать событие 🎸</h3>
       <button class="close-x" (click)="close()">×</button>
     </header>
 
     <form [formGroup]="eventForm" (ngSubmit)="submit()">
       <div class="field">
-        <label>Заголовок</label>
-        <input formControlName="title" placeholder="Название ивента" />
+        <label>Название</label>
+        <input formControlName="title" placeholder="Крутая рейв-туса" />
       </div>
 
       <div class="field">
@@ -17,17 +17,20 @@
       </div>
 
       <div class="field">
-        <label>Когда начинаем?</label>
+        <label>Дата начала</label>
         <input type="datetime-local" formControlName="startDate" />
       </div>
 
-      <div class="divider"><span>Локация</span></div>
+      <div class="divider"><span>Где это будет?</span></div>
 
       <div class="field">
-        <label>Где это будет? (Поиск по карте)</label>
-        <input formControlName="locationName" placeholder="Название клуба или адрес..." />
-        
-        </div>
+        <label>Ткни на карту или перетащи маркер 📍</label>
+        <div id="event-map" class="leaflet-map-container"></div>
+      </div>
+
+      <div class="field">
+        <input formControlName="locationName" placeholder="Название места (Клуб Atlas)" />
+      </div>
 
       <div class="field-row">
         <input formControlName="city" placeholder="Город" />
@@ -37,8 +40,8 @@
 
       <div class="actions">
         <button type="button" class="btn-secondary" (click)="close()">Отмена</button>
-        <button type="submit" class="btn-primary" [disabled]="eventForm.invalid">
-          Создать черновик
+        <button type="submit" class="btn-primary" [disabled]="eventForm.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Отправка...' : 'Создать черновик' }}
         </button>
       </div>
     </form>

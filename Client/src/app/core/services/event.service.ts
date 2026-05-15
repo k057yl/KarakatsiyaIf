@@ -14,4 +14,8 @@ export class EventService {
   createEvent(payload: CreateEventDto): Observable<{ message: string, eventId: string }> {
     return this.http.post<{ message: string, eventId: string }>(this.apiUrl, payload);
   }
+
+  getApprovedEvents(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl); 
+  }
 }
