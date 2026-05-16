@@ -11,9 +11,7 @@
           @switch (user.role) {
             
             @case ('SuperAdmin') {
-              <a routerLink="/admin" class="btn-admin" routerLinkActive="active">
-                👑 Админка
-              </a>
+              <a routerLink="/admin" class="btn-admin" routerLinkActive="active">{{ 'HEADER.ADMIN_BTN' | translate }}</a>
             }
 
             @case ('Organizer') {
@@ -35,8 +33,13 @@
             }
           }
 
+          <div class="lang-switcher">
+            <button (click)="switchLanguage('uk')">UA</button>
+            <button (click)="switchLanguage('en')">EN</button>
+          </div>
+
           <span class="user-email">{{ user.email }}</span>
-          <button (click)="logout()" class="btn-outline">Выйти</button>
+          <button (click)="logout()" class="btn-outline">{{ 'HEADER.LOGOUT_BTN' | translate }}</button>
 
         } @else {
           <a routerLink="/auth/login" class="btn-link">Вход</a>

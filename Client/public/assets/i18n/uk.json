@@ -1,0 +1,20 @@
+{
+  "COMMON": {
+    "POSTER": "Афіша",
+    "CABINET": "Мій Кабінет",
+    "ADMIN": "Адмінка",
+    "LOGOUT": "Вийти"
+  },
+  "ERRORS": {
+    "EVENT_NOT_FOUND": "Йобаний боді, цей івент десь загубився!",
+    "ALREADY_APPLIED_OR_ADMIN": "Ти вже або орг, або при владі.",
+    "USER_NOT_FOUND": "Такого юзера немає в системі."
+  },
+  "SUCCESS": {
+    "ORGANIZER_APPROVED": "Красава, орга одобрено!"
+  },
+  "HEADER": {
+    "ADMIN_BTN": "Адмінка",
+    "LOGOUT_BTN": "Вийти"
+  }
+}

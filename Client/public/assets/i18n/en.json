@@ -1,0 +1,20 @@
+{
+  "COMMON": {
+    "POSTER": "Billboard",
+    "CABINET": "My Dashboard",
+    "ADMIN": "Admin Panel",
+    "LOGOUT": "Logout"
+  },
+  "ERRORS": {
+    "EVENT_NOT_FOUND": "Damn, this event was not found!",
+    "ALREADY_APPLIED_OR_ADMIN": "You are already an organizer or admin.",
+    "USER_NOT_FOUND": "User not found."
+  },
+  "SUCCESS": {
+    "ORGANIZER_APPROVED": "Success, organizer approved!"
+  },
+  "HEADER": {
+    "ADMIN_BTN": "Admin",
+    "LOGOUT_BTN": "Logout"
+  }
+}
