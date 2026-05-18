@@ -1,25 +1,56 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    TranslateModule
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  authService = inject(AuthService);
-  private translate = inject(TranslateService);
+export class AppComponent implements OnInit {
+  private readonly LANGUAGE_STORAGE_KEY = 'lang';
+  private readonly platformId = inject(PLATFORM_ID);
+  public readonly authService = inject(AuthService);
+  private readonly translateService = inject(TranslateService);
 
-  logout() {
+  public ngOnInit(): void {
+    this.initializeLocalization();
+  }
+
+  public switchLanguage(languageCode: string): void {
+    this.translateService.use(languageCode);
+    
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(this.LANGUAGE_STORAGE_KEY, languageCode);
+    }
+  }
+
+  public logout(): void {
     this.authService.logout();
   }
 
-  switchLanguage(lang: string) {
-    this.translate.use(lang);
+  private initializeLocalization(): void {
+    const fallbackLanguage = 'uk';
+    let targetLanguage = fallbackLanguage;
+
+    if (isPlatformBrowser(this.platformId)) {
+      const savedLanguage = localStorage.getItem(this.LANGUAGE_STORAGE_KEY);
+      if (savedLanguage) {
+        targetLanguage = savedLanguage;
+      }
+    }
+
+    this.translateService.setDefaultLang(fallbackLanguage);
+    this.translateService.use(targetLanguage);
   }
 }

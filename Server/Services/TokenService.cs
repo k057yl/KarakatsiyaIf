@@ -28,7 +28,7 @@ namespace Karakatsiya.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var secretKey = _config[AppConstants.Config.JWT_KEY] ?? throw new InvalidOperationException(AppConstants.Errors.CONFIG_MISSING_JWT);
+            var secretKey = _config[AppConstants.Config.JWT_KEY] ?? throw new InvalidOperationException(AppConstants.Others.CONFIG_MISSING_JWT);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expireDays = _config.GetValue<double>(AppConstants.Config.JWT_EXPIRE_DAYS, 7);
@@ -62,7 +62,7 @@ namespace Karakatsiya.Services
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            var secretKey = _config[AppConstants.Config.JWT_KEY] ?? throw new InvalidOperationException(AppConstants.Errors.CONFIG_MISSING_JWT);
+            var secretKey = _config[AppConstants.Config.JWT_KEY] ?? throw new InvalidOperationException(AppConstants.Others.CONFIG_MISSING_JWT);
 
             var tokenValidationParameters = new TokenValidationParameters
             {

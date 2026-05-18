@@ -16,12 +16,10 @@ export const routes: Routes = [
       },
       {
         path: 'events',
-        // Этот компонент нужно будет создать по аналогии с оргами
         loadComponent: () => import('./features/admin/pending-events/pending-events.component').then(m => m.PendingEventsComponent)
       }
     ]
   },
-
   {
     path: 'become-organizer',
     loadComponent: () => import('./features/organizer/become-organizer/become-organizer.component').then(m => m.BecomeOrganizerComponent)
@@ -30,10 +28,13 @@ export const routes: Routes = [
     path: 'organizer/dashboard',
     loadComponent: () => import('./features/organizer/dashboard/organizer-dashboard.component').then(m => m.OrganizerDashboardComponent)
   },
-
   { 
     path: 'events', 
     loadComponent: () => import('./features/events/event-list/event-list.component').then(m => m.EventListComponent) 
+  },
+  {
+    path: 'events/:id',
+    loadComponent: () => import('./features/events/event-details/event-details.component').then(m => m.EventDetailsComponent)
   },
   { path: '', redirectTo: 'events', pathMatch: 'full' },
   { path: '**', redirectTo: 'events' }

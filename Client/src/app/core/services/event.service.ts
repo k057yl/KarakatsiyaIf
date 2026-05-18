@@ -18,4 +18,8 @@ export class EventService {
   getApprovedEvents(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl); 
   }
+
+  getEventDetails(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
 }

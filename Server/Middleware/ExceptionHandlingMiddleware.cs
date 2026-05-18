@@ -22,7 +22,7 @@ namespace Karakatsiya.Middleware
             try { await _next(context); }
             catch (Exception ex)
             {
-                _logger.LogError(ex, AppConstants.Errors.MIDDLEWARE_FATAL_LOG, ex.Message);
+                _logger.LogError(ex, AppConstants.Others.MIDDLEWARE_FATAL_LOG, ex.Message);
                 await HandleExceptionAsync(context, ex);
             }
         }

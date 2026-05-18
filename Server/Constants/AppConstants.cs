@@ -95,8 +95,6 @@
             public const string INVALID_CREDENTIALS = "ERRORS.INVALID_CREDENTIALS";
             public const string VALIDATION_FAILED = "ERRORS.VALIDATION_FAILED";
             public const string INTERNAL_SERVER_ERROR = "ERRORS.INTERNAL_SERVER_ERROR";
-            public const string CONFIG_MISSING_JWT = "JWT Key is missing in configuration!";
-            public const string MIDDLEWARE_FATAL_LOG = "Ахтунг! В контроллере пиздец: {Message}";
             public const string USER_NOT_FOUND = "ERRORS.USER_NOT_FOUND";
             public const string ALREADY_APPLIED_OR_ADMIN = "ERRORS.ALREADY_APPLIED_OR_ADMIN";
             public const string NO_CONTACTS_PROVIDED = "ERRORS.NO_CONTACTS_PROVIDED";
@@ -117,6 +115,14 @@
             public const string APPLICATION_SUBMITTED = "SUCCESS.APPLICATION_SUBMITTED";
             public const string ORGANIZER_APPROVED = "SUCCESS.ORGANIZER_APPROVED";
             public const string ORGANIZER_REJECTED = "SUCCESS.ORGANIZER_REJECTED";
+        }
+
+        public static class Others
+        {
+            public const string CONFIG_MISSING_JWT = "JWT Key is missing in configuration!";
+            public const string MIDDLEWARE_FATAL_LOG = "Ахтунг! В контроллере пиздец: {Message}";
+            public const string LOCATION_NOT_SPECIFIED = "Место не указано";
+            public const string ORGANIZER_NOT_SPECIFIED = "Организатор не указан";
         }
     }
 }

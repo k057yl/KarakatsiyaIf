@@ -33,7 +33,7 @@ namespace Karakatsiya.Extensions
         private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)
         {
             var jwtKey = config[AppConstants.Config.JWT_KEY]
-                ?? throw new InvalidOperationException(AppConstants.Errors.CONFIG_MISSING_JWT);
+                ?? throw new InvalidOperationException(AppConstants.Others.CONFIG_MISSING_JWT);
 
             var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 

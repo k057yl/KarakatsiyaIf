@@ -1,0 +1,53 @@
+<div class="details-container">
+  @if (isLoading()) {
+    <div class="loading-spinner">Загрузка...</div>
+  } @else if (errorMessage()) {
+    <div class="error-msg">{{ errorMessage() | translate }}</div>
+    <a routerLink="/events" class="btn-outline">Вернуться к афише</a>
+  } @else {
+    @if (eventDetails(); as event) {
+      <div class="event-header">
+        <a routerLink="/events" class="back-link">← Назад</a>
+        <h1>{{ event.title }}</h1>
+        <div class="event-meta">
+          <span class="organizer">👤 Орг: {{ event.organizerName }}</span>
+          <span class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="event-content">
+        <div class="main-info">
+          <div class="cover-image-placeholder">
+            🖼️ Тут скоро будет обложка
+          </div>
+          
+          <div class="description-block">
+            <h3>О мероприятии</h3>
+            <p>{{ event.description }}</p>
+          </div>
+
+          @if (event.externalTicketUrl || event.contactLinks) {
+            <div class="links-block">
+              <h3>Полезные ссылки</h3>
+              @if (event.externalTicketUrl) {
+                <a [href]="event.externalTicketUrl" target="_blank" class="btn-primary">🎟️ Купить билеты</a>
+              }
+              @if (event.contactLinks) {
+                <p>Связь: {{ event.contactLinks }}</p>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="sidebar-info">
+          <div class="location-card">
+            <h3>Локация</h3>
+            <p><strong>{{ event.locationName }}</strong></p>
+            <p>{{ event.city }}, {{ event.street }} {{ event.houseNumber }}</p>
+            <div id="event-map" class="map-container"></div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>
