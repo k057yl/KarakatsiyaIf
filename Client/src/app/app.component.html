@@ -9,7 +9,6 @@
         @if (authService.currentUser$ | async; as user) {
           
           @switch (user.role) {
-            
             @case ('SuperAdmin') {
               <a routerLink="/admin" class="btn-admin" routerLinkActive="active">{{ 'HEADER.ADMIN_BTN' | translate }}</a>
             }
@@ -45,6 +44,10 @@
           <a routerLink="/auth/login" class="btn-link">Вход</a>
           <a routerLink="/auth/register" class="btn-primary">Регистрация</a>
         }
+
+        <button class="theme-toggle-btn" (click)="toggleTheme()">
+          {{ currentTheme === 'dark' ? '☀️' : '🌙' }}
+        </button>
       </div>
     </nav>
   </div>

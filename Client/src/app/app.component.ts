@@ -19,20 +19,29 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class AppComponent implements OnInit {
   private readonly LANGUAGE_STORAGE_KEY = 'lang';
+  private readonly THEME_STORAGE_KEY = 'theme';
   private readonly platformId = inject(PLATFORM_ID);
+  
   public readonly authService = inject(AuthService);
   private readonly translateService = inject(TranslateService);
+  
+  public currentTheme = 'dark';
 
   public ngOnInit(): void {
     this.initializeLocalization();
+    this.initializeTheme();
   }
 
   public switchLanguage(languageCode: string): void {
     this.translateService.use(languageCode);
-    
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.LANGUAGE_STORAGE_KEY, languageCode);
     }
+  }
+
+  public toggleTheme(): void {
+    this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.applyTheme(this.currentTheme);
   }
 
   public logout(): void {
@@ -52,5 +61,27 @@ export class AppComponent implements OnInit {
 
     this.translateService.setDefaultLang(fallbackLanguage);
     this.translateService.use(targetLanguage);
+  }
+
+  private initializeTheme(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedTheme = localStorage.getItem(this.THEME_STORAGE_KEY);
+      
+      if (savedTheme) {
+        this.currentTheme = savedTheme;
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.currentTheme = prefersDark ? 'dark' : 'light';
+      }
+      
+      this.applyTheme(this.currentTheme);
+    }
+  }
+
+  private applyTheme(theme: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(this.THEME_STORAGE_KEY, theme);
+    }
   }
 }
