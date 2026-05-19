@@ -1,9 +1,9 @@
-import { Component, inject, OnInit, signal, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, signal, OnDestroy, PLATFORM_ID, afterNextRender, ElementRef, viewChild, effect, Injector, runInInjectionContext } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EventService } from '../../../core/services/event.service';
 import { TranslateModule } from '@ngx-translate/core';
-import * as L from 'leaflet';
+import type * as LType from 'leaflet';
 
 @Component({
   selector: 'app-event-details',
@@ -16,12 +16,30 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly eventService = inject(EventService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly injector = inject(Injector);
+
+  private mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
   public eventDetails = signal<any>(null);
   public isLoading = signal<boolean>(true);
   public errorMessage = signal<string>('');
 
-  private map: L.Map | undefined;
+  private map: LType.Map | undefined;
+
+  constructor() {
+    afterNextRender(() => {
+      runInInjectionContext(this.injector, () => {
+        effect(async () => {
+          const data = this.eventDetails();
+          const container = this.mapContainer()?.nativeElement;
+
+          if (data && data.latitude && data.longitude && container && !this.map) {
+            await this.initMap(container, data.latitude, data.longitude);
+          }
+        });
+      });
+    });
+  }
 
   public ngOnInit(): void {
     const eventId = this.route.snapshot.paramMap.get('id');
@@ -45,10 +63,6 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.eventDetails.set(data);
         this.isLoading.set(false);
-        
-        if (isPlatformBrowser(this.platformId) && data.latitude && data.longitude) {
-          setTimeout(() => this.initMap(data.latitude, data.longitude), 100);
-        }
       },
       error: (err) => {
         this.errorMessage.set(err.error?.message || 'ERRORS.SERVICE_UNAVAILABLE');
@@ -57,11 +71,13 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initMap(lat: number, lng: number): void {
-    this.map = L.map('event-map', {
+  private async initMap(container: HTMLDivElement, lat: number, lng: number): Promise<void> {
+    const L = await import('leaflet');
+
+    this.map = L.map(container, {
       center: [lat, lng],
       zoom: 16,
-      dragging: false,
+      dragging: true,
       scrollWheelZoom: false
     });
 
@@ -71,10 +87,16 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
 
     const customIcon = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41]
     });
 
     L.marker([lat, lng], { icon: customIcon }).addTo(this.map);
+
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 50);
   }
 }
