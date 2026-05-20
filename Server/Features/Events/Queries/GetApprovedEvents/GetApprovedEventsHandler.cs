@@ -13,8 +13,10 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
 
         public async Task<List<EventDto>> Handle(GetApprovedEventsQuery request, CancellationToken cancellationToken)
         {
+            var now = DateTime.UtcNow;
+
             return await _context.Events
-                .Where(e => e.Status == EventStatus.Approved)
+                .Where(e => e.Status == EventStatus.Approved && e.StartDate >= now)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventDto(
                     e.Id,
@@ -23,7 +25,9 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                     e.Location != null ? e.Location.Name : Constants.AppConstants.General.NOT_NAME,
                     e.Location != null ? e.Location.Address.City : string.Empty,
                     e.Location != null ? e.Location.Address.Street : string.Empty,
-                    e.Location != null ? e.Location.Address.HouseNumber : string.Empty
+                    e.Location != null ? e.Location.Address.HouseNumber : string.Empty,
+                    e.Location != null ? e.Location.Address.Latitude : null,
+                    e.Location != null ? e.Location.Address.Longitude : null
                 ))
                 .ToListAsync(cancellationToken);
         }

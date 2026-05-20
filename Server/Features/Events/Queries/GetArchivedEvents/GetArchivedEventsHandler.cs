@@ -1,21 +1,23 @@
 ﻿using Karakatsiya.Data;
+using Microsoft.EntityFrameworkCore;
 using Karakatsiya.Models.Dtos.Event;
 using Karakatsiya.Models.Enums;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
-namespace Karakatsiya.Features.Events.Queries.GetPendingEvents
+namespace Karakatsiya.Features.Events.Queries.GetArchivedEvents
 {
-    public class GetPendingEventsHandler : IRequestHandler<GetPendingEventsQuery, List<EventDto>>
+    public class GetArchivedEventsHandler : IRequestHandler<GetArchivedEventsQuery, List<EventDto>>
     {
         private readonly AppDbContext _context;
-        public GetPendingEventsHandler(AppDbContext context) => _context = context;
+        public GetArchivedEventsHandler(AppDbContext context) => _context = context;
 
-        public async Task<List<EventDto>> Handle(GetPendingEventsQuery request, CancellationToken cancellationToken)
+        public async Task<List<EventDto>> Handle(GetArchivedEventsQuery request, CancellationToken cancellationToken)
         {
+            var now = DateTime.UtcNow;
+
             return await _context.Events
-                .Where(e => e.Status == EventStatus.Pending)
-                .OrderBy(e => e.CreatedAt)
+                .Where(e => e.Status == EventStatus.Approved && e.StartDate < now)
+                .OrderByDescending(e => e.StartDate)
                 .Select(e => new EventDto(
                     e.Id,
                     e.Title,

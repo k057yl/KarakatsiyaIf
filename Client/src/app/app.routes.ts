@@ -30,7 +30,11 @@ export const routes: Routes = [
   },
   { 
     path: 'events', 
-    loadComponent: () => import('./features/events/event-list/event-list.component').then(m => m.EventListComponent) 
+    loadComponent: () => import('./features/events/event-hub/event-hub.component').then(m => m.EventHubComponent) 
+  },
+  { 
+    path: 'archive', 
+    loadComponent: () => import('./features/events/event-archive/event-archive.component').then(m => m.EventArchiveComponent) 
   },
   {
     path: 'events/:id',

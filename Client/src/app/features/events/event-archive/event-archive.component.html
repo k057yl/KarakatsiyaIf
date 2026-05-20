@@ -1,0 +1,28 @@
+<div class="archive-container">
+  <div class="archive-header">
+    <h1>Архив мероприятий</h1>
+    <p>События, которые уже прошли, но навсегда остались в базе данных.</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="center-state">Загрузка архива...</div>
+  } @else if (archivedEvents().length === 0) {
+    <div class="center-state">Архив пуст.</div>
+  } @else {
+    <div class="events-grid">
+      @for (event of archivedEvents(); track event.id) {
+        <div class="event-card">
+          <div class="card-body">
+            <h3>{{ event.title }}</h3>
+            <p class="org">👤 {{ event.organizerName }}</p>
+            <p class="loc">📍 {{ event.locationName }} — {{ event.city }}</p>
+            <p class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
+            <div class="actions">
+              <a [routerLink]="['/events', event.id]" class="btn-more">Вспомнить всё</a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

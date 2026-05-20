@@ -1,0 +1,63 @@
+<div class="map-page-container">
+  
+  <div class="map-side">
+    <div #mapContainer id="main-events-map" class="full-map"></div>
+  </div>
+
+  <div class="list-side">
+    <div class="list-header">
+      <h2>Мероприятия</h2>
+      
+      <div class="legend">
+        <span class="badge today">Сегодня</span>
+        <span class="badge weekend">Ближайшие 3 дня</span>
+        <span class="badge week">Неделя</span>
+        <span class="badge later">Позже</span>
+      </div>
+
+      <div class="sort-controls">
+        <button 
+            class="btn-outline" 
+            [class.active]="currentSort() === 'date'"
+            (click)="sortEvents('date')">
+            По дате
+        </button>
+        <button 
+            class="btn-outline" 
+            [class.active]="currentSort() === 'location'"
+            (click)="sortEvents('location')">
+            По локации
+        </button>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="center-state">Загрузка списка событий...</div>
+    } @else if (filteredEvents().length === 0) {
+      <div class="center-state">Событий не найдено</div>
+    } @else {
+      <div class="scrollable-list">
+        @for (event of filteredEvents(); track event.id) {
+          <div 
+            [id]="'event-card-' + event.id"
+            class="event-mini-card"
+            [class.active]="selectedEventId() === event.id"
+            (click)="selectEvent(event.id, true)"
+          >
+            <div class="card-body">
+              <span class="event-type-dot" [style.background-color]="getMarkerColor(event.startDate)"></span>
+              <h3>{{ event.title }}</h3>
+              <p class="org">👤 {{ event.organizerName }}</p>
+              <p class="loc">📍 {{ event.locationName }} — {{ event.city }}</p>
+              <p class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
+              <div class="actions">
+                <a [routerLink]="['/events', event.id]" class="btn-more" (click)="$event.stopPropagation()">Открыть страницу</a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</div>

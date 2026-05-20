@@ -4,6 +4,7 @@
     
     <nav class="main-nav">
       <a routerLink="/events" routerLinkActive="active">Афиша</a>
+      <a routerLink="/archive" routerLinkActive="active">Архив</a>
 
       <div class="auth-buttons">
         @if (authService.currentUser$ | async; as user) {
