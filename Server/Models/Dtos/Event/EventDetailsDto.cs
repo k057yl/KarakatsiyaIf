@@ -13,6 +13,7 @@
         double? Longitude,
         string OrganizerName,
         string? ExternalTicketUrl,
-        string? ContactLinks
+        string? ContactLinks,
+        bool IsVip
     );
 }

@@ -28,8 +28,8 @@ export class AdminService {
   getPendingEvents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.eventsApiUrl}/pending`);
   }
-  approveEvent(id: string): Observable<any> {
-    return this.http.post(`${this.eventsApiUrl}/${id}/approve`, {});
+  approveEvent(id: string, isVip: boolean): Observable<any> {
+    return this.http.post(`${this.eventsApiUrl}/${id}/approve?isVip=${isVip}`, {});
   }
   rejectEvent(id: string, reason: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

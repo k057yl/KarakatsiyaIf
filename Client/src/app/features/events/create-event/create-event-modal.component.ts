@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MapService } from '../../../core/services/map.service';
 import { EventService } from '../../../core/services/event.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import * as L from 'leaflet';
 
 @Component({
@@ -19,8 +20,12 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
   private fb = inject(FormBuilder);
   private eventService = inject(EventService);
   private mapService = inject(MapService);
+  private paymentService = inject(PaymentService);
+
+  private readonly DRAFT_KEY = 'event_draft_form';
 
   isSubmitting = signal(false);
+  createdEventId = signal<string | null>(null);
 
   private selectedLat: number | undefined = undefined;
   private selectedLon: number | undefined = undefined;
@@ -41,11 +46,48 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initMap();
+    this.loadDraft();
+
+    this.eventForm.valueChanges.subscribe(() => this.saveDraft());
   }
 
   ngOnDestroy() {
     if (this.map) {
       this.map.remove();
+    }
+  }
+
+  private saveDraft() {
+    if (this.createdEventId()) return;
+    const draft = {
+      form: this.eventForm.getRawValue(),
+      lat: this.selectedLat,
+      lon: this.selectedLon,
+      osmId: this.selectedOsmId
+    };
+    localStorage.setItem(this.DRAFT_KEY, JSON.stringify(draft));
+  }
+
+  private loadDraft() {
+    const saved = localStorage.getItem(this.DRAFT_KEY);
+    if (saved) {
+      try {
+        const draft = JSON.parse(saved);
+        this.eventForm.patchValue(draft.form);
+        
+        if (draft.lat && draft.lon) {
+          this.selectedLat = draft.lat;
+          this.selectedLon = draft.lon;
+          this.selectedOsmId = draft.osmId;
+          
+          if (this.marker && this.map) {
+            this.marker.setLatLng([draft.lat, draft.lon]);
+            this.map.setView([draft.lat, draft.lon], 15);
+          }
+        }
+      } catch (e) {
+        console.error('Ошибка чтения черновика', e);
+      }
     }
   }
 
@@ -86,22 +128,24 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
   private updateLocationData(lat: number, lon: number) {
     this.mapService.reverseGeocode(lat, lon).subscribe((res: any) => {
         if (res && res.address) {
-        this.selectedLat = lat;
-        this.selectedLon = lon;
-        this.selectedOsmId = res.osm_id?.toString() || undefined;
+          this.selectedLat = lat;
+          this.selectedLon = lon;
+          this.selectedOsmId = res.osm_id?.toString() || undefined;
 
-        const addr = res.address;
-        const locName = res.name || addr.amenity || addr.building || ''; 
+          const addr = res.address;
+          const locName = res.name || addr.amenity || addr.building || ''; 
 
-        this.eventForm.patchValue({
-            locationName: locName,
-            city: addr.city || addr.town || addr.village || '',
-            street: addr.road || '',
-            houseNumber: addr.house_number || ''
-        });
+          this.eventForm.patchValue({
+              locationName: locName,
+              city: addr.city || addr.town || addr.village || '',
+              street: addr.road || '',
+              houseNumber: addr.house_number || ''
+          });
+          
+          this.saveDraft();
         }
     });
-    }
+  }
 
   close() {
     this.closeModal.emit();
@@ -123,12 +167,27 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
     this.eventService.createEvent(payload).subscribe({
       next: (res) => {
         this.isSubmitting.set(false);
-        this.eventCreated.emit(res.eventId);
+        localStorage.removeItem(this.DRAFT_KEY);
+        this.createdEventId.set(res.eventId);
       },
       error: (err) => {
         this.isSubmitting.set(false);
         console.error(err);
       }
     });
+  }
+
+  finishWithoutVip() {
+    if (this.createdEventId()) {
+      this.eventCreated.emit(this.createdEventId()!);
+    }
+    this.close();
+  }
+
+  buyVip() {
+    const id = this.createdEventId();
+    if (id) {
+      this.paymentService.payForVip(id);
+    }
   }
 }

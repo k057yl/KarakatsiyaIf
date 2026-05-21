@@ -24,6 +24,7 @@ namespace Karakatsiya.Models.Entities.Showcase
 
         public bool IsVip { get; set; } = false;
         public DateTime? VipExpiresAt { get; set; }
+        public bool IsVipRequested { get; set; } = false;
 
         public List<EventServiceRequest> ServiceRequests { get; set; } = new();
 

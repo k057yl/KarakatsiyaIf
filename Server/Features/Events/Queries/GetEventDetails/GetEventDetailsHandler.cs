@@ -40,7 +40,8 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 ev.Location?.Address.Longitude,
                 ev.Organizer != null ? ev.Organizer.Name : AppConstants.Others.ORGANIZER_NOT_SPECIFIED,
                 ev.ExternalTicketUrl,
-                ev.ContactLinks
+                ev.ContactLinks,
+                ev.IsVip
             );
         }
     }

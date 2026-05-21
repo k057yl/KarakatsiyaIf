@@ -34,11 +34,11 @@ export class PendingEventsComponent implements OnInit {
     });
   }
 
-  approve(eventId: string) {
-    this.adminService.approveEvent(eventId).subscribe({
+  approve(eventId: string, isVip: boolean) {
+    this.adminService.approveEvent(eventId, isVip).subscribe({
       next: () => {
         this.events.update(list => list.filter(e => e.id !== eventId));
-        this.message.set('Ивент одобрен, пускаем в люди!');
+        this.message.set(isVip ? 'Ивент одобрен как VIP 💎' : 'Ивент одобрен, пускаем в люди!');
         setTimeout(() => this.message.set(''), 3000);
       },
       error: (err) => {

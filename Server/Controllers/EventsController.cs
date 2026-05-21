@@ -1,6 +1,7 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Features.Events.Commands.CreateEvent;
 using Karakatsiya.Features.Events.Queries.GetApprovedEvents;
+using Karakatsiya.Features.Events.Queries.GetArchivedEvents;
 using Karakatsiya.Features.Events.Queries.GetEventDetails;
 using Karakatsiya.Models.Dtos.Event;
 using Karakatsiya.Models.Enums;
@@ -48,6 +49,13 @@ namespace Karakatsiya.Controllers
             var result = await Mediator.Send(query);
 
             return Ok(result);
+        }
+
+        [HttpGet("archive")]
+        public async Task<IActionResult> GetArchivedEvents()
+        {
+            var events = await Mediator.Send(new GetArchivedEventsQuery());
+            return Ok(events);
         }
     }
 }

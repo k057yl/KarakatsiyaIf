@@ -18,6 +18,8 @@ namespace Karakatsiya.Features.Events.Commands.ApproveEvent
                 throw new Exception(AppConstants.Errors.EVENT_NOT_FOUND);
 
             ev.Status = EventStatus.Approved;
+            ev.IsVip = request.IsVip;
+
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

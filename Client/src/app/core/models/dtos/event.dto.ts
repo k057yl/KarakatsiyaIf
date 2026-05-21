@@ -11,4 +11,5 @@ export interface CreateEventDto {
   osmId?: string;
   externalTicketUrl?: string;
   contactLinks?: string;
+  isVip?: boolean;
 }

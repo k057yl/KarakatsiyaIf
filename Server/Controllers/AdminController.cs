@@ -47,11 +47,12 @@ namespace Karakatsiya.Controllers
             return Ok(events);
         }
 
-        [HttpPost("events/{id}/approve")]
-        public async Task<IActionResult> ApproveEvent(Guid id)
+        [HttpPost("events/{eventId:guid}/approve")]
+        public async Task<IActionResult> ApproveEvent(Guid eventId, [FromQuery] bool isVip = false)
         {
-            await Mediator.Send(new ApproveEventCommand(id));
-            return Ok(new { Message = AppConstants.Success.REQUEST_APPROVED });
+            var command = new ApproveEventCommand(eventId, isVip);
+            await Mediator.Send(command);
+            return Ok();
         }
 
         [HttpPost("events/{id}/reject")]

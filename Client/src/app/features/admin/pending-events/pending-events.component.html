@@ -18,12 +18,20 @@
         </thead>
         <tbody>
           @for (ev of events(); track ev.id) {
-            <tr>
-              <td><strong>{{ ev.title }}</strong></td>
+            <tr [class.vip-paid-row]="ev.isVip">
+              <td>
+                <strong>{{ ev.title }}</strong>
+                @if (ev.isVip) { <span class="money-badge" style="color: #ffd700; margin-left: 10px;">💰 ОПЛАЧЕНО VIP</span> }
+              </td>
               <td>📍 {{ ev.locationName }} ({{ ev.city }})</td>
               <td>📅 {{ ev.startDate | date:'dd.MM.yyyy HH:mm' }}</td>
               <td class="actions">
-                <button class="btn-approve" (click)="approve(ev.id)">Одобрить</button>
+                @if (ev.isVip) {
+                  <button class="btn-approve-vip" (click)="approve(ev.id, true)">💎 Подтвердить VIP</button>
+                } @else {
+                  <button class="btn-approve" (click)="approve(ev.id, false)">Одобрить</button>
+                  <button class="btn-approve-vip" style="background: #eedd82" (click)="approve(ev.id, true)">Сделать VIP нахаляву</button>
+                }
                 <button class="btn-reject" (click)="reject(ev.id)">Нахуй</button>
               </td>
             </tr>

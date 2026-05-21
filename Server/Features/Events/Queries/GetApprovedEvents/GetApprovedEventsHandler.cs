@@ -27,7 +27,8 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                     e.Location != null ? e.Location.Address.Street : string.Empty,
                     e.Location != null ? e.Location.Address.HouseNumber : string.Empty,
                     e.Location != null ? e.Location.Address.Latitude : null,
-                    e.Location != null ? e.Location.Address.Longitude : null
+                    e.Location != null ? e.Location.Address.Longitude : null,
+                    e.IsVip
                 ))
                 .ToListAsync(cancellationToken);
         }
