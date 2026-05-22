@@ -12,6 +12,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
       <div class="admin-tabs">
         <a routerLink="/admin/organizers" routerLinkActive="active" class="tab-link">Заявки Организаторов</a>
         <a routerLink="/admin/events" routerLinkActive="active" class="tab-link">Модерация Ивентов</a>
+        <a routerLink="/admin/active-events" routerLinkActive="active" class="tab-link">⚡ Активные события</a>
       </div>
 
       <div class="admin-content">

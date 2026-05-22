@@ -1,0 +1,66 @@
+.active-management {
+  .filter-panel {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+
+    .win-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text-color);
+    }
+
+    .win-select {
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text-color);
+    }
+  }
+
+  .system-alert {
+    background: #004d40;
+    color: #e0f2f1;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+
+  .badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    background: #444;
+    
+    &.badge-vip {
+      background: #ffd700;
+      color: #000;
+      font-weight: bold;
+    }
+  }
+
+  .control-actions {
+    display: flex;
+    gap: 8px;
+
+    button {
+      padding: 4px 10px;
+      border: 1px solid #000;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-toggle-vip { background: #0076a3; color: #fff; }
+    .btn-fix { background: #ffaa00; color: #000; }
+    .btn-kill { background: #b71c1c; color: #fff; }
+  }
+  
+  .vip-row {
+    background: rgba(255, 215, 0, 0.05);
+  }
+}

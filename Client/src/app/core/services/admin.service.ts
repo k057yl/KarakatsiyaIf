@@ -35,4 +35,17 @@ export class AdminService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(`${this.eventsApiUrl}/${id}/reject`, JSON.stringify(reason), { headers });
   }
+  deleteEvent(id: string): Observable<any> {
+    return this.http.delete(`${this.eventsApiUrl}/${id}`);
+  }
+  sendToFix(id: string, reason: string): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post(`${this.eventsApiUrl}/${id}/send-to-fix`, JSON.stringify(reason), { headers });
+  }
+  toggleVip(id: string): Observable<any> {
+    return this.http.post(`${this.eventsApiUrl}/${id}/toggle-vip`, {});
+  }
+  getActiveEvents(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.eventsApiUrl}/active`);
+  }
 }

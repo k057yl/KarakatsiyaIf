@@ -19,6 +19,10 @@
             <p class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
             <div class="actions">
               <a [routerLink]="['/events', event.id]" class="btn-more">Вспомнить всё</a>
+              
+              @if (isAdmin()) {
+                <button (click)="deleteEvent(event.id)" class="btn-delete">💀 Удалить</button>
+              }
             </div>
           </div>
         </div>

@@ -1,0 +1,59 @@
+<div class="active-management">
+  @if (message()) { <div class="system-alert">{{ message() }}</div> }
+
+  <div class="filter-panel">
+    <input 
+      type="text" 
+      placeholder="Поиск по названию или городу..." 
+      [value]="searchQuery()"
+      (input)="onSearch($event)" 
+      class="win-input" />
+
+    <select (change)="onVipFilterChange($event)" class="win-select">
+      <option value="all">Все тарифы</option>
+      <option value="vip">💎 Только VIP</option>
+      <option value="regular">Обычные</option>
+    </select>
+  </div>
+
+  @if (isLoading()) {
+    <p>Сканируем базу на наличие активного движа...</p>
+  } @else {
+    @if (filteredEvents().length === 0) {
+      <p class="empty-state">Ничего не найдено. Либо пусто, либо фильтры слишком жесткие.</p>
+    } @else {
+      <table class="win98-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Локация</th>
+            <th>Дата старта</th>
+            <th>Статус тарифа</th>
+            <th>Управление</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ev of filteredEvents(); track ev.id) {
+            <tr [class.vip-row]="ev.isVip">
+              <td><strong>{{ ev.title }}</strong></td>
+              <td>📍 {{ ev.locationName }} ({{ ev.city }})</td>
+              <td>📅 {{ ev.startDate | date:'dd.MM.yyyy HH:mm' }}</td>
+              <td>
+                <span class="badge" [class.badge-vip]="ev.isVip">
+                  {{ ev.isVip ? '💎 VIP Движ' : 'Обычный' }}
+                </span>
+              </td>
+              <td class="control-actions">
+                <button class="btn-toggle-vip" (click)="toggleVip(ev.id)">
+                  {{ ev.isVip ? 'Снять VIP' : 'Дать VIP' }}
+                </button>
+                <button class="btn-fix" (click)="sendToFix(ev.id)">🔧 На ремонт</button>
+                <button class="btn-kill" (click)="deleteEvent(ev.id)">💀 Удалить</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>

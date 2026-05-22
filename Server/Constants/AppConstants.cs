@@ -115,6 +115,11 @@
             public const string APPLICATION_SUBMITTED = "SUCCESS.APPLICATION_SUBMITTED";
             public const string ORGANIZER_APPROVED = "SUCCESS.ORGANIZER_APPROVED";
             public const string ORGANIZER_REJECTED = "SUCCESS.ORGANIZER_REJECTED";
+            public const string EVENT_APPROVED = "SUCCESS.EVENT_APPROVED";
+            public const string EVENT_REJECTED = "SUCCESS.EVENT_REJECTED";
+            public const string EVENT_DELETED = "SUCCESS.EVENT_DELETED";
+            public const string EVENT_SENT_TO_FIX = "SUCCESS.EVENT_SENT_TO_FIX";
+            public const string EVENT_VIP_TOGGLED = "SUCCESS.EVENT_VIP_TOGGLED";
         }
 
         public static class Others

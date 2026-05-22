@@ -62,4 +62,31 @@ export class PendingEventsComponent implements OnInit {
       }
     });
   }
+
+  sendToFix(eventId: string) {
+    const reason = window.prompt('Что оргу нужно исправить в ивенте?');
+    if (!reason) return;
+
+    this.adminService.sendToFix(eventId, reason).subscribe({
+      next: () => {
+        this.events.update(list => list.filter(e => e.id !== eventId));
+        this.message.set('Ивент отправлен на доработку.');
+        setTimeout(() => this.message.set(''), 3000);
+      },
+      error: (err) => this.message.set('Ошибка операции')
+    });
+  }
+
+  deleteEvent(eventId: string) {
+    if (!window.confirm('🚨 ВНИМАНИЕ: Это полностью удалит ивент из базы данных! Стираем?')) return;
+
+    this.adminService.deleteEvent(eventId).subscribe({
+      next: () => {
+        this.events.update(list => list.filter(e => e.id !== eventId));
+        this.message.set('Ивент полностью уничтожен.');
+        setTimeout(() => this.message.set(''), 3000);
+      },
+      error: (err) => this.message.set('Ошибка удаления')
+    });
+  }
 }

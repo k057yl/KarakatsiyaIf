@@ -46,4 +46,9 @@ export class AuthService {
     }
     this.currentUserSubject.next(null);
   }
+
+  public isSuperAdmin(): boolean {
+    const user = this.currentUserSubject.value;
+    return user?.role === 'SuperAdmin';
+  }
 }

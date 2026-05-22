@@ -2,6 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { take } from 'rxjs';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -9,9 +10,9 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   let token: string | null = null;
 
-  authService.currentUser$.subscribe(user => {
+  authService.currentUser$.pipe(take(1)).subscribe(user => {
     token = user?.token || null;
-  }).unsubscribe();
+  });
 
   const isApiUrl = req.url.startsWith(apiUrl);
 

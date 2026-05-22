@@ -17,6 +17,10 @@ export const routes: Routes = [
       {
         path: 'events',
         loadComponent: () => import('./features/admin/pending-events/pending-events.component').then(m => m.PendingEventsComponent)
+      },
+      {
+        path: 'active-events',
+        loadComponent: () => import('./features/admin/active-events/active-events.component').then(m => m.ActiveEventsComponent)
       }
     ]
   },
