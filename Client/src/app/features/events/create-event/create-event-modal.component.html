@@ -1,9 +1,9 @@
 <div class="modal-backdrop" (click)="close()">
   <div class="modal-window" (click)="$event.stopPropagation()">
     
-    @if (!createdEventId()) {
+    @if (!isSuccessScreen()) {
       <header>
-        <h3>Создать событие 🎸</h3>
+        <h3>{{ isEditMode() ? 'Ремонт события 🛠' : 'Создать событие 🎸' }}</h3>
         <button class="close-x" (click)="close()">×</button>
       </header>
 
@@ -37,13 +37,13 @@
         <div class="field-row">
           <input formControlName="city" placeholder="Город" />
           <input formControlName="street" placeholder="Улица" />
-          <input formControlNumber="houseNumber" placeholder="Дом" class="small" />
+          <input formControlName="houseNumber" placeholder="Дом" class="small" />
         </div>
 
         <div class="actions">
           <button type="button" class="btn-secondary" (click)="close()">Отмена</button>
           <button type="submit" class="btn-primary" [disabled]="eventForm.invalid || isSubmitting()">
-            {{ isSubmitting() ? 'Отправка...' : 'Создать событие' }}
+            {{ isSubmitting() ? 'Отправка...' : (isEditMode() ? 'Сохранить изменения' : 'Создать событие') }}
           </button>
         </div>
       </form>

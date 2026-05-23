@@ -1,8 +1,10 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Features.Events.Commands.CreateEvent;
+using Karakatsiya.Features.Events.Commands.UpdateEvent;
 using Karakatsiya.Features.Events.Queries.GetApprovedEvents;
 using Karakatsiya.Features.Events.Queries.GetArchivedEvents;
 using Karakatsiya.Features.Events.Queries.GetEventDetails;
+using Karakatsiya.Features.Events.Queries.GetOrganizerEvents;
 using Karakatsiya.Models.Dtos.Event;
 using Karakatsiya.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +58,43 @@ namespace Karakatsiya.Controllers
         {
             var events = await Mediator.Send(new GetArchivedEventsQuery());
             return Ok(events);
+        }
+
+        [HttpGet("my")]
+        [Authorize(Roles = nameof(UserRole.Organizer))]
+        public async Task<IActionResult> GetOrganizerEvents()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
+            }
+
+            var events = await Mediator.Send(new GetOrganizerEventsQuery(userId));
+            return Ok(events);
+        }
+
+        [HttpPut("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Organizer))]
+        public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] CreateEventDto payload)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
+            }
+
+            var command = new UpdateEventCommand(id, userId, payload);
+            var success = await Mediator.Send(command);
+
+            if (!success)
+            {
+                return NotFound(new { Message = AppConstants.Errors.VALIDATION_FAILED });
+            }
+
+            return Ok(new { Message = AppConstants.Success.EVENT_CREATED });
         }
     }
 }

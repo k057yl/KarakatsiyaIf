@@ -2,17 +2,64 @@
   <h2>Кабинет Организатора 👑</h2>
   
   <div class="actions">
-    <button class="btn-primary" (click)="isModalOpen.set(true)">
+    <button class="btn-primary" (click)="openCreateModal()">
       + Создать Ивент
     </button>
   </div>
 
   <div class="events-list">
-    <p>Тут будут твои ивенты, но пока тут нихуя нет.</p>
+    @if (isLoading()) {
+      <p>Загрузка твоего движа...</p>
+    } @else {
+      @if (organizerEvents().length === 0) {
+        <p>Тут пусто. Либо все твои ивенты уже в релизе, либо ты еще нихуя не создал.</p>
+      } @else {
+        <table class="organizer-table">
+          <thead>
+            <tr>
+              <th>Название</th>
+              <th>Дата старта</th>
+              <th>Статус</th>
+              <th>Управление</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ev of organizerEvents(); track ev.id) {
+              <tr [class.rejected-row]="ev.status === 3">
+                <td>
+                  <strong>{{ ev.title }}</strong>
+                  @if (ev.status === 3 && ev.fixReason) {
+                    <div class="fix-reason-alert">
+                      ⚠️ <strong>Причина отклонения:</strong> {{ ev.fixReason }}
+                    </div>
+                  }
+                </td>
+                <td>{{ ev.startDate | date:'dd.MM.yyyy HH:mm' }}</td>
+                <td>
+                  <span class="status-badge" [attr.data-status]="ev.status">
+                    {{ ev.status === 3 ? '🛠 Отклонено / Ремонт' : (ev.status === 1 ? '⏳ На модерации' : '📝 Черновик') }}
+                  </span>
+                </td>
+                <td>
+                  @if (ev.status === 3 || ev.status === 0) {
+                    <button class="btn-fix-action" (click)="openEditModal(ev)">
+                      🔧 {{ ev.status === 3 ? 'Исправить' : 'Продолжить заполнение' }}
+                    </button>
+                  } @else {
+                    <span class="text-muted">Админ еще не чекал</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    }
   </div>
 
   @if (isModalOpen()) {
     <app-create-event-modal 
+      [editEventData]="selectedEventForEdit()"
       (closeModal)="isModalOpen.set(false)"
       (eventCreated)="onEventCreated($event)">
     </app-create-event-modal>

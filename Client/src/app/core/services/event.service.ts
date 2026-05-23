@@ -26,4 +26,12 @@ export class EventService {
   getArchivedEvents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/archive`);
   }
+
+  public getOrganizerEvents(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/my`);
+  }
+
+  public updateEvent(id: string, payload: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, payload);
+  }
 }

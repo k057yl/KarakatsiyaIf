@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output, signal, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal, AfterViewInit, OnDestroy, input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MapService } from '../../../core/services/map.service';
@@ -13,9 +13,11 @@ import * as L from 'leaflet';
   templateUrl: './create-event-modal.component.html',
   styleUrls: ['./create-event-modal.component.scss']
 })
-export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
+export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() closeModal = new EventEmitter<void>();
   @Output() eventCreated = new EventEmitter<string>();
+
+  public editEventData = input<any | null>(null);
 
   private fb = inject(FormBuilder);
   private eventService = inject(EventService);
@@ -24,8 +26,10 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
 
   private readonly DRAFT_KEY = 'event_draft_form';
 
-  isSubmitting = signal(false);
-  createdEventId = signal<string | null>(null);
+  public isSubmitting = signal(false);
+  public createdEventId = signal<string | null>(null);
+  public isEditMode = signal<boolean>(false);
+  public isSuccessScreen = signal<boolean>(false);
 
   private selectedLat: number | undefined = undefined;
   private selectedLon: number | undefined = undefined;
@@ -44,11 +48,54 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
     houseNumber: ['']
   });
 
-  ngAfterViewInit() {
-    this.initMap();
-    this.loadDraft();
+  ngOnInit() {
+    const data = this.editEventData();
+    if (data) {
+      this.isEditMode.set(true);
+      this.createdEventId.set(data.id);
 
-    this.eventForm.valueChanges.subscribe(() => this.saveDraft());
+      const formattedDate = data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : '';
+
+      this.eventForm.patchValue({
+        title: data.title || '',
+        description: data.description || '',
+        startDate: formattedDate,
+        locationName: data.locationName || '',
+        city: data.city || '',
+        street: data.street || '',
+        houseNumber: data.houseNumber || ''
+      });
+
+      this.selectedLat = data.latitude;
+      this.selectedLon = data.longitude;
+      this.selectedOsmId = data.osmId;
+    }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const mapContainer = document.getElementById('event-map');
+      if (!mapContainer) {
+        console.error('Контейнер для карты не найден в DOM.');
+        return;
+      }
+      
+      this.initMap();
+
+      if (!this.isEditMode()) {
+        this.loadDraft();
+        this.eventForm.valueChanges.subscribe(() => this.saveDraft());
+      } else if (this.selectedLat && this.selectedLon) {
+        this.moveMarkerAndSetView(this.selectedLat, this.selectedLon);
+      }
+    }, 50);
+  }
+
+  private moveMarkerAndSetView(lat: number, lon: number) {
+    if (this.marker && this.map) {
+      this.marker.setLatLng([lat, lon]);
+      this.map.setView([lat, lon], 15);
+    }
   }
 
   ngOnDestroy() {
@@ -58,7 +105,7 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
   }
 
   private saveDraft() {
-    if (this.createdEventId()) return;
+    if (this.createdEventId() && !this.isEditMode()) return;
     const draft = {
       form: this.eventForm.getRawValue(),
       lat: this.selectedLat,
@@ -79,11 +126,7 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
           this.selectedLat = draft.lat;
           this.selectedLon = draft.lon;
           this.selectedOsmId = draft.osmId;
-          
-          if (this.marker && this.map) {
-            this.marker.setLatLng([draft.lat, draft.lon]);
-            this.map.setView([draft.lat, draft.lon], 15);
-          }
+          this.moveMarkerAndSetView(draft.lat, draft.lon);
         }
       } catch (e) {
         console.error('Ошибка чтения черновика', e);
@@ -102,13 +145,16 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
     });
     L.Marker.prototype.options.icon = iconDefault;
 
-    this.map = L.map('event-map').setView([50.4501, 30.5234], 13);
+    const startLat = this.selectedLat || 50.4501;
+    const startLon = this.selectedLon || 30.5234;
+
+    this.map = L.map('event-map').setView([startLat, startLon], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.marker = L.marker([50.4501, 30.5234], { draggable: true }).addTo(this.map);
+    this.marker = L.marker([startLat, startLon], { draggable: true }).addTo(this.map);
 
     this.marker.on('dragend', () => {
       const position = this.marker.getLatLng();
@@ -120,9 +166,7 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
       this.updateLocationData(e.latlng.lat, e.latlng.lng);
     });
 
-    setTimeout(() => {
-      this.map.invalidateSize();
-    }, 100);
+    this.map.invalidateSize();
   }
 
   private updateLocationData(lat: number, lon: number) {
@@ -142,7 +186,9 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
               houseNumber: addr.house_number || ''
           });
           
-          this.saveDraft();
+          if (!this.isEditMode()) {
+            this.saveDraft();
+          }
         }
     });
   }
@@ -164,17 +210,33 @@ export class CreateEventModalComponent implements AfterViewInit, OnDestroy {
       osmId: this.selectedOsmId
     };
 
-    this.eventService.createEvent(payload).subscribe({
-      next: (res) => {
-        this.isSubmitting.set(false);
-        localStorage.removeItem(this.DRAFT_KEY);
-        this.createdEventId.set(res.eventId);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        console.error(err);
-      }
-    });
+    if (this.isEditMode()) {
+      const id = this.createdEventId()!;
+      this.eventService.updateEvent(id, payload).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.eventCreated.emit(id);
+          this.close();
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          console.error(err);
+        }
+      });
+    } else {
+      this.eventService.createEvent(payload).subscribe({
+        next: (res) => {
+          this.isSubmitting.set(false);
+          localStorage.removeItem(this.DRAFT_KEY);
+          this.createdEventId.set(res.eventId);
+          this.isSuccessScreen.set(true);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          console.error(err);
+        }
+      });
+    }
   }
 
   finishWithoutVip() {
