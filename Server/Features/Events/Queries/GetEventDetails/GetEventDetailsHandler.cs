@@ -20,12 +20,17 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
             var ev = await _context.Events
                 .Include(e => e.Location)
                 .Include(e => e.Organizer)
+                .Include(e => e.Photos)
                 .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
             if (ev == null)
             {
                 throw new Exception(AppConstants.Errors.EVENT_NOT_FOUND);
             }
+
+            var photosDto = ev.Photos != null
+                ? ev.Photos.Select(p => new EventDetailsPhotoDto(p.ImageUrl, p.PublicId, p.IsMain)).ToList()
+                : new List<EventDetailsPhotoDto>();
 
             return new EventDetailsDto(
                 ev.Id,
@@ -41,7 +46,8 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 ev.Organizer != null ? ev.Organizer.Name : AppConstants.Others.ORGANIZER_NOT_SPECIFIED,
                 ev.ExternalTicketUrl,
                 ev.ContactLinks,
-                ev.IsVip
+                ev.IsVip,
+                photosDto
             );
         }
     }

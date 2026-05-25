@@ -17,14 +17,34 @@
 
       <div class="event-content">
         <div class="main-info">
-          <div class="cover-image-placeholder">
-            🖼️ Тут скоро будет обложка
+          
+          <div class="cover-image-container">
+            @if (event.photos && event.photos.length > 0) {
+              <img [src]="event.mainPhotoUrl || event.photos[0].imageUrl" alt="Event Cover" class="cover-image" />
+            } @else {
+              <div class="cover-image-placeholder">
+                🖼️ Организатор поленился добавить обложку
+              </div>
+            }
           </div>
           
           <div class="description-block">
             <h3>О мероприятии</h3>
-            <p>{{ event.description }}</p>
+            <div [innerHTML]="event.description" class="html-content"></div>
           </div>
+
+          @if (event.photos && event.photos.length > 1) {
+            <div class="gallery-block">
+              <h3>Галерея</h3>
+              <div class="gallery-grid">
+                @for (photo of event.photos; track photo.publicId) {
+                  @if (!photo.isMain) {
+                    <img [src]="photo.imageUrl" alt="Gallery photo" class="gallery-thumb" />
+                  }
+                }
+              </div>
+            </div>
+          }
 
           @if (event.externalTicketUrl || event.contactLinks) {
             <div class="links-block">
@@ -33,7 +53,7 @@
                 <a [href]="event.externalTicketUrl" target="_blank" class="btn-primary">🎟️ Купить билеты</a>
               }
               @if (event.contactLinks) {
-                <p>Связь: {{ event.contactLinks }}</p>
+                <p class="contacts-text">Связь: {{ event.contactLinks }}</p>
               }
             </div>
           }
@@ -42,8 +62,8 @@
         <div class="sidebar-info">
           <div class="location-card">
             <h3>Локация</h3>
-            <p><strong>{{ event.locationName }}</strong></p>
-            <p>{{ event.city }}, {{ event.street }} {{ event.houseNumber }}</p>
+            <p class="location-title"><strong>{{ event.locationName }}</strong></p>
+            <p class="location-address">{{ event.city }}, {{ event.street }} {{ event.houseNumber }}</p>
             <div #mapContainer id="event-map" class="map-container"></div>
           </div>
         </div>

@@ -1,3 +1,9 @@
+export interface CreateEventPhotoDto {
+  imageUrl: string;
+  publicId: string;
+  isMain: boolean;
+}
+
 export interface CreateEventDto {
   title: string;
   description: string;
@@ -12,4 +18,5 @@ export interface CreateEventDto {
   externalTicketUrl?: string;
   contactLinks?: string;
   isVip?: boolean;
+  photos: CreateEventPhotoDto[];
 }

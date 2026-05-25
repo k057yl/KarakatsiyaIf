@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using Karakatsiya.Constants;
 using Karakatsiya.Data;
+using Karakatsiya.Models.Entities.Common;
 using Karakatsiya.Services;
 using Karakatsiya.Services.BackgroundServices;
 using Karakatsiya.Services.Behaviors;
+using Karakatsiya.Services.Infrastructure;
 using Karakatsiya.Services.Interfaces;
 using Karakatsiya.Services.Tracker;
 using MediatR;
@@ -21,6 +23,7 @@ namespace Karakatsiya.Extensions
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddCustomControllers();
             services.AddCustomDatabase(config);
             services.AddCustomCors(config);
@@ -101,6 +104,7 @@ namespace Karakatsiya.Extensions
             services.AddScoped<IFileService, LocalFileService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IPhotoService, PhotoService>();
 
             return services;
         }

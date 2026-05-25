@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Karakatsiya.Constants;
+using System;
+using System.Linq;
 
 namespace Karakatsiya.Features.Events.Commands.CreateEvent
 {
@@ -21,10 +23,21 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 .NotEmpty().WithMessage(AppConstants.Errors.VALIDATION_FAILED);
 
             RuleFor(x => x.Payload.City)
-                .NotEmpty().WithMessage(AppConstants.Errors.VALIDATION_FAILED);
+                .NotEmpty().WithMessage(AppConstants.Errors.VALIDATION_FAILED)
+                .MaximumLength(AppConstants.Validation.MAX_CITY_LENGTH).WithMessage(AppConstants.Errors.VALIDATION_FAILED);
 
             RuleFor(x => x.Payload.Street)
-                .NotEmpty().WithMessage(AppConstants.Errors.VALIDATION_FAILED);
+                .NotEmpty().WithMessage(AppConstants.Errors.VALIDATION_FAILED)
+                .MaximumLength(AppConstants.Validation.MAX_STREET_LENGTH).WithMessage(AppConstants.Errors.VALIDATION_FAILED);
+
+            RuleFor(x => x.Payload.HouseNumber)
+                .MaximumLength(AppConstants.Validation.MAX_HOUSE_NUMBER_LENGTH).WithMessage(AppConstants.Errors.VALIDATION_FAILED);
+
+            RuleFor(x => x.Payload.ExternalTicketUrl)
+                .MaximumLength(AppConstants.Validation.MAX_URL_LENGTH).WithMessage(AppConstants.Errors.VALIDATION_FAILED);
+
+            RuleFor(x => x.Payload.Photos)
+                .Must(photos => photos == null || photos.Count <= 6).WithMessage(AppConstants.Errors.VALIDATION_FAILED);
         }
     }
 }

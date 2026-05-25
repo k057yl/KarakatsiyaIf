@@ -1,6 +1,7 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Features.Events.Commands.CreateEvent;
 using Karakatsiya.Features.Events.Commands.UpdateEvent;
+using Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto;
 using Karakatsiya.Features.Events.Queries.GetApprovedEvents;
 using Karakatsiya.Features.Events.Queries.GetArchivedEvents;
 using Karakatsiya.Features.Events.Queries.GetEventDetails;
@@ -95,6 +96,28 @@ namespace Karakatsiya.Controllers
             }
 
             return Ok(new { Message = AppConstants.Success.EVENT_CREATED });
+        }
+
+        [HttpPost("{id:guid}/photos/organizer")]
+        [Authorize(Roles = nameof(UserRole.Organizer))]
+        public async Task<IActionResult> UploadOrganizerPhoto(Guid id, [FromForm] IFormFile file, [FromForm] bool isMain)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
+            }
+
+            var command = new UploadOrganizerPhotoCommand(id, userId, file, isMain);
+            var result = await Mediator.Send(command);
+
+            if (!result.Success)
+            {
+                return BadRequest(new { Message = result.ErrorMessage });
+            }
+
+            return Ok(new { Url = result.Url });
         }
     }
 }

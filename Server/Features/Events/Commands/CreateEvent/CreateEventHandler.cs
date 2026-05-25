@@ -1,10 +1,12 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
+using Karakatsiya.Models.Entities.Audience;
 using Karakatsiya.Models.Entities.Showcase;
 using Karakatsiya.Models.Entities.ValueObjects;
 using Karakatsiya.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Karakatsiya.Features.Events.Commands.CreateEvent
 {
@@ -57,6 +59,7 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
 
             var newEvent = new Event
             {
+                Id = Guid.NewGuid(),
                 Title = p.Title,
                 Slug = GenerateSlug(p.Title),
                 Description = p.Description,
@@ -67,6 +70,20 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 ExternalTicketUrl = p.ExternalTicketUrl,
                 ContactLinks = p.ContactLinks
             };
+
+            if (p.Photos != null && p.Photos.Any())
+            {
+                newEvent.Photos = p.Photos.Select(photo => new EventPhoto
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = newEvent.Id,
+                    UserId = request.UserId,
+                    ImageUrl = photo.ImageUrl,
+                    PublicId = photo.PublicId,
+                    IsMain = photo.IsMain,
+                    IsApproved = true
+                }).ToList();
+            }
 
             _context.Set<Event>().Add(newEvent);
             await _context.SaveChangesAsync(cancellationToken);

@@ -14,6 +14,7 @@
         string OrganizerName,
         string? ExternalTicketUrl,
         string? ContactLinks,
-        bool IsVip
+        bool IsVip,
+        List<EventDetailsPhotoDto> Photos
     );
 }

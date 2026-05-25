@@ -1,9 +1,8 @@
-import { Component, inject, OnInit, signal, OnDestroy, PLATFORM_ID, afterNextRender, ElementRef, viewChild, effect, Injector, runInInjectionContext } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit, signal, OnDestroy, ElementRef, viewChild, effect, Injector, runInInjectionContext, afterNextRender } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EventService } from '../../../core/services/event.service';
 import { TranslateModule } from '@ngx-translate/core';
-import type * as LType from 'leaflet';
 
 @Component({
   selector: 'app-event-details',
@@ -15,7 +14,6 @@ import type * as LType from 'leaflet';
 export class EventDetailsComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly eventService = inject(EventService);
-  private readonly platformId = inject(PLATFORM_ID);
   private readonly injector = inject(Injector);
 
   private mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
@@ -24,7 +22,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   public isLoading = signal<boolean>(true);
   public errorMessage = signal<string>('');
 
-  private map: LType.Map | undefined;
+  private map: any;
 
   constructor() {
     afterNextRender(() => {
@@ -61,6 +59,10 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   private loadEventDetails(id: string): void {
     this.eventService.getEventDetails(id).subscribe({
       next: (data) => {
+        if (data && data.photos && data.photos.length > 0) {
+          const main = data.photos.find((p: any) => p.isMain);
+          data.mainPhotoUrl = main ? main.imageUrl : data.photos[0].imageUrl;
+        }
         this.eventDetails.set(data);
         this.isLoading.set(false);
       },

@@ -23,6 +23,41 @@
           <input type="datetime-local" formControlName="startDate" />
         </div>
 
+        <div class="field photo-upload-section">
+          <label>Медиафайлы мероприятия (До 6 фоток, кликни на фото чтобы сделать обложкой) 📸</label>
+          
+          <div class="photo-actions">
+            <button type="button" class="btn-upload-sub" (click)="fileInput.click()" [disabled]="isUploadingPhoto()">
+              + Добавить фотографии
+            </button>
+            <input #fileInput type="file" (change)="onFilesSelected($event)" style="display: none;" accept="image/*" multiple />
+          </div>
+
+          @if (isUploadingPhoto()) {
+            <p class="loader-text">Сжимаем картинки через SkiaSharp и заливаем в облако...</p>
+          }
+
+          <div class="photos-preview-grid" *ngIf="uploadedPhotos().length > 0">
+            <div 
+              class="photo-card" 
+              *ngFor="let photo of uploadedPhotos(); let i = index" 
+              [class.main-photo]="photo.isMain"
+              (click)="setMainPhoto(i)"
+              title="Сделать обложкой"
+            >
+              <img [src]="photo.imageUrl" alt="Event photo" />
+              
+              <div class="photo-badge">
+                {{ photo.isMain ? '⭐ Главное' : '◽ Сделать главным' }}
+              </div>
+              
+              <div class="photo-controls">
+                <button type="button" class="btn-delete-mini" (click)="removePhoto(i); $event.stopPropagation()">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="divider"><span>Где это будет?</span></div>
 
         <div class="field">

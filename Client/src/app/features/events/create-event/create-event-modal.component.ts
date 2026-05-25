@@ -4,7 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MapService } from '../../../core/services/map.service';
 import { EventService } from '../../../core/services/event.service';
 import { PaymentService } from '../../../core/services/payment.service';
-import * as L from 'leaflet';
+import { CreateEventPhotoDto } from '../../../core/models/dtos/event.dto';
+import { forkJoin, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-create-event-modal',
@@ -27,16 +28,20 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
   private readonly DRAFT_KEY = 'event_draft_form';
 
   public isSubmitting = signal(false);
+  public isUploadingPhoto = signal(false);
   public createdEventId = signal<string | null>(null);
   public isEditMode = signal<boolean>(false);
   public isSuccessScreen = signal<boolean>(false);
+  public uploadedPhotos = signal<CreateEventPhotoDto[]>([]);
+
+  private selectedFiles: { file: File, isMain: boolean }[] = [];
 
   private selectedLat: number | undefined = undefined;
   private selectedLon: number | undefined = undefined;
   private selectedOsmId: string | undefined = undefined;
 
-  private map!: L.Map;
-  private marker!: L.Marker;
+  private map!: any;
+  private marker!: any;
 
   eventForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(300)]],
@@ -45,7 +50,9 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
     locationName: ['', Validators.required],
     city: ['', Validators.required],
     street: ['', Validators.required],
-    houseNumber: ['']
+    houseNumber: [''],
+    externalTicketUrl: [''],
+    contactLinks: ['']
   });
 
   ngOnInit() {
@@ -63,12 +70,18 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
         locationName: data.locationName || '',
         city: data.city || '',
         street: data.street || '',
-        houseNumber: data.houseNumber || ''
+        houseNumber: data.houseNumber || '',
+        externalTicketUrl: data.externalTicketUrl || '',
+        contactLinks: data.contactLinks || ''
       });
 
       this.selectedLat = data.latitude;
       this.selectedLon = data.longitude;
       this.selectedOsmId = data.osmId;
+
+      if (data.photos) {
+        this.uploadedPhotos.set(data.photos);
+      }
     }
   }
 
@@ -89,6 +102,70 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
         this.moveMarkerAndSetView(this.selectedLat, this.selectedLon);
       }
     }, 50);
+  }
+
+  public onFilesSelected(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+
+    const files: File[] = Array.from(target.files);
+
+    files.forEach(file => {
+      const isFirst = this.uploadedPhotos().length === 0 && this.selectedFiles.length === 0;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const localPhoto: CreateEventPhotoDto = {
+          imageUrl: e.target.result,
+          publicId: '',
+          isMain: isFirst
+        };
+
+        this.uploadedPhotos.update(list => [...list, localPhoto]);
+        this.selectedFiles.push({ file, isMain: isFirst });
+
+        if (this.isEditMode()) {
+          this.uploadSinglePhotoOnFly(file, isFirst);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  private uploadSinglePhotoOnFly(file: File, isMain: boolean) {
+    this.isUploadingPhoto.set(true);
+    this.eventService.uploadPhoto(this.createdEventId()!, file, isMain).subscribe({
+      next: (res: any) => {
+        this.uploadedPhotos.update(list => 
+          list.map(p => p.imageUrl.startsWith('data:') ? { ...p, imageUrl: res.url, publicId: res.publicId } : p)
+        );
+        this.isUploadingPhoto.set(false);
+      },
+      error: () => this.isUploadingPhoto.set(false)
+    });
+  }
+
+  public removePhoto(index: number) {
+    this.uploadedPhotos.update(list => {
+      const updated = list.filter((_, i) => i !== index);
+      if (list[index]?.isMain && updated.length > 0) {
+        updated[0].isMain = true;
+        if (!this.isEditMode() && this.selectedFiles[0]) {
+          this.selectedFiles[0].isMain = true;
+        }
+      }
+      return updated;
+    });
+
+    if (!this.isEditMode()) {
+      this.selectedFiles.splice(index, 1);
+    }
+  }
+
+  public setMainPhoto(index: number) {
+    this.uploadedPhotos.update(list => list.map((p, i) => ({ ...p, isMain: i === index })));
+    if (!this.isEditMode()) {
+      this.selectedFiles.forEach((f, i) => f.isMain = i === index);
+    }
   }
 
   private moveMarkerAndSetView(lat: number, lon: number) {
@@ -134,7 +211,9 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
     }
   }
 
-  private initMap() {
+  private async initMap() {
+    const L = await import('leaflet');
+
     const iconDefault = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
       shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -185,10 +264,6 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
               street: addr.road || '',
               houseNumber: addr.house_number || ''
           });
-          
-          if (!this.isEditMode()) {
-            this.saveDraft();
-          }
         }
     });
   }
@@ -198,6 +273,12 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   submit() {
+    const hasMainPhoto = this.uploadedPhotos().some(p => p.isMain);
+    if (!hasMainPhoto) {
+      alert('Загрузи обложку, без неё мероприятие не создать!');
+      return;
+    }
+
     if (this.eventForm.invalid) return;
     this.isSubmitting.set(true);
 
@@ -207,7 +288,8 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
       startDate: new Date(formValue.startDate).toISOString(),
       latitude: this.selectedLat,
       longitude: this.selectedLon,
-      osmId: this.selectedOsmId
+      osmId: this.selectedOsmId,
+      photos: this.isEditMode() ? this.uploadedPhotos() : []
     };
 
     if (this.isEditMode()) {
@@ -218,23 +300,38 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
           this.eventCreated.emit(id);
           this.close();
         },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          console.error(err);
-        }
+        error: (err) => { this.isSubmitting.set(false); console.error(err); }
       });
     } else {
       this.eventService.createEvent(payload).subscribe({
         next: (res) => {
-          this.isSubmitting.set(false);
-          localStorage.removeItem(this.DRAFT_KEY);
           this.createdEventId.set(res.eventId);
-          this.isSuccessScreen.set(true);
+          localStorage.removeItem(this.DRAFT_KEY);
+
+          if (this.selectedFiles.length > 0) {
+            this.isUploadingPhoto.set(true);
+            const uploadObservables = this.selectedFiles.map(f => 
+              this.eventService.uploadPhoto(res.eventId, f.file, f.isMain)
+            );
+
+            forkJoin(uploadObservables).subscribe({
+              next: () => {
+                this.isUploadingPhoto.set(false);
+                this.isSubmitting.set(false);
+                this.isSuccessScreen.set(true);
+              },
+              error: (err) => {
+                this.isUploadingPhoto.set(false);
+                this.isSubmitting.set(false);
+                console.error('Ошибка пакетной загрузки медиа:', err);
+              }
+            });
+          } else {
+            this.isSubmitting.set(false);
+            this.isSuccessScreen.set(true);
+          }
         },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          console.error(err);
-        }
+        error: (err) => { this.isSubmitting.set(false); console.error(err); }
       });
     }
   }

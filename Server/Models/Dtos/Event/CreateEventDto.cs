@@ -12,6 +12,7 @@
         double? Longitude,
         string? OsmId,
         string? ExternalTicketUrl,
-        string? ContactLinks
+        string? ContactLinks,
+        List<CreateEventPhotoDto> Photos
     );
 }
