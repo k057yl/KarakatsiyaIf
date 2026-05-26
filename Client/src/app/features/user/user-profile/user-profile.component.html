@@ -1,0 +1,48 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>⚙️ Настройки профиля</h1>
+    <p>Добавь свои соцсети, чтобы прикреплять их к комментариям на странице событий.</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loader">Загрузка данных...</div>
+  } @else {
+    <div class="card">
+      <form [formGroup]="profileForm" (ngSubmit)="saveContacts()">
+        
+        <div class="field">
+          <label>📱 Telegram (без &#64;)</label>
+          <input formControlName="telegram" placeholder="durov" />
+        </div>
+
+        <div class="field">
+          <label>📸 Instagram (без &#64;)</label>
+          <input formControlName="instagram" placeholder="zuck" />
+        </div>
+
+        <div class="field">
+          <label>📞 Телефон</label>
+          <input formControlName="phone" placeholder="+380..." />
+        </div>
+
+        <div class="field">
+          <label>🌐 Вебсайт</label>
+          <input formControlName="website" placeholder="https://tvoy-sayt.com" />
+        </div>
+
+        @if (successMessage()) {
+          <div class="alert alert-success">{{ successMessage() }}</div>
+        }
+        @if (errorMessage()) {
+          <div class="alert alert-danger">{{ errorMessage() }}</div>
+        }
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="profileForm.invalid || isSaving()">
+            {{ isSaving() ? 'Сохраняем...' : 'Сохранить изменения' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

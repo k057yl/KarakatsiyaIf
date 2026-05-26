@@ -32,7 +32,10 @@
                   <button class="btn-approve" (click)="approve(ev.id, false)">Одобрить</button>
                   <button class="btn-approve-vip" style="background: #eedd82" (click)="approve(ev.id, true)">Сделать VIP нахаляву</button>
                 }
+                
+                <button class="btn-fix" (click)="sendToFix(ev.id)">🔧 На уточнение</button>
                 <button class="btn-reject" (click)="reject(ev.id)">Нахуй</button>
+                <button class="btn-delete" (click)="deleteEvent(ev.id)">💀 Стереть</button>
               </td>
             </tr>
           }

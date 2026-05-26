@@ -16,14 +16,14 @@ namespace Karakatsiya.Data.Configurations
                 .HasMaxLength(AppConstants.Validation.MAX_COMMENT_LENGTH);
 
             builder.HasOne(x => x.Event)
-                .WithMany(x => x.Comments)
+                .WithMany(e => e.Comments)
                 .HasForeignKey(x => x.EventId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.User)
-                .WithMany(x => x.Comments)
+                .WithMany(u => u.Comments)
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

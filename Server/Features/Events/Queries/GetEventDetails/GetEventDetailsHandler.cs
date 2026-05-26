@@ -21,6 +21,7 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 .Include(e => e.Location)
                 .Include(e => e.Organizer)
                 .Include(e => e.Photos)
+                .Include(e => e.Comments).ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
             if (ev == null)
@@ -31,6 +32,17 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
             var photosDto = ev.Photos != null
                 ? ev.Photos.Select(p => new EventDetailsPhotoDto(p.ImageUrl, p.PublicId, p.IsMain)).ToList()
                 : new List<EventDetailsPhotoDto>();
+
+            var commentsDto = ev.Comments != null
+                ? ev.Comments.Select(c => new EventCommentDto(
+                    c.Id,
+                    c.User != null ? (c.User.Nickname ?? c.User.Email) : AppConstants.Others.ANONIM,
+                    c.Text,
+                    c.CreatedAt,
+                    c.ShowInstagram && c.User?.Contacts != null ? c.User.Contacts.Instagram : null,
+                    c.ShowTelegram && c.User?.Contacts != null ? c.User.Contacts.Telegram : null
+                  )).OrderByDescending(c => c.CreatedAt).ToList()
+                : new List<EventCommentDto>();
 
             return new EventDetailsDto(
                 ev.Id,
@@ -47,7 +59,8 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 ev.ExternalTicketUrl,
                 ev.ContactLinks,
                 ev.IsVip,
-                photosDto
+                photosDto,
+                commentsDto
             );
         }
     }

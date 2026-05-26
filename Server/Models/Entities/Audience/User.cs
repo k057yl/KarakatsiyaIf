@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Models.Entities.Common;
 using Karakatsiya.Models.Entities.Showcase;
+using Karakatsiya.Models.Entities.ValueObjects;
 using Karakatsiya.Models.Enums;
 
 namespace Karakatsiya.Models.Entities.Audience
@@ -8,6 +9,7 @@ namespace Karakatsiya.Models.Entities.Audience
     {
         public string Email { get; set; } = string.Empty;
         public string? PasswordHash { get; set; } = string.Empty;
+        public string? Nickname { get; set; }
 
         public AuthProvider Provider { get; set; } = AuthProvider.Local;
         public bool IsEmailVerified { get; set; } = false;
@@ -16,6 +18,8 @@ namespace Karakatsiya.Models.Entities.Audience
         public DateTime? VerificationCodeExpiresAt { get; set; }
 
         public UserRole Role { get; set; } = UserRole.Visitor;
+
+        public ContactInfo? Contacts { get; set; }
 
         public Organizer? OrganizerProfile { get; set; }
         public List<Ticket> Tickets { get; set; } = new();

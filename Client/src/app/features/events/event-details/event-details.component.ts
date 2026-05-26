@@ -1,19 +1,24 @@
-import { Component, inject, OnInit, signal, OnDestroy, ElementRef, viewChild, effect, Injector, runInInjectionContext, afterNextRender } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ElementRef, viewChild, effect, Injector, runInInjectionContext, afterNextRender, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EventService } from '../../../core/services/event.service';
+import { CommentService } from '../../../core/services/comment.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule],
+  imports: [CommonModule, RouterLink, TranslateModule, FormsModule],
   templateUrl: './event-details.component.html',
   styleUrls: ['./event-details.component.scss']
 })
 export class EventDetailsComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly eventService = inject(EventService);
+  private readonly commentService = inject(CommentService);
+  public readonly authService = inject(AuthService);
   private readonly injector = inject(Injector);
 
   private mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
@@ -21,6 +26,11 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   public eventDetails = signal<any>(null);
   public isLoading = signal<boolean>(true);
   public errorMessage = signal<string>('');
+
+  public commentText = signal<string>('');
+  public showInst = signal<boolean>(false);
+  public showTg = signal<boolean>(false);
+  public isCommentSubmitting = signal<boolean>(false);
 
   private map: any;
 
@@ -69,6 +79,30 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.errorMessage.set(err.error?.message || 'ERRORS.SERVICE_UNAVAILABLE');
         this.isLoading.set(false);
+      }
+    });
+  }
+
+  public sendComment(): void {
+    const text = this.commentText().trim();
+    const event = this.eventDetails();
+    if (!text || !event) return;
+
+    this.isCommentSubmitting.set(true);
+
+    this.commentService.createComment({
+      eventId: event.id,
+      text: text,
+      showInstagram: this.showInst(),
+      showTelegram: this.showTg()
+    }).subscribe({
+      next: () => {
+        this.loadEventDetails(event.id);
+        this.commentText.set(''); 
+        this.isCommentSubmitting.set(false);
+      },
+      error: () => {
+        this.isCommentSubmitting.set(false);
       }
     });
   }

@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Auth\Queries\" />
-    <Folder Include="Models\Validators\" />
   </ItemGroup>
 
   <ItemGroup>

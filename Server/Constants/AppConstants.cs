@@ -61,6 +61,7 @@
             public const int MAX_SLUG_LENGTH = 150;
             public const int MIN_REASON_LENGTH = 5;
             public const int MAX_REASON_LENGTH = 500;
+            public const int MAX_SOCIAL_LENGTH = 100;
         }
 
         public static class Columns
@@ -70,6 +71,9 @@
             public const string ADDRESS_CITY = "Address_City";
             public const string ADDRESS_STREET = "Address_Street";
             public const string ADDRESS_HOUSE = "Address_HouseNumber";
+            public const string CONTACT_WEBSITE = "Contact_Website";
+            public const string CONTACT_TELEGRAM = "Contact_Telegram";
+            public const string CONTACT_INSTAGRAM = "Contact_Instagram";
         }
 
         public static class Storage
@@ -120,6 +124,7 @@
             public const string EVENT_DELETED = "SUCCESS.EVENT_DELETED";
             public const string EVENT_SENT_TO_FIX = "SUCCESS.EVENT_SENT_TO_FIX";
             public const string EVENT_VIP_TOGGLED = "SUCCESS.EVENT_VIP_TOGGLED";
+            public const string CONTACTS_UPDATED = "SUCCESS.CONTACTS_UPDATED";
         }
 
         public static class Others
@@ -128,6 +133,7 @@
             public const string MIDDLEWARE_FATAL_LOG = "Ахтунг! В контроллере пиздец: {Message}";
             public const string LOCATION_NOT_SPECIFIED = "Место не указано";
             public const string ORGANIZER_NOT_SPECIFIED = "Организатор не указан";
+            public const string ANONIM = "Anonim";
         }
     }
 }

@@ -38,6 +38,10 @@
             <button (click)="switchLanguage('en')">EN</button>
           </div>
 
+          <a routerLink="/profile" class="user-email profile-link" title="Настройки профиля">
+            ⚙️ {{ user.email }}
+          </a>
+
           <span class="user-email">{{ user.email }}</span>
           <button (click)="logout()" class="btn-outline">{{ 'HEADER.LOGOUT_BTN' | translate }}</button>
 

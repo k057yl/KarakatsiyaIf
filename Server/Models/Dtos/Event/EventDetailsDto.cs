@@ -15,6 +15,7 @@
         string? ExternalTicketUrl,
         string? ContactLinks,
         bool IsVip,
-        List<EventDetailsPhotoDto> Photos
+        List<EventDetailsPhotoDto> Photos,
+        List<EventCommentDto> Comments
     );
 }

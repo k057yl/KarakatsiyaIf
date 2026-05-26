@@ -10,5 +10,8 @@ namespace Karakatsiya.Models.Entities.Audience
         public Guid UserId { get; set; }
         public User? User { get; set; }
         public string Text { get; set; } = string.Empty;
+
+        public bool ShowInstagram { get; set; } = false;
+        public bool ShowTelegram { get; set; } = false;
     }
 }

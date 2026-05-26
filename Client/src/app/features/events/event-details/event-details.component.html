@@ -67,6 +67,75 @@
             <div #mapContainer id="event-map" class="map-container"></div>
           </div>
         </div>
+
+        <div class="comments-section">
+          <h2>💬 Обсуждение события ({{ event.comments?.length || 0 }})</h2>
+
+          @if (authService.currentUser$ | async; as user) {
+            <div class="comment-form-card">
+              <h3>Оставь свой след в истории</h3>
+              <textarea 
+                [ngModel]="commentText()" 
+                (ngModelChange)="commentText.set($event)" 
+                placeholder="Как всё прошло? Поделись эмоциями, накинь говна или похвали орга..." 
+                rows="3"
+                maxlength="1000">
+              </textarea>
+              
+              <div class="form-footer">
+                <div class="privacy-checkboxes">
+                  <label class="checkbox-label">
+                    <input type="checkbox" [ngModel]="showInst()" (ngModelChange)="showInst.set($event)" />
+                    Прикрепить Insta 📸
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" [ngModel]="showTg()" (ngModelChange)="showTg.set($event)" />
+                    Светить Телегегу 📱
+                  </label>
+                </div>
+
+                <button 
+                  (click)="sendComment()" 
+                  class="btn-submit-comment" 
+                  [disabled]="!commentText().trim() || isCommentSubmitting()">
+                  {{ isCommentSubmitting() ? 'Отправка...' : 'Отправить' }}
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="login-prompt">
+              <p>Хочешь вставить свои пять копеек и оставить ссылку на свои соцсети? <a routerLink="/auth/login">Войди на сайт</a>.</p>
+            </div>
+          }
+
+          <div class="comments-list">
+            @for (comment of event.comments; track comment.id) {
+              <div class="comment-item">
+                <div class="comment-meta">
+                  <span class="author">👤 {{ comment.authorName }}</span>
+                  <span class="time">{{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+                  
+                  <div class="author-socials">
+                    @if (comment.instagramUrl) {
+                      <a [href]="'https://instagram.com/' + comment.instagramUrl" target="_blank" class="social-badge insta">
+                        📸 &#64;{{ comment.instagramUrl }}
+                      </a>
+                    }
+                    @if (comment.telegramUsername) {
+                      <a [href]="'https://t.me/' + comment.telegramUsername" target="_blank" class="social-badge tg">
+                        📱 &#64;{{ comment.telegramUsername }}
+                      </a>
+                    }
+                  </div>
+                </div>
+                <p class="comment-text">{{ comment.text }}</p>
+              </div>
+            } @empty {
+              <div class="no-comments">Пока тишина... Будь первым, кто нарушит это молчание!</div>
+            }
+          </div>
+        </div>
+
       </div>
     }
   }
