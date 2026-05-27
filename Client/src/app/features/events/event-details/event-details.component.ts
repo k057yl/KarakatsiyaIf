@@ -83,6 +83,16 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+  public canLeaveComment(startDate: string): boolean {
+    if (!startDate) return false;
+    
+    const eventTime = new Date(startDate).getTime();
+    const now = new Date().getTime();
+    const oneHourOffset = 60 * 60 * 1000; 
+    
+    return now >= (eventTime + oneHourOffset);
+  }
+
   public sendComment(): void {
     const text = this.commentText().trim();
     const event = this.eventDetails();
@@ -103,6 +113,20 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.isCommentSubmitting.set(false);
+      }
+    });
+  }
+
+  public reportComment(commentId: string): void {
+    const reason = window.prompt('Какая причина жалобы? (Спам, мат, оскорбления, реклама крипты):');
+    if (!reason || !reason.trim()) return;
+
+    this.commentService.reportComment(commentId, reason.trim()).subscribe({
+      next: () => {
+        window.alert('Жалоба отправлена на стол Суперадмину. Разберёмся!');
+      },
+      error: (err) => {
+        window.alert(err.error?.message || 'Не удалось отправить жалобу.');
       }
     });
   }

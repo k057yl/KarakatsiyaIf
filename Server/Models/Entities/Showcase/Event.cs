@@ -32,5 +32,6 @@ namespace Karakatsiya.Models.Entities.Showcase
 
         public List<Comment> Comments { get; set; } = new();
         public List<EventPhoto> Photos { get; set; } = new();
+        public int ViewsCount { get; set; } = 0;
     }
 }

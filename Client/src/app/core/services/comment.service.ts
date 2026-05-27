@@ -14,4 +14,8 @@ export class CommentService {
   public createComment(payload: CreateCommentDto): Observable<{ commentId: string, message: string }> {
     return this.http.post<{ commentId: string, message: string }>(this.apiUrl, payload);
   }
+
+  public reportComment(commentId: string, reason: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${commentId}/report`, { reason });
+  }
 }

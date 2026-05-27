@@ -16,6 +16,7 @@
         string? ContactLinks,
         bool IsVip,
         List<EventDetailsPhotoDto> Photos,
-        List<EventCommentDto> Comments
+        List<EventCommentDto> Comments,
+        int ViewsCount
     );
 }

@@ -21,6 +21,10 @@ export const routes: Routes = [
       {
         path: 'active-events',
         loadComponent: () => import('./features/admin/active-events/active-events.component').then(m => m.ActiveEventsComponent)
+      },
+      {
+        path: 'reported-comments',
+        loadComponent: () => import('./features/admin/reported-comments/reported-comments.component').then(m => m.ReportedCommentsComponent)
       }
     ]
   },

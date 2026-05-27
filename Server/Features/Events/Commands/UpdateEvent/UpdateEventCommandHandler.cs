@@ -1,6 +1,7 @@
 ﻿using Karakatsiya.Data;
 using Karakatsiya.Models.Entities.ValueObjects;
 using Karakatsiya.Models.Enums;
+using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,12 @@ namespace Karakatsiya.Features.Events.Commands.UpdateEvent
     public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, bool>
     {
         private readonly AppDbContext _context;
+        private readonly ISanitizerService _sanitizer;
 
-        public UpdateEventCommandHandler(AppDbContext context)
+        public UpdateEventCommandHandler(AppDbContext context, ISanitizerService sanitizer)
         {
             _context = context;
+            _sanitizer = sanitizer;
         }
 
         public async Task<bool> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
@@ -30,8 +33,8 @@ namespace Karakatsiya.Features.Events.Commands.UpdateEvent
 
             if (ev == null) return false;
 
-            ev.Title = request.Payload.Title;
-            ev.Description = request.Payload.Description;
+            ev.Title = _sanitizer.StripAllHtml(request.Payload.Title);
+            ev.Description = _sanitizer.SanitizeHtml(request.Payload.Description);
             ev.StartDate = request.Payload.StartDate;
             ev.Status = EventStatus.Pending;
 

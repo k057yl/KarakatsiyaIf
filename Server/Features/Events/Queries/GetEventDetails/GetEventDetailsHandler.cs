@@ -1,6 +1,7 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
 using Karakatsiya.Models.Dtos.Event;
+using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,12 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
     public class GetEventDetailsHandler : IRequestHandler<GetEventDetailsQuery, EventDetailsDto>
     {
         private readonly AppDbContext _context;
+        private readonly ISanitizerService _sanitizer;
 
-        public GetEventDetailsHandler(AppDbContext context)
+        public GetEventDetailsHandler(AppDbContext context, ISanitizerService sanitizer)
         {
             _context = context;
+            _sanitizer = sanitizer;
         }
 
         public async Task<EventDetailsDto> Handle(GetEventDetailsQuery request, CancellationToken cancellationToken)
@@ -28,6 +31,9 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
             {
                 throw new Exception(AppConstants.Errors.EVENT_NOT_FOUND);
             }
+
+            ev.ViewsCount++;
+            await _context.SaveChangesAsync(cancellationToken);
 
             var photosDto = ev.Photos != null
                 ? ev.Photos.Select(p => new EventDetailsPhotoDto(p.ImageUrl, p.PublicId, p.IsMain)).ToList()
@@ -46,7 +52,7 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
 
             return new EventDetailsDto(
                 ev.Id,
-                ev.Title,
+                _sanitizer.StripAllHtml(ev.Title),
                 ev.Description,
                 ev.StartDate,
                 ev.Location != null ? ev.Location.Name : AppConstants.Others.LOCATION_NOT_SPECIFIED,
@@ -60,7 +66,8 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 ev.ContactLinks,
                 ev.IsVip,
                 photosDto,
-                commentsDto
+                commentsDto,
+                ev.ViewsCount
             );
         }
     }

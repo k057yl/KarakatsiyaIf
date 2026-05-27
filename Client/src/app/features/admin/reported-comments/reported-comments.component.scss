@@ -1,0 +1,84 @@
+.reports-container {
+  color: var(--text-main);
+}
+
+.loader, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.reports-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.report-card { 
+  background: var(--card-bg); 
+  border: 1px solid var(--border-color); 
+  border-radius: 10px; 
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-header { 
+  display: flex; 
+  justify-content: space-between; 
+  font-size: 0.9rem; 
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.comment-text {
+  margin: 0;
+  font-size: 1.05rem;
+  background: var(--input-bg);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.reason {
+  margin: 0;
+  color: var(--error-text, #dc3545);
+  font-size: 0.95rem;
+}
+
+.date {
+  color: var(--text-muted);
+}
+
+.report-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.btn-dismiss {
+  background: #28a745;
+  color: white;
+}
+
+.btn-kill {
+  background: #dc3545;
+  color: white;
+}

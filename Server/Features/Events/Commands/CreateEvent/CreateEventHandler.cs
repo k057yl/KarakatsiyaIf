@@ -4,19 +4,21 @@ using Karakatsiya.Models.Entities.Audience;
 using Karakatsiya.Models.Entities.Showcase;
 using Karakatsiya.Models.Entities.ValueObjects;
 using Karakatsiya.Models.Enums;
+using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Karakatsiya.Features.Events.Commands.CreateEvent
 {
     public class CreateEventHandler : IRequestHandler<CreateEventCommand, Guid>
     {
         private readonly AppDbContext _context;
+        private readonly ISanitizerService _sanitizer;
 
-        public CreateEventHandler(AppDbContext context)
+        public CreateEventHandler(AppDbContext context, ISanitizerService sanitizer)
         {
             _context = context;
+            _sanitizer = sanitizer;
         }
 
         public async Task<Guid> Handle(CreateEventCommand request, CancellationToken cancellationToken)
@@ -30,6 +32,8 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
             }
 
             var p = request.Payload;
+            var cleanTitle = _sanitizer.StripAllHtml(p.Title);
+            var safeDescription = _sanitizer.SanitizeHtml(p.Description);
 
             Location? location = null;
 
@@ -60,9 +64,9 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
             var newEvent = new Event
             {
                 Id = Guid.NewGuid(),
-                Title = p.Title,
-                Slug = GenerateSlug(p.Title),
-                Description = p.Description,
+                Title = cleanTitle,
+                Slug = GenerateSlug(cleanTitle),
+                Description = safeDescription,
                 StartDate = p.StartDate.ToUniversalTime(),
                 Status = EventStatus.Pending,
                 Location = location,

@@ -7,6 +7,9 @@ using Karakatsiya.Features.Admin.Queries.GetPendingOrganizers;
 using Karakatsiya.Features.Events.Commands.ApproveEvent;
 using Karakatsiya.Features.Events.Commands.RejectEvent;
 using Karakatsiya.Features.Events.Queries.GetPendingEvents;
+using Karakatsiya.Features.Admin.Queries.GetReportedComments;
+using Karakatsiya.Features.Admin.Commands.DeleteCommentByReport;
+using Karakatsiya.Features.Admin.Commands.DismissReport;
 using Karakatsiya.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -114,6 +117,29 @@ namespace Karakatsiya.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { IsVip = ev.IsVip, Message = AppConstants.Success.EVENT_VIP_TOGGLED });
+        }
+
+        // --- МОДЕРАЦИЯ КОММЕНТАРИЕВ (ЖАЛОБЫ) ---
+
+        [HttpGet("comments/reported")]
+        public async Task<IActionResult> GetReportedComments()
+        {
+            var result = await Mediator.Send(new GetReportedCommentsQuery());
+            return Ok(result);
+        }
+
+        [HttpDelete("comments/{id:guid}/confirm-report")]
+        public async Task<IActionResult> DeleteCommentByReport(Guid id)
+        {
+            await Mediator.Send(new DeleteCommentByReportCommand(id));
+            return Ok(new { Message = AppConstants.Success.EVENT_DELETED });
+        }
+
+        [HttpPost("comments/{id:guid}/dismiss-report")]
+        public async Task<IActionResult> DismissReport(Guid id)
+        {
+            await Mediator.Send(new DismissReportCommand(id));
+            return Ok(new { Message = AppConstants.Success.REQUEST_APPROVED });
         }
     }
 }

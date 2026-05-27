@@ -19,6 +19,7 @@ namespace Karakatsiya.Data
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<EventPhoto> EventPhotos => Set<EventPhoto>();
         public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<CommentReport> CommentReports => Set<CommentReport>();
 
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

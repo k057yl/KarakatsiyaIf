@@ -48,4 +48,19 @@ export class AdminService {
   getActiveEvents(): Observable<any[]> {
     return this.http.get<any[]>(`${this.eventsApiUrl}/active`);
   }
+
+  // --- МОДЕРАЦИЯ КОММЕНТАРИЕВ ---
+  private commentsAdminUrl = `${environment.apiUrl}/admin/comments`;
+
+  getReportedComments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.commentsAdminUrl}/reported`);
+  }
+
+  deleteCommentByReport(commentId: string): Observable<any> {
+    return this.http.delete(`${this.commentsAdminUrl}/${commentId}/confirm-report`);
+  }
+
+  dismissReport(commentId: string): Observable<any> {
+    return this.http.post(`${this.commentsAdminUrl}/${commentId}/dismiss-report`, {});
+  }
 }

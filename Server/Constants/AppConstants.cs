@@ -134,6 +134,7 @@
             public const string LOCATION_NOT_SPECIFIED = "Место не указано";
             public const string ORGANIZER_NOT_SPECIFIED = "Организатор не указан";
             public const string ANONIM = "Anonim";
+            public const string COMMENT_DELETE = "Comment delete";
         }
     }
 }

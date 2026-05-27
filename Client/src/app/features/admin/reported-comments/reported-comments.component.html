@@ -1,0 +1,31 @@
+<div class="reports-container">
+  <h3>🚩 Активные жалобы на комментарии ({{ reports().length }})</h3>
+
+  @if (isLoading()) {
+    <div class="loader">Загрузка жалоб...</div>
+  } @else if (reports().length === 0) {
+    <div class="empty-state">Кайф! Жалоб нет, все ведут себя прилично.</div>
+  } @else {
+    <div class="reports-grid">
+      @for (report of reports(); track report.reportId) {
+        <div class="report-card">
+          <div class="report-header">
+            <span class="author">Автор: <b>{{ report.authorName }}</b></span>
+            <span class="reporter">Стукач: <b>{{ report.reporterName }}</b></span>
+          </div>
+          
+          <div class="report-body">
+            <p class="comment-text">💬 {{ report.commentText }}</p>
+            <p class="reason">⚠️ <b>Причина:</b> {{ report.reason }}</p>
+            <small class="date">Дата: {{ report.reportedAt | date:'dd.MM.yyyy HH:mm' }}</small>
+          </div>
+
+          <div class="report-actions">
+            <button (click)="dismiss(report.commentId)" class="btn-dismiss">✅ Простить</button>
+            <button (click)="kill(report.commentId)" class="btn-kill">💀 Удалить коммент</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

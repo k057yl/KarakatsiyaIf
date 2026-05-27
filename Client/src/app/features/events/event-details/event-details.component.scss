@@ -250,3 +250,27 @@
     .author-socials { margin-left: 0; width: 100%; margin-top: 5px; }
   }
 }
+
+.event-meta .views {
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.btn-report-comment {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.4;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    opacity: 1;
+    background: var(--error-bg);
+  }
+}
