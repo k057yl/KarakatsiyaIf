@@ -1,0 +1,119 @@
+.calendar-wrapper {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 380px;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .month-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-main);
+    text-transform: capitalize;
+    font-weight: bold;
+  }
+
+  .nav-btn {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+  }
+}
+
+.calendar-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 10px;
+  
+  span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-cell {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: background 0.2s, transform 0.1s;
+  user-select: none;
+
+  .day-number {
+    font-weight: 500;
+    z-index: 2;
+  }
+
+  &:hover:not(.empty) {
+    background: var(--input-bg);
+  }
+
+  &:active:not(.empty) {
+    transform: scale(0.95);
+  }
+
+  &.empty {
+    cursor: default;
+    background: transparent;
+  }
+
+  &.is-past {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  &.is-today {
+    color: var(--primary-color);
+    font-weight: bold;
+    border: 2px solid var(--primary-color);
+  }
+
+  .event-dot {
+    position: absolute;
+    bottom: 6px;
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 5px var(--primary-color);
+  }
+
+  &.is-today .event-dot {
+    bottom: 4px;
+  }
+}

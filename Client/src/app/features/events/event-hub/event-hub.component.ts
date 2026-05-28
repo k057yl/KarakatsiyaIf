@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../../core/services/event.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { EventCalendarComponent } from '../event-calendar/event-calendar.component';
 import type * as LType from 'leaflet';
 
 @Component({
   selector: 'app-event-hub',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule],
+  imports: [CommonModule, RouterLink, TranslateModule, EventCalendarComponent],
   templateUrl: './event-hub.component.html',
   styleUrls: ['./event-hub.component.scss']
 })
@@ -20,6 +21,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public events = signal<any[]>([]);
   public filteredEvents = signal<any[]>([]);
   public selectedEventId = signal<string | null>(null);
+  public selectedCalendarDate = signal<string | null>(null);
   public isLoading = signal<boolean>(true);
   public isMapReady = signal<boolean>(false);
   public currentSort = signal<'date' | 'location'>('date');
@@ -39,11 +41,11 @@ export class EventHubComponent implements OnInit, OnDestroy {
     });
 
     effect(() => {
-      const eventList = this.events();
+      const eventList = this.filteredEvents(); 
       const loading = this.isLoading();
       const mapReady = this.isMapReady();
 
-      if (eventList.length > 0 && !loading && mapReady && this.map && this.LeafletLib) {
+      if (!loading && mapReady && this.map && this.LeafletLib) {
         this.renderMarkers(this.LeafletLib, eventList);
         this.adjustMapBounds(this.LeafletLib, eventList);
       }
@@ -89,6 +91,30 @@ export class EventHubComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.map?.invalidateSize();
     }, 200);
+  }
+
+  public filterByCalendarDate(dateStr: string): void {
+    this.selectedCalendarDate.set(dateStr);
+    
+    const allEvents = this.events();
+    const filtered = allEvents.filter(e => {
+      const eDate = new Date(e.startDate);
+      const year = eDate.getFullYear();
+      const month = String(eDate.getMonth() + 1).padStart(2, '0');
+      const day = String(eDate.getDate()).padStart(2, '0');
+      const formattedEventDate = `${year}-${month}-${day}`;
+      
+      return formattedEventDate === dateStr;
+    });
+
+    this.filteredEvents.set(filtered);
+    this.sortEvents(this.currentSort());
+  }
+
+  public resetCalendarFilter(): void {
+    this.selectedCalendarDate.set(null);
+    this.filteredEvents.set(this.events());
+    this.sortEvents(this.currentSort());
   }
 
   private renderMarkers(L: any, eventList: any[]): void {

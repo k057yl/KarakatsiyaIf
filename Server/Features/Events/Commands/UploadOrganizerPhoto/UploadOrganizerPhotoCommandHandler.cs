@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
+using Karakatsiya.Models.Dtos.Event;
 using Karakatsiya.Models.Entities.Audience;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
 {
-    public class UploadOrganizerPhotoCommandHandler : IRequestHandler<UploadOrganizerPhotoCommand, UploadPhotoResult>
+    public class UploadOrganizerPhotoCommandHandler : IRequestHandler<UploadOrganizerPhotoCommand, UploadPhotoResultDto>
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
@@ -18,7 +19,7 @@ namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
             _photoService = photoService;
         }
 
-        public async Task<UploadPhotoResult> Handle(UploadOrganizerPhotoCommand request, CancellationToken cancellationToken)
+        public async Task<UploadPhotoResultDto> Handle(UploadOrganizerPhotoCommand request, CancellationToken cancellationToken)
         {
             var realOrganizerId = await _context.Organizers
                 .Where(o => o.UserId == request.UserId)
@@ -31,22 +32,31 @@ namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
 
             if (ev == null)
             {
-                return new UploadPhotoResult(false, null, AppConstants.Errors.VALIDATION_FAILED);
+                return new UploadPhotoResultDto(false, null, AppConstants.Errors.VALIDATION_FAILED);
             }
 
             int currentPhotosCount = ev.Photos.Count(p => p.IsMain == request.IsMain);
             int maxAllowed = request.IsMain ? 1 : 5;
 
-            if (currentPhotosCount >= maxAllowed)
+            if (request.IsMain && currentPhotosCount >= maxAllowed)
             {
-                return new UploadPhotoResult(false, null, AppConstants.Errors.VALIDATION_FAILED);
+                var oldMain = ev.Photos.FirstOrDefault(p => p.IsMain);
+                if (oldMain != null)
+                {
+                    _context.EventPhotos.Remove(oldMain);
+                    ev.Photos.Remove(oldMain);
+                }
+            }
+            else if (!request.IsMain && currentPhotosCount >= maxAllowed)
+            {
+                return new UploadPhotoResultDto(false, null, AppConstants.Errors.VALIDATION_FAILED);
             }
 
             var uploadResult = await _photoService.AddPhotoAsync(request.File, request.IsMain);
 
             if (uploadResult.Error != null)
             {
-                return new UploadPhotoResult(false, null, uploadResult.Error.Message);
+                return new UploadPhotoResultDto(false, null, uploadResult.Error.Message);
             }
 
             var eventPhoto = new EventPhoto
@@ -63,7 +73,7 @@ namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
             _context.EventPhotos.Add(eventPhoto);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new UploadPhotoResult(true, eventPhoto.ImageUrl, null);
+            return new UploadPhotoResultDto(true, eventPhoto.ImageUrl, null);
         }
     }
 }

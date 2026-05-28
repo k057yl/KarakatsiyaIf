@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CreateEventModalComponent } from '../../events/create-event/create-event-modal.component';
 import { EventService } from '../../../core/services/event.service';
 
@@ -12,6 +12,7 @@ import { EventService } from '../../../core/services/event.service';
 })
 export class OrganizerDashboardComponent implements OnInit {
   private eventService = inject(EventService);
+  private platformId = inject(PLATFORM_ID);
 
   public isModalOpen = signal(false);
   public organizerEvents = signal<any[]>([]);
@@ -19,7 +20,9 @@ export class OrganizerDashboardComponent implements OnInit {
   public selectedEventForEdit = signal<any | null>(null);
 
   ngOnInit() {
-    this.loadOrganizerEvents();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadOrganizerEvents();
+    }
   }
 
   public loadOrganizerEvents() {
@@ -51,6 +54,9 @@ export class OrganizerDashboardComponent implements OnInit {
   onEventCreated(eventId: string) {
     console.log('Заебись, ивент обработан! ID:', eventId);
     this.isModalOpen.set(false);
-    this.loadOrganizerEvents();
+    
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadOrganizerEvents();
+    }
   }
 }

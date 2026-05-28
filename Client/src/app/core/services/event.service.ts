@@ -41,4 +41,8 @@ export class EventService {
     formData.append('isMain', isMain ? 'true' : 'false'); 
     return this.http.post<{ url: string, publicId: string }>(`${this.apiUrl}/${eventId}/photos/organizer`, formData);
   }
+
+  public getOccupiedDates(year: number, month: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/calendar/occupied-dates?year=${year}&month=${month}`);
+  }
 }

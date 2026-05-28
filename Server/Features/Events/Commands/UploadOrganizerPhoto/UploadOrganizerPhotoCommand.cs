@@ -1,6 +1,7 @@
-﻿using MediatR;
+﻿using Karakatsiya.Models.Dtos.Event;
+using MediatR;
 
 namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
 {
-    public record UploadOrganizerPhotoCommand(Guid EventId, Guid UserId, IFormFile File, bool IsMain) : IRequest<UploadPhotoResult>;
+    public record UploadOrganizerPhotoCommand(Guid EventId, Guid UserId, IFormFile File, bool IsMain) : IRequest<UploadPhotoResultDto>;
 }

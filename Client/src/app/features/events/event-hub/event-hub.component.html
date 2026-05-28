@@ -5,8 +5,20 @@
   </div>
 
   <div class="list-side">
+    
+    <div class="calendar-section">
+      <app-event-calendar (dateSelected)="filterByCalendarDate($event)"></app-event-calendar>
+    </div>
+
     <div class="list-header">
-      <h2>Мероприятия</h2>
+      <div class="title-row">
+        <h2>Мероприятия</h2>
+        @if (selectedCalendarDate()) {
+          <button class="btn-reset-date" (click)="resetCalendarFilter()">
+            ❌ Сбросить дату ({{ selectedCalendarDate() | date:'dd.MM' }})
+          </button>
+        }
+      </div>
       
       <div class="legend">
         <span class="badge today">Сегодня</span>

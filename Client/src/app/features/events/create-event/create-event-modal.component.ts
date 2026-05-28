@@ -269,6 +269,14 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   close() {
+    this.selectedFiles = []; 
+    this.uploadedPhotos.set([]);
+    this.createdEventId.set(null);
+    this.isSuccessScreen.set(false);
+    this.isSubmitting.set(false);
+    this.isUploadingPhoto.set(false);
+    this.eventForm.reset();
+
     this.closeModal.emit();
   }
 
@@ -283,27 +291,33 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
     this.isSubmitting.set(true);
 
     const formValue = this.eventForm.getRawValue();
-    const payload = {
+    const basePayload = {
       ...formValue,
       startDate: new Date(formValue.startDate).toISOString(),
       latitude: this.selectedLat,
       longitude: this.selectedLon,
-      osmId: this.selectedOsmId,
-      photos: this.isEditMode() ? this.uploadedPhotos() : []
+      osmId: this.selectedOsmId
     };
 
     if (this.isEditMode()) {
       const id = this.createdEventId()!;
-      this.eventService.updateEvent(id, payload).subscribe({
+      const updatePayload = { ...basePayload, photos: [] };
+
+      this.eventService.updateEvent(id, updatePayload).subscribe({
         next: () => {
           this.isSubmitting.set(false);
           this.eventCreated.emit(id);
           this.close();
         },
-        error: (err) => { this.isSubmitting.set(false); console.error(err); }
+        error: (err) => { 
+          this.isSubmitting.set(false); 
+          console.error('Ошибка апдейта:', err); 
+        }
       });
     } else {
-      this.eventService.createEvent(payload).subscribe({
+      const createPayload = { ...basePayload, photos: [] };
+
+      this.eventService.createEvent(createPayload).subscribe({
         next: (res) => {
           this.createdEventId.set(res.eventId);
           localStorage.removeItem(this.DRAFT_KEY);

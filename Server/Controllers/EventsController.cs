@@ -5,6 +5,7 @@ using Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto;
 using Karakatsiya.Features.Events.Queries.GetApprovedEvents;
 using Karakatsiya.Features.Events.Queries.GetArchivedEvents;
 using Karakatsiya.Features.Events.Queries.GetEventDetails;
+using Karakatsiya.Features.Events.Queries.GetOccupiedDates;
 using Karakatsiya.Features.Events.Queries.GetOrganizerEvents;
 using Karakatsiya.Models.Dtos.Event;
 using Karakatsiya.Models.Enums;
@@ -100,7 +101,10 @@ namespace Karakatsiya.Controllers
 
         [HttpPost("{id:guid}/photos/organizer")]
         [Authorize(Roles = nameof(UserRole.Organizer))]
-        public async Task<IActionResult> UploadOrganizerPhoto(Guid id, [FromForm] IFormFile file, [FromForm] bool isMain)
+        public async Task<IActionResult> UploadOrganizerPhoto(
+            Guid id,
+            [FromForm(Name = "file")] IFormFile file,
+            [FromForm(Name = "isMain")] bool isMain)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -118,6 +122,13 @@ namespace Karakatsiya.Controllers
             }
 
             return Ok(new { Url = result.Url });
+        }
+
+        [HttpGet("calendar/occupied-dates")]
+        public async Task<IActionResult> GetOccupiedDates([FromQuery] int year, [FromQuery] int month)
+        {
+            var result = await Mediator.Send(new GetOccupiedDatesQuery(year, month));
+            return Ok(result);
         }
     }
 }
