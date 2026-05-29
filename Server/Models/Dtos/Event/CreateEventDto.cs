@@ -13,6 +13,7 @@
         string? OsmId,
         string? ExternalTicketUrl,
         string? ContactLinks,
+        Guid? CategoryId,
         List<CreateEventPhotoDto> Photos
     );
 }

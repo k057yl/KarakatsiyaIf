@@ -32,6 +32,18 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
             }
 
             var p = request.Payload;
+
+            if (p.CategoryId.HasValue && p.CategoryId.Value != Guid.Empty)
+            {
+                var categoryExists = await _context.EventCategories
+                    .AnyAsync(c => c.Id == p.CategoryId.Value, cancellationToken);
+
+                if (!categoryExists)
+                {
+                    throw new Exception(AppConstants.Errors.CATEGORY_NOT_EXIST);
+                }
+            }
+
             var cleanTitle = _sanitizer.StripAllHtml(p.Title);
             var safeDescription = _sanitizer.SanitizeHtml(p.Description);
 
@@ -72,7 +84,8 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 Location = location,
                 OrganizerId = organizer.Id,
                 ExternalTicketUrl = p.ExternalTicketUrl,
-                ContactLinks = p.ContactLinks
+                ContactLinks = p.ContactLinks,
+                CategoryId = p.CategoryId
             };
 
             if (p.Photos != null && p.Photos.Any())

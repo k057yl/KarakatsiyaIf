@@ -26,5 +26,7 @@ namespace Karakatsiya.Models.Entities.Audience
         public List<Comment> Comments { get; set; } = new();
         public List<EventPhoto> Photos { get; set; } = new();
         public List<Notification> Notifications { get; set; } = new();
+
+        public long? TelegramChatId { get; set; }
     }
 }

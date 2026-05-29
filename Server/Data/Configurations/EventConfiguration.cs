@@ -24,6 +24,11 @@ namespace Karakatsiya.Data.Configurations
                 .WithMany(x => x.Events)
                 .HasForeignKey(x => x.OrganizerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Category)
+                .WithMany(c => c.Events)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -109,6 +109,7 @@
             public const string REASON_REQUIRED = "ERRORS.REASON_REQUIRED";
             public const string REASON_TOO_SHORT = "ERRORS.REASON_TOO_SHORT";
             public const string REASON_TOO_LONG = "ERRORS.REASON_TOO_LONG";
+            public const string CATEGORY_NOT_EXIST = "the category does not exist";
         }
 
         public static class Success
@@ -135,6 +136,7 @@
             public const string ORGANIZER_NOT_SPECIFIED = "Организатор не указан";
             public const string ANONIM = "Anonim";
             public const string COMMENT_DELETE = "Comment delete";
+            public const string APPLICATION_SUCCESS = "The application has been submitted.";
         }
     }
 }

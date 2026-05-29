@@ -10,6 +10,7 @@ namespace Karakatsiya.Data
     public class AppDbContext : DbContext
     {
         public DbSet<Event> Events => Set<Event>();
+        public DbSet<EventCategory> EventCategories => Set<EventCategory>();
         public DbSet<Location> Locations => Set<Location>();
         public DbSet<Organizer> Organizers => Set<Organizer>();
         public DbSet<AdminService> AdminServices => Set<AdminService>();
@@ -20,7 +21,7 @@ namespace Karakatsiya.Data
         public DbSet<EventPhoto> EventPhotos => Set<EventPhoto>();
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<CommentReport> CommentReports => Set<CommentReport>();
-
+        public DbSet<TelegramConnectionCode> TelegramConnectionCodes => Set<TelegramConnectionCode>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

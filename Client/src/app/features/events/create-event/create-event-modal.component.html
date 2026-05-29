@@ -23,6 +23,16 @@
           <input type="datetime-local" formControlName="startDate" />
         </div>
 
+        <div class="field">
+          <label>Категория мероприятия 🏷</label>
+          <select formControlName="categoryId" class="category-select">
+            <option value="" disabled selected>Выбери тип события...</option>
+            @for (cat of categoriesList(); track cat.id) {
+              <option [value]="cat.id">🏷 {{ cat.name }}</option>
+            }
+          </select>
+        </div>
+
         <div class="field photo-upload-section">
           <label>Медиафайлы мероприятия (До 6 фоток, кликни на фото чтобы сделать обложкой) 📸</label>
           

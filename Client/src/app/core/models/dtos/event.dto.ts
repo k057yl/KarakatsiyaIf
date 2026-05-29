@@ -11,6 +11,7 @@ export interface CreateEventDto {
   locationName: string;
   city: string;
   street: string;
+  categoryId: string;
   houseNumber?: string;
   latitude?: number;
   longitude?: number;

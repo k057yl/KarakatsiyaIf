@@ -1,4 +1,6 @@
-﻿using Karakatsiya.Features.Organizers.Commands.ApplyForOrganizer;
+﻿using Karakatsiya.Constants;
+using Karakatsiya.Features.Organizers.Commands.ApplyForOrganizer;
+using Karakatsiya.Features.Users.Commands.GenerateTelegramOtp;
 using Karakatsiya.Models.Dtos.Organizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +27,16 @@ namespace Karakatsiya.Controllers
 
             var organizerId = await Mediator.Send(command);
 
-            return Ok(new { Id = organizerId, Message = "Заявка подана успешно" });
+            return Ok(new { Id = organizerId, Message = AppConstants.Others.APPLICATION_SUCCESS });
+        }
+
+        [HttpPost("telegram/generate-otp")]
+        public async Task<IActionResult> GenerateTelegramOtp()
+        {
+            var command = new GenerateTelegramOtpCommand(CurrentUserId);
+            var code = await Mediator.Send(command);
+
+            return Ok(new { Code = code });
         }
     }
 }

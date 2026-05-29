@@ -33,6 +33,7 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
   public isEditMode = signal<boolean>(false);
   public isSuccessScreen = signal<boolean>(false);
   public uploadedPhotos = signal<CreateEventPhotoDto[]>([]);
+  public categoriesList = signal<any[]>([]);
 
   private selectedFiles: { file: File, isMain: boolean }[] = [];
 
@@ -47,6 +48,7 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
     title: ['', [Validators.required, Validators.maxLength(300)]],
     description: ['', Validators.required],
     startDate: ['', Validators.required],
+    categoryId: ['', Validators.required],
     locationName: ['', Validators.required],
     city: ['', Validators.required],
     street: ['', Validators.required],
@@ -56,6 +58,8 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
   });
 
   ngOnInit() {
+    this.loadCategories();
+
     const data = this.editEventData();
     if (data) {
       this.isEditMode.set(true);
@@ -67,6 +71,7 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
         title: data.title || '',
         description: data.description || '',
         startDate: formattedDate,
+        categoryId: data.categoryId || '',
         locationName: data.locationName || '',
         city: data.city || '',
         street: data.street || '',
@@ -83,6 +88,13 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
         this.uploadedPhotos.set(data.photos);
       }
     }
+  }
+
+  private loadCategories() {
+    this.eventService.getCategories().subscribe({
+      next: (cats) => this.categoriesList.set(cats),
+      error: (err) => console.error('Не удалось загрузить категории для селекта', err)
+    });
   }
 
   ngAfterViewInit() {

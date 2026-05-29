@@ -45,4 +45,16 @@ export class EventService {
   public getOccupiedDates(year: number, month: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/calendar/occupied-dates?year=${year}&month=${month}`);
   }
+
+  public getCategories(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/categories`);
+  }
+
+  public createCategory(payload: { name: string, icon: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/categories`, payload);
+  }
+
+  public deleteCategory(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/categories/${id}`);
+  }
 }

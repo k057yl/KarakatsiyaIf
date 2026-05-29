@@ -25,6 +25,10 @@ export const routes: Routes = [
       {
         path: 'reported-comments',
         loadComponent: () => import('./features/admin/reported-comments/reported-comments.component').then(m => m.ReportedCommentsComponent)
+      },
+      {
+        path: 'categories',
+        loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent)
       }
     ]
   },
