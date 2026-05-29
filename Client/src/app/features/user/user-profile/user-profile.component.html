@@ -1,23 +1,76 @@
 <div class="profile-container">
   <div class="profile-header">
     <h1>⚙️ Настройки профиля</h1>
-    <p>Добавь свои соцсети, чтобы прикреплять их к комментариям на странице событий.</p>
+    <p>Добавь свои соцсети и подключи системного Telegram-бота для пуш-уведомлений.</p>
   </div>
 
   @if (isLoading()) {
-    <div class="loader">Загрузка данных...</div>
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <p>Синхронизируем стейт профиля...</p>
+    </div>
   } @else {
+    
+    <div class="card tg-card" [class.linked]="telegramChatId()">
+      <div class="tg-header">
+        <div class="tg-info">
+          <h3>🤖 Telegram пуш-центр</h3>
+          <p>Получай мгновенные уведомления о статусе модерации ивентов и напоминалки о тусах.</p>
+        </div>
+        <div class="tg-status-badge">
+          @if (telegramChatId()) {
+            <span class="badge active">● Активен</span>
+          } @else {
+            <span class="badge disabled">○ Отключен</span>
+          }
+        </div>
+      </div>
+
+      <div class="tg-body">
+        @if (telegramChatId()) {
+          <div class="tg-linked-success">
+            <p>🔒 Твой аккаунт успешно связан с системой. Роботы уже на низком старте.</p>
+            <button type="button" class="btn-unlink" (click)="unlinkTelegram()">
+              ❌ Отключить уведомления
+            </button>
+          </div>
+        } @else {
+          @if (!telegramOtpCode()) {
+            <button type="button" class="btn-tg" (click)="getTelegramCode()" [disabled]="isGeneratingOtp()">
+              {{ isGeneratingOtp() ? 'Генерация...' : '🔗 Привязать Telegram-бота' }}
+            </button>
+          } @else {
+            <div class="tg-instructions animate-fade">
+              <div class="otp-display">
+                <span class="otp-label">Твой секретный код:</span>
+                <span class="otp-number">{{ telegramOtpCode() }}</span>
+                <span class="otp-timer">⏳ Истекает через: <strong>{{ formattedTimeLeft }}</strong></span>
+              </div>
+              <ol class="steps">
+                <li>Перейди к нашему официальному боту: <a href="https://t.me/Karakatsiya_events_bot" target="_blank">&#64;Karakatsiya_events_bot</a></li>
+                <li>Нажми кнопку <strong>Start</strong> (или отправь <code>/start</code>).</li>
+                <li>Отправь ему секретный код, указанный выше, одним сообщением.</li>
+              </ol>
+              <small class="tg-hint">Система автоматически распознает отправку кода. Страница обновится сама.</small>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
     <div class="card">
       <form [formGroup]="profileForm" (ngSubmit)="saveContacts()">
         
-        <div class="field">
-          <label>📱 Telegram (без &#64;)</label>
-          <input formControlName="telegram" placeholder="durov" />
-        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>📱 Telegram (без &#64;)</label>
+            <input formControlName="telegram" placeholder="durov" />
+          </div>
 
-        <div class="field">
-          <label>📸 Instagram (без &#64;)</label>
-          <input formControlName="instagram" placeholder="zuck" />
+          <div class="field">
+            <label>📸 Instagram (без &#64;)</label>
+            <input formControlName="instagram" placeholder="zuck" />
+          </div>
         </div>
 
         <div class="field">

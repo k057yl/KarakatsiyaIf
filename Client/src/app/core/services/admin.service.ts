@@ -40,7 +40,7 @@ export class AdminService {
   }
   sendToFix(id: string, reason: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(`${this.eventsApiUrl}/${id}/send-to-fix`, JSON.stringify(reason), { headers });
+    return this.http.post(`${this.eventsApiUrl}/${id}/fix`, JSON.stringify(reason), { headers });
   }
   toggleVip(id: string): Observable<any> {
     return this.http.post(`${this.eventsApiUrl}/${id}/toggle-vip`, {});

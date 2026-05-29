@@ -10,12 +10,12 @@ namespace Karakatsiya.Features.Admin.Commands.RejectOrganizer
     public class RejectOrganizerHandler : IRequestHandler<RejectOrganizerCommand, Unit>
     {
         private readonly AppDbContext _context;
-        private readonly IEmailService _emailService;
+        private readonly INotificationDispatcher _dispatcher;
 
-        public RejectOrganizerHandler(AppDbContext context, IEmailService emailService)
+        public RejectOrganizerHandler(AppDbContext context, INotificationDispatcher dispatcher)
         {
             _context = context;
-            _emailService = emailService;
+            _dispatcher = dispatcher;
         }
 
         public async Task<Unit> Handle(RejectOrganizerCommand request, CancellationToken cancellationToken)
@@ -34,17 +34,21 @@ namespace Karakatsiya.Features.Admin.Commands.RejectOrganizer
                 throw new Exception(AppConstants.Errors.NOT_PENDING_ORGANIZER);
             }
 
+            var userId = organizer.UserId;
             organizer.User.Role = UserRole.Visitor;
-
             _context.Organizers.Remove(organizer);
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            await _emailService.SendEmailAsync(
-                organizer.User.Email,
-                "EMAIL_ORGANIZER_REJECTED_SUBJECT",
-                "EMAIL_ORGANIZER_REJECTED_BODY",
-                request.Reason);
+            var msg = string.Format(AppConstants.Success.NOTIFICATION_ORG_REJECT_BODY, string.Empty, request.Reason);
+
+            await _dispatcher.SendAsync(
+                userId: userId,
+                message: msg,
+                emailSubject: AppConstants.Success.NOTIFICATION_ORG_REJECT_SUBJ,
+                emailBody: msg,
+                cancellationToken: cancellationToken
+            );
 
             return Unit.Value;
         }

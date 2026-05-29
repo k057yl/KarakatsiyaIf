@@ -2,6 +2,7 @@
 using Karakatsiya.Features.Events.Commands.CreateEvent;
 using Karakatsiya.Features.Events.Commands.UpdateEvent;
 using Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto;
+using Karakatsiya.Features.Events.Queries.GetAddressByCoords;
 using Karakatsiya.Features.Events.Queries.GetApprovedEvents;
 using Karakatsiya.Features.Events.Queries.GetArchivedEvents;
 using Karakatsiya.Features.Events.Queries.GetEventDetails;
@@ -128,6 +129,16 @@ namespace Karakatsiya.Controllers
         public async Task<IActionResult> GetOccupiedDates([FromQuery] int year, [FromQuery] int month)
         {
             var result = await Mediator.Send(new GetOccupiedDatesQuery(year, month));
+            return Ok(result);
+        }
+
+        [HttpGet("api/geo/reverse")]
+        public async Task<IActionResult> ReverseGeocode([FromQuery] double lat, [FromQuery] double lon)
+        {
+            var result = await Mediator.Send(new GetAddressByCoordsQuery(lat, lon));
+            if (result == null)
+                return StatusCode(503, new { Message = AppConstants.Errors.SERVICE_UNAVAILABLE });
+
             return Ok(result);
         }
     }

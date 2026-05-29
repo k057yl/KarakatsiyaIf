@@ -26,6 +26,8 @@
             public const string JWT_EXPIRE_DAYS = "Jwt:ExpireDays";
             public const string SEED_ADMIN_EMAIL = "SeedData:AdminEmail";
             public const string SEED_ADMIN_PASSWORD = "SeedData:AdminPassword";
+            public const string TG_BOT_TOKEN = "TelegramBotSettings:BotToken";
+            public const string GEO_USER_AGENT = "GeoSettings:UserAgent";
         }
 
         public static class MimeTypes
@@ -62,6 +64,7 @@
             public const int MIN_REASON_LENGTH = 5;
             public const int MAX_REASON_LENGTH = 500;
             public const int MAX_SOCIAL_LENGTH = 100;
+            public const int MAX_CATEGORY_NAME = 100;
         }
 
         public static class Columns
@@ -110,6 +113,9 @@
             public const string REASON_TOO_SHORT = "ERRORS.REASON_TOO_SHORT";
             public const string REASON_TOO_LONG = "ERRORS.REASON_TOO_LONG";
             public const string CATEGORY_NOT_EXIST = "the category does not exist";
+            public const string CATEGORY_ALREADY_EXISTS = "ERRORS.CATEGORY_ALREADY_EXISTS";
+            public const string TG_TOKEN_MISSING = "Telegram BotToken отсутствует в конфигурации appsettings.json!";
+
         }
 
         public static class Success
@@ -126,6 +132,21 @@
             public const string EVENT_SENT_TO_FIX = "SUCCESS.EVENT_SENT_TO_FIX";
             public const string EVENT_VIP_TOGGLED = "SUCCESS.EVENT_VIP_TOGGLED";
             public const string CONTACTS_UPDATED = "SUCCESS.CONTACTS_UPDATED";
+            public const string NOTIFICATION_EVENT_APPROVED_SUBJ = "NOTIFICATION.EVENT_APPROVED_SUBJECT";
+            public const string NOTIFICATION_EVENT_APPROVED_BODY = "🎉 Твоё событие \"{0}\" успешно одобрено модератором и опубликовано на афише!";
+            public const string NOTIFICATION_EVENT_APPROVED_VIP = " 💎 Ему присвоен VIP статус!";
+
+            public const string NOTIFICATION_EVENT_REJECT_SUBJ = "NOTIFICATION.EVENT_REJECT_SUBJECT";
+            public const string NOTIFICATION_EVENT_REJECT_BODY = "🛠 Твоё событие \"{0}\" отправлено на доработку.\nПричина: {1}";
+
+            public const string NOTIFICATION_EVENT_REJECTED_FINAL_SUBJ = "NOTIFICATION.EVENT_REJECTED_FINAL_SUBJECT";
+            public const string NOTIFICATION_EVENT_REJECTED_FINAL_BODY = "❌ Твоё событие \"{0}\" было окончательно отклонено модератором.\nПричина: {1}";
+
+            public const string NOTIFICATION_ORG_APPROVED_SUBJ = "NOTIFICATION.ORGANIZER_APPROVED_SUBJECT";
+            public const string NOTIFICATION_ORG_APPROVED_BODY = "👑 Поздравляем! Твоя заявка одобрена. Теперь у тебя есть доступ к панели организатора. Время создавать крутые события!";
+
+            public const string NOTIFICATION_ORG_REJECT_SUBJ = "NOTIFICATION.ORGANIZER_REJECT_SUBJECT";
+            public const string NOTIFICATION_ORG_REJECT_BODY = "❌ К сожалению, твоя заявка на статус организатора была отклонена.\nПричина: {1}";
         }
 
         public static class Others

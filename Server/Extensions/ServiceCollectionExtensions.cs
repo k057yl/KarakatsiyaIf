@@ -83,7 +83,10 @@ namespace Karakatsiya.Extensions
         {
             var assembly = typeof(ServiceCollectionExtensions).Assembly;
 
+            services.AddHttpClient();
+
             services.AddHostedService<UnconfirmedUserCleanupWorker>();
+            services.AddHostedService<TelegramBotHostedService>();
 
             services.AddValidatorsFromAssembly(assembly);
 
@@ -105,6 +108,8 @@ namespace Karakatsiya.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPhotoService, PhotoService>();
+
+            services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 
             return services;
         }

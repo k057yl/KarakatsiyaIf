@@ -261,22 +261,29 @@ export class CreateEventModalComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private updateLocationData(lat: number, lon: number) {
-    this.mapService.reverseGeocode(lat, lon).subscribe((res: any) => {
+    this.mapService.reverseGeocode(lat, lon).subscribe({
+      next: (res: any) => {
         if (res && res.address) {
           this.selectedLat = lat;
           this.selectedLon = lon;
-          this.selectedOsmId = res.osm_id?.toString() || undefined;
+
+          this.selectedOsmId = res.osmId?.toString() || undefined;
 
           const addr = res.address;
-          const locName = res.name || addr.amenity || addr.building || ''; 
+
+          const locName = res.displayName ? res.displayName.split(',')[0] : ''; 
 
           this.eventForm.patchValue({
-              locationName: locName,
-              city: addr.city || addr.town || addr.village || '',
-              street: addr.road || '',
-              houseNumber: addr.house_number || ''
+            locationName: locName,
+            city: addr.city || addr.town || addr.village || '',
+            street: addr.road || '',
+            houseNumber: addr.houseNumber || ''
           });
         }
+      },
+      error: (err) => {
+        console.error('Геокодер на бэкенде вернул ошибку или недоступен:', err);
+      }
     });
   }
 

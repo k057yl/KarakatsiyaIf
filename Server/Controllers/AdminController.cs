@@ -1,5 +1,4 @@
 ﻿using Karakatsiya.Constants;
-using Karakatsiya.Data;
 using Karakatsiya.Features.Admin.Commands.ApproveOrganizer;
 using Karakatsiya.Features.Admin.Commands.RejectOrganizer;
 using Karakatsiya.Features.Admin.Queries.GetActiveEvents;
@@ -17,16 +16,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Karakatsiya.Controllers
 {
     [Authorize(Roles = nameof(UserRole.SuperAdmin))]
-    [Route("api/[controller]")]
+    [ApiController]
+    [Route("api/admin")]
     public class AdminController : BaseController
     {
-        private readonly AppDbContext _context;
-
-        public AdminController(AppDbContext context)
-        {
-            _context = context;
-        }
-
         // --- ОРГАНИЗАТОРЫ ---
 
         [HttpGet("organizers/pending")]
@@ -36,14 +29,14 @@ namespace Karakatsiya.Controllers
             return Ok(result);
         }
 
-        [HttpPost("organizers/{id}/approve")]
+        [HttpPost("organizers/{id:guid}/approve")]
         public async Task<IActionResult> ApproveOrganizer(Guid id)
         {
             await Mediator.Send(new ApproveOrganizerCommand(id));
             return Ok(new { Message = AppConstants.Success.ORGANIZER_APPROVED });
         }
 
-        [HttpPost("organizers/{id}/reject")]
+        [HttpPost("organizers/{id:guid}/reject")]
         public async Task<IActionResult> RejectOrganizer(Guid id, [FromBody] string reason)
         {
             await Mediator.Send(new RejectOrganizerCommand(id, reason));
@@ -59,19 +52,25 @@ namespace Karakatsiya.Controllers
             return Ok(events);
         }
 
-        [HttpPost("events/{eventId:guid}/approve")]
-        public async Task<IActionResult> ApproveEvent(Guid eventId, [FromQuery] bool isVip = false)
+        [HttpPost("events/{id:guid}/approve")]
+        public async Task<IActionResult> ApproveEvent(Guid id, [FromQuery] bool isVip = false)
         {
-            var command = new ApproveEventCommand(eventId, isVip);
-            await Mediator.Send(command);
+            await Mediator.Send(new ApproveEventCommand(id, isVip));
             return Ok(new { Message = AppConstants.Success.EVENT_APPROVED });
         }
 
-        [HttpPost("events/{id}/reject")]
+        [HttpPost("events/{id:guid}/reject")]
         public async Task<IActionResult> RejectEvent(Guid id, [FromBody] string reason)
         {
-            await Mediator.Send(new RejectEventCommand(id, reason));
+            await Mediator.Send(new RejectEventCommand(id, reason, IsToFix: false));
             return Ok(new { Message = AppConstants.Success.EVENT_REJECTED });
+        }
+
+        [HttpPost("events/{id:guid}/fix")]
+        public async Task<IActionResult> SendToFix(Guid id, [FromBody] string reason)
+        {
+            await Mediator.Send(new RejectEventCommand(id, reason, IsToFix: true));
+            return Ok(new { Message = AppConstants.Success.EVENT_SENT_TO_FIX });
         }
 
         [HttpGet("events/active")]
@@ -81,42 +80,16 @@ namespace Karakatsiya.Controllers
             return Ok(events);
         }
 
-        // --- УПРАВЛЕНИЕ СУДЬБАМИ ИВЕНТОВ (ВОЗВРАЩАЕМ НА МЕСТО) ---
-
         [HttpDelete("events/{id:guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
-            var ev = await _context.Events.FindAsync(id);
-            if (ev == null) return NotFound(new { Message = AppConstants.Errors.EVENT_NOT_FOUND });
-
-            _context.Events.Remove(ev);
-            await _context.SaveChangesAsync();
-
             return Ok(new { Message = AppConstants.Success.EVENT_DELETED });
-        }
-
-        [HttpPost("events/{id:guid}/send-to-fix")]
-        public async Task<IActionResult> SendToFix(Guid id, [FromBody] string reason)
-        {
-            var ev = await _context.Events.FindAsync(id);
-            if (ev == null) return NotFound(new { Message = AppConstants.Errors.EVENT_NOT_FOUND });
-
-            ev.Status = EventStatus.Draft;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = AppConstants.Success.EVENT_SENT_TO_FIX });
         }
 
         [HttpPost("events/{id:guid}/toggle-vip")]
         public async Task<IActionResult> ToggleVipStatus(Guid id)
         {
-            var ev = await _context.Events.FindAsync(id);
-            if (ev == null) return NotFound(new { Message = AppConstants.Errors.EVENT_NOT_FOUND });
-
-            ev.IsVip = !ev.IsVip;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { IsVip = ev.IsVip, Message = AppConstants.Success.EVENT_VIP_TOGGLED });
+            return Ok(new { Message = AppConstants.Success.EVENT_VIP_TOGGLED });
         }
 
         // --- МОДЕРАЦИЯ КОММЕНТАРИЕВ (ЖАЛОБЫ) ---

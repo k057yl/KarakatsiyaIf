@@ -10,12 +10,12 @@ namespace Karakatsiya.Features.Admin.Commands.ApproveOrganizer
     public class ApproveOrganizerHandler : IRequestHandler<ApproveOrganizerCommand, Unit>
     {
         private readonly AppDbContext _context;
-        private readonly IEmailService _emailService;
+        private readonly INotificationDispatcher _dispatcher;
 
-        public ApproveOrganizerHandler(AppDbContext context, IEmailService emailService)
+        public ApproveOrganizerHandler(AppDbContext context, INotificationDispatcher dispatcher)
         {
             _context = context;
-            _emailService = emailService;
+            _dispatcher = dispatcher;
         }
 
         public async Task<Unit> Handle(ApproveOrganizerCommand request, CancellationToken cancellationToken)
@@ -35,13 +35,17 @@ namespace Karakatsiya.Features.Admin.Commands.ApproveOrganizer
             }
 
             organizer.User.Role = UserRole.Organizer;
-
             await _context.SaveChangesAsync(cancellationToken);
 
-            await _emailService.SendEmailAsync(
-                organizer.User.Email,
-                "EMAIL_ORGANIZER_APPROVED_SUBJECT",
-                "EMAIL_ORGANIZER_APPROVED_BODY");
+            var msg = AppConstants.Success.NOTIFICATION_ORG_APPROVED_BODY;
+
+            await _dispatcher.SendAsync(
+                userId: organizer.UserId,
+                message: msg,
+                emailSubject: AppConstants.Success.NOTIFICATION_ORG_APPROVED_SUBJ,
+                emailBody: msg,
+                cancellationToken: cancellationToken
+            );
 
             return Unit.Value;
         }

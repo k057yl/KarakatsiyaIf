@@ -9,7 +9,7 @@ import { UpdateContactsDto } from '../models/dtos/user.dto';
 })
 export class UserService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/user`;
+  private apiUrl = `${environment.apiUrl}/users`;
 
   public updateContacts(data: UpdateContactsDto): Observable<{ message: string }> {
     return this.http.put<{ message: string }>(`${this.apiUrl}/me/contacts`, data);
@@ -17,5 +17,13 @@ export class UserService {
 
   public getMyProfile(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/me`);
+  }
+
+  public generateTelegramOtp(): Observable<{ code: string }> {
+    return this.http.post<{ code: string }>(`${this.apiUrl}/me/telegram/generate-otp`, {});
+  }
+
+  public unlinkTelegram(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/me/telegram/unlink`, {});
   }
 }
