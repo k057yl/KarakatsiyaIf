@@ -1,26 +1,26 @@
 <div class="dashboard-container">
-  <h2>Кабинет Организатора 👑</h2>
+  <h2>{{ 'COMMON.CABINET' | translate }} 👑</h2>
   
   <div class="actions">
     <button class="btn-primary" (click)="openCreateModal()">
-      + Создать Ивент
+      + {{ 'EVENT_MODAL.CREATE_EVENT_BTN' | translate }}
     </button>
   </div>
 
   <div class="events-list">
     @if (isLoading()) {
-      <p>Загрузка твоего движа...</p>
+      <p>{{ 'EVENT_MODAL.SUBMITTING_BTN' | translate }}</p>
     } @else {
       @if (organizerEvents().length === 0) {
-        <p>Тут пусто. Либо все твои ивенты уже в релизе, либо ты еще нихуя не создал.</p>
+        <p>{{ 'OTHERS.LOCATION_NOT_SPECIFIED' | translate }}</p>
       } @else {
         <table class="organizer-table">
           <thead>
             <tr>
-              <th>Название</th>
-              <th>Дата старта</th>
-              <th>Статус</th>
-              <th>Управление</th>
+              <th>{{ 'EVENT_MODAL.FIELD_TITLE_LABEL' | translate }}</th>
+              <th>{{ 'EVENT_MODAL.FIELD_DATE_LABEL' | translate }}</th>
+              <th>{{ 'SUCCESS.EVENT_VIP_TOGGLED' | translate }}</th>
+              <th>{{ 'COMMON.ADMIN' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -30,23 +30,23 @@
                   <strong>{{ ev.title }}</strong>
                   @if (ev.status === 3 && ev.fixReason) {
                     <div class="fix-reason-alert">
-                      ⚠️ <strong>Причина отклонения:</strong> {{ ev.fixReason }}
+                      ⚠️ <strong>{{ 'SUCCESS.EVENT_SENT_TO_FIX' | translate }}:</strong> {{ ev.fixReason }}
                     </div>
                   }
                 </td>
                 <td>{{ ev.startDate | date:'dd.MM.yyyy HH:mm' }}</td>
                 <td>
                   <span class="status-badge" [attr.data-status]="ev.status">
-                    {{ ev.status === 3 ? '🛠 Отклонено / Ремонт' : (ev.status === 1 ? '⏳ На модерации' : '📝 Черновик') }}
+                    {{ ev.status === 3 ? ('EVENT_MODAL.TITLE_EDIT' | translate) : (ev.status === 1 ? ('SUCCESS.APPLICATION_SUBMITTED' | translate) : ('OTHERS.ANONIM' | translate)) }}
                   </span>
                 </td>
                 <td>
                   @if (ev.status === 3 || ev.status === 0) {
                     <button class="btn-fix-action" (click)="openEditModal(ev)">
-                      🔧 {{ ev.status === 3 ? 'Исправить' : 'Продолжить заполнение' }}
+                      🔧 {{ ev.status === 3 ? ('EVENT_MODAL.SAVE_CHANGES_BTN' | translate) : ('EVENT_MODAL.CREATE_EVENT_BTN' | translate) }}
                     </button>
                   } @else {
-                    <span class="text-muted">Админ еще не чекал</span>
+                    <span class="text-muted">{{ 'ERRORS.USER_NOT_FOUND_OR_ALREADY_VERIFIED' | translate }}</span>
                   }
                 </td>
               </tr>
@@ -58,10 +58,17 @@
   </div>
 
   @if (isModalOpen()) {
-    <app-create-event-modal 
-      [editEventData]="selectedEventForEdit()"
-      (closeModal)="isModalOpen.set(false)"
-      (eventCreated)="onEventCreated($event)">
-    </app-create-event-modal>
+    @if (selectedEventForEdit() === null) {
+      <app-create-event-modal 
+        (closeModal)="isModalOpen.set(false)"
+        (eventCreated)="onEventCreated($event)">
+      </app-create-event-modal>
+    } @else {
+      <app-edit-event-modal 
+        [editEventData]="selectedEventForEdit()"
+        (closeModal)="isModalOpen.set(false); selectedEventForEdit.set(null)"
+        (eventUpdated)="onEventCreated($event)">
+      </app-edit-event-modal>
+    }
   }
 </div>

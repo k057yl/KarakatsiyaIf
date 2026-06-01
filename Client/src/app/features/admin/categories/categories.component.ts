@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EventService } from '../../../core/services/event.service';
+import { EventService } from '../../events/services/event.service';
 
 @Component({
   selector: 'app-admin-categories',

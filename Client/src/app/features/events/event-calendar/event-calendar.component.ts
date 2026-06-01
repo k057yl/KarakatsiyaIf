@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EventService } from '../../../core/services/event.service';
+import { EventService } from '../services/event.service';
 
 export interface CalendarDay {
   date: number;

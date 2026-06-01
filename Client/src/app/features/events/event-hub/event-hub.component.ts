@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, OnDestroy, afterNextRender, ElementRef, viewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { EventService } from '../../../core/services/event.service';
+import { EventService } from '../services/event.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { EventCalendarComponent } from '../event-calendar/event-calendar.component';
 import type * as LType from 'leaflet';

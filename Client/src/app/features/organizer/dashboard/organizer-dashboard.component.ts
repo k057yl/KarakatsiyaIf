@@ -1,12 +1,14 @@
 import { Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { CreateEventModalComponent } from '../../events/create-event/create-event-modal.component';
-import { EventService } from '../../../core/services/event.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { CreateEventModalComponent } from '../../events/create-event-modal/create-event-modal.component';
+import { EditEventModalComponent } from '../../events/edit-event-modal/edit-event-modal.component';
+import { EventService } from '../../events/services/event.service';
 
 @Component({
   selector: 'app-organizer-dashboard',
   standalone: true,
-  imports: [CommonModule, CreateEventModalComponent],
+  imports: [CommonModule, TranslateModule, CreateEventModalComponent, EditEventModalComponent],
   templateUrl: './organizer-dashboard.component.html',
   styleUrls: ['./organizer-dashboard.component.scss']
 })
@@ -35,7 +37,7 @@ export class OrganizerDashboardComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err: unknown) => {
-        console.error('Не удалось загрузить ваши события', err);
+        console.error('Failed to load organizer events:', err);
         this.isLoading.set(false);
       }
     });
@@ -52,8 +54,9 @@ export class OrganizerDashboardComponent implements OnInit {
   }
 
   onEventCreated(eventId: string) {
-    console.log('Заебись, ивент обработан! ID:', eventId);
+    console.log('Event processing completed successfully. ID:', eventId);
     this.isModalOpen.set(false);
+    this.selectedEventForEdit.set(null);
     
     if (isPlatformBrowser(this.platformId)) {
       this.loadOrganizerEvents();

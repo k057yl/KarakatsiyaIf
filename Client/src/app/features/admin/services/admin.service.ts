@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; 
-import { environment } from '../../../environments/environment';
-import { PendingOrganizer } from '../models/dtos/admin.dto';
+import { environment } from '../../../../environments/environment';
+import { PendingOrganizer } from '../../../core/models/dtos/admin.dto';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

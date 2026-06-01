@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { EventService } from '../../../core/services/event.service';
-import { AdminService } from '../../../core/services/admin.service';
+import { EventService } from '../services/event.service';
+import { AdminService } from '../../admin/services/admin.service';
 // Предполагаем, что у тебя есть AuthService для проверки роли
 import { AuthService } from '../../../core/services/auth.service'; 
 

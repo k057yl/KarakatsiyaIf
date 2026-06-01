@@ -1,0 +1,21 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="modal-window" (click)="$event.stopPropagation()">
+    
+    <header>
+      <h3>{{ 'EVENT_MODAL.TITLE_EDIT' | translate }}</h3>
+      <button class="close-x" (click)="close()">×</button>
+    </header>
+
+    <app-event-form
+      [isEditMode]="true"
+      [initialData]="editEventData()"
+      [categoriesList]="categoriesList()"
+      [isSubmitting]="isSubmitting()"
+      [isUploadingPhoto]="isUploadingPhoto()"
+      (formSubmit)="onEditSubmit($event)"
+      (uploadPhotoOnFly)="onUploadPhotoOnFly($event)"
+      (cancel)="close()">
+    </app-event-form>
+
+  </div>
+</div>

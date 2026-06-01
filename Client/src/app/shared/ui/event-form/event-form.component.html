@@ -1,0 +1,85 @@
+<form [formGroup]="eventForm" (ngSubmit)="submitForm()">
+  <div class="field">
+    <label>{{ 'EVENT_MODAL.FIELD_TITLE_LABEL' | translate }}</label>
+    <input formControlName="title" [placeholder]="'EVENT_MODAL.FIELD_TITLE_PLACEHOLDER' | translate" />
+  </div>
+
+  <div class="field">
+    <label>{{ 'EVENT_MODAL.FIELD_DESC_LABEL' | translate }}</label>
+    <textarea formControlName="description" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label>{{ 'EVENT_MODAL.FIELD_DATE_LABEL' | translate }}</label>
+    <input type="datetime-local" formControlName="startDate" />
+  </div>
+
+  <div class="field">
+    <label>{{ 'EVENT_MODAL.FIELD_CAT_LABEL' | translate }}</label>
+    <select formControlName="categoryId" class="category-select">
+      <option value="" disabled selected>{{ 'EVENT_MODAL.FIELD_CAT_PLACEHOLDER' | translate }}</option>
+      @for (cat of categoriesList; track cat.id) {
+        <option [value]="cat.id">🏷 {{ cat.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field photo-upload-section">
+    <label>{{ 'EVENT_MODAL.FIELD_PHOTO_LABEL' | translate }}</label>
+    
+    <div class="photo-actions">
+      <button type="button" class="btn-upload-sub" (click)="fileInput.click()" [disabled]="isUploadingPhoto">
+        {{ 'EVENT_MODAL.ADD_PHOTO_BTN' | translate }}
+      </button>
+      <input #fileInput type="file" (change)="onFilesSelected($event)" style="display: none;" accept="image/*" multiple />
+    </div>
+
+    @if (isUploadingPhoto) {
+      <p class="loader-text">{{ 'EVENT_MODAL.PHOTO_COMPRESSING' | translate }}</p>
+    }
+
+    <div class="photos-preview-grid" *ngIf="uploadedPhotos().length > 0">
+      <div 
+        class="photo-card" 
+        *ngFor="let photo of uploadedPhotos(); let i = index" 
+        [class.main-photo]="photo.isMain"
+        (click)="setMainPhoto(i)"
+        title="Сделать обложкой"
+      >
+        <img [src]="photo.imageUrl" alt="Event photo" />
+        
+        <div class="photo-badge">
+          {{ (photo.isMain ? 'EVENT_MODAL.PHOTO_MAIN_BADGE' : 'EVENT_MODAL.PHOTO_MAKE_MAIN_BADGE') | translate }}
+        </div>
+        
+        <div class="photo-controls">
+          <button type="button" class="btn-delete-mini" (click)="removePhoto(i); $event.stopPropagation()">×</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span>{{ 'EVENT_MODAL.WHERE_IS_IT' | translate }}</span></div>
+
+  <div class="field">
+    <label>{{ 'EVENT_MODAL.MAP_LABEL' | translate }}</label>
+    <div id="event-map" class="leaflet-map-container"></div>
+  </div>
+
+  <div class="field">
+    <input formControlName="locationName" [placeholder]="'EVENT_MODAL.LOC_NAME_PLACEHOLDER' | translate" />
+  </div>
+
+  <div class="field-row">
+    <input formControlName="city" [placeholder]="'EVENT_MODAL.CITY_PLACEHOLDER' | translate" />
+    <input formControlName="street" [placeholder]="'EVENT_MODAL.STREET_PLACEHOLDER' | translate" />
+    <input formControlName="houseNumber" [placeholder]="'EVENT_MODAL.HOUSE_PLACEHOLDER' | translate" class="small" />
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn-secondary" (click)="cancel.emit()">{{ 'EVENT_MODAL.CANCEL_BTN' | translate }}</button>
+    <button type="submit" class="btn-primary" [disabled]="eventForm.invalid || isSubmitting">
+      {{ (isSubmitting ? 'EVENT_MODAL.SUBMITTING_BTN' : (isEditMode ? 'EVENT_MODAL.SAVE_CHANGES_BTN' : 'EVENT_MODAL.CREATE_EVENT_BTN')) | translate }}
+    </button>
+  </div>
+</form>

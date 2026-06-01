@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminService } from '../../../core/services/admin.service';
+import { AdminService } from '../services/admin.service';
 
 @Component({
   selector: 'app-pending-events',

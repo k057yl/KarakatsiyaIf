@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy, ElementRef, viewChild, effect, Injector, runInInjectionContext, afterNextRender, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { EventService } from '../../../core/services/event.service';
+import { EventService } from '../services/event.service';
 import { CommentService } from '../../../core/services/comment.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslateModule } from '@ngx-translate/core';

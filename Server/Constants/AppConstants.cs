@@ -6,7 +6,7 @@
         {
             public const string DEFAULT_CURRENCY = "UAH";
             public const int MAX_TITLE_LENGTH = 300;
-            public const string NOT_NAME = "Без названия";
+            public const string NOT_NAME = "GENERAL.NOT_NAME";
         }
 
         public static class Shared
@@ -44,7 +44,7 @@
 
         public static class SeedData
         {
-            public const string ADMIN_CREATED_LOG = "✅ Суперадмин успешно создан!";
+            public const string ADMIN_CREATED_LOG = "SEED_DATA.ADMIN_CREATED_LOG";
         }
 
         public static class Validation
@@ -112,10 +112,9 @@
             public const string REASON_REQUIRED = "ERRORS.REASON_REQUIRED";
             public const string REASON_TOO_SHORT = "ERRORS.REASON_TOO_SHORT";
             public const string REASON_TOO_LONG = "ERRORS.REASON_TOO_LONG";
-            public const string CATEGORY_NOT_EXIST = "the category does not exist";
+            public const string CATEGORY_NOT_EXIST = "ERRORS.CATEGORY_NOT_EXIST";
             public const string CATEGORY_ALREADY_EXISTS = "ERRORS.CATEGORY_ALREADY_EXISTS";
-            public const string TG_TOKEN_MISSING = "Telegram BotToken отсутствует в конфигурации appsettings.json!";
-
+            public const string TG_TOKEN_MISSING = "ERRORS.TG_TOKEN_MISSING";
         }
 
         public static class Success
@@ -132,32 +131,33 @@
             public const string EVENT_SENT_TO_FIX = "SUCCESS.EVENT_SENT_TO_FIX";
             public const string EVENT_VIP_TOGGLED = "SUCCESS.EVENT_VIP_TOGGLED";
             public const string CONTACTS_UPDATED = "SUCCESS.CONTACTS_UPDATED";
-            public const string NOTIFICATION_EVENT_APPROVED_SUBJ = "NOTIFICATION.EVENT_APPROVED_SUBJECT";
-            public const string NOTIFICATION_EVENT_APPROVED_BODY = "🎉 Твоё событие \"{0}\" успешно одобрено модератором и опубликовано на афише!";
-            public const string NOTIFICATION_EVENT_APPROVED_VIP = " 💎 Ему присвоен VIP статус!";
 
-            public const string NOTIFICATION_EVENT_REJECT_SUBJ = "NOTIFICATION.EVENT_REJECT_SUBJECT";
-            public const string NOTIFICATION_EVENT_REJECT_BODY = "🛠 Твоё событие \"{0}\" отправлено на доработку.\nПричина: {1}";
+            public const string NOTIFICATION_EVENT_APPROVED_SUBJ = "NOTIFICATIONS.EVENT_APPROVED_SUBJECT";
+            public const string NOTIFICATION_EVENT_APPROVED_BODY = "NOTIFICATIONS.EVENT_APPROVED_BODY";
+            public const string NOTIFICATION_EVENT_APPROVED_VIP = "NOTIFICATIONS.EVENT_APPROVED_VIP";
 
-            public const string NOTIFICATION_EVENT_REJECTED_FINAL_SUBJ = "NOTIFICATION.EVENT_REJECTED_FINAL_SUBJECT";
-            public const string NOTIFICATION_EVENT_REJECTED_FINAL_BODY = "❌ Твоё событие \"{0}\" было окончательно отклонено модератором.\nПричина: {1}";
+            public const string NOTIFICATION_EVENT_REJECT_SUBJ = "NOTIFICATIONS.EVENT_REJECT_SUBJECT";
+            public const string NOTIFICATION_EVENT_REJECT_BODY = "NOTIFICATIONS.EVENT_REJECT_BODY";
 
-            public const string NOTIFICATION_ORG_APPROVED_SUBJ = "NOTIFICATION.ORGANIZER_APPROVED_SUBJECT";
-            public const string NOTIFICATION_ORG_APPROVED_BODY = "👑 Поздравляем! Твоя заявка одобрена. Теперь у тебя есть доступ к панели организатора. Время создавать крутые события!";
+            public const string NOTIFICATION_EVENT_REJECTED_FINAL_SUBJ = "NOTIFICATIONS.EVENT_REJECTED_FINAL_SUBJECT";
+            public const string NOTIFICATION_EVENT_REJECTED_FINAL_BODY = "NOTIFICATIONS.EVENT_REJECTED_FINAL_BODY";
 
-            public const string NOTIFICATION_ORG_REJECT_SUBJ = "NOTIFICATION.ORGANIZER_REJECT_SUBJECT";
-            public const string NOTIFICATION_ORG_REJECT_BODY = "❌ К сожалению, твоя заявка на статус организатора была отклонена.\nПричина: {1}";
+            public const string NOTIFICATION_ORG_APPROVED_SUBJ = "NOTIFICATIONS.ORGANIZER_APPROVED_SUBJECT";
+            public const string NOTIFICATION_ORG_APPROVED_BODY = "NOTIFICATIONS.ORGANIZER_APPROVED_BODY";
+
+            public const string NOTIFICATION_ORG_REJECT_SUBJ = "NOTIFICATIONS.ORGANIZER_REJECT_SUBJECT";
+            public const string NOTIFICATION_ORG_REJECT_BODY = "NOTIFICATIONS.ORGANIZER_REJECT_BODY";
         }
 
         public static class Others
         {
-            public const string CONFIG_MISSING_JWT = "JWT Key is missing in configuration!";
-            public const string MIDDLEWARE_FATAL_LOG = "Ахтунг! В контроллере пиздец: {Message}";
-            public const string LOCATION_NOT_SPECIFIED = "Место не указано";
-            public const string ORGANIZER_NOT_SPECIFIED = "Организатор не указан";
-            public const string ANONIM = "Anonim";
-            public const string COMMENT_DELETE = "Comment delete";
-            public const string APPLICATION_SUCCESS = "The application has been submitted.";
+            public const string CONFIG_MISSING_JWT = "OTHERS.CONFIG_MISSING_JWT";
+            public const string MIDDLEWARE_FATAL_LOG = "OTHERS.MIDDLEWARE_FATAL_LOG";
+            public const string LOCATION_NOT_SPECIFIED = "OTHERS.LOCATION_NOT_SPECIFIED";
+            public const string ORGANIZER_NOT_SPECIFIED = "OTHERS.ORGANIZER_NOT_SPECIFIED";
+            public const string ANONIM = "OTHERS.ANONIM";
+            public const string COMMENT_DELETE = "OTHERS.COMMENT_DELETE";
+            public const string APPLICATION_SUCCESS = "OTHERS.APPLICATION_SUCCESS";
         }
     }
 }
