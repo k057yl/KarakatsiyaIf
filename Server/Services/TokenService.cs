@@ -46,9 +46,7 @@ namespace Karakatsiya.Services
 
         public string GenerateRefreshToken()
         {
-            var randomNumber = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
+            var randomNumber = RandomNumberGenerator.GetBytes(64);
             return Convert.ToBase64String(randomNumber);
         }
 

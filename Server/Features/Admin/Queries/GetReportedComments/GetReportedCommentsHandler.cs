@@ -18,6 +18,7 @@ namespace Karakatsiya.Features.Admin.Queries.GetReportedComments
         public async Task<List<ReportedCommentDto>> Handle(GetReportedCommentsQuery request, CancellationToken ct)
         {
             return await _db.CommentReports
+                .AsNoTracking()
                 .Include(r => r.Comment).ThenInclude(c => c.User)
                 .Include(r => r.Reporter)
                 .Where(r => !r.IsResolved)

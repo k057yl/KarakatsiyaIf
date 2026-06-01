@@ -15,13 +15,11 @@ namespace Karakatsiya.Features.Users.Commands.UnlinkTelegram
 
         public async Task<bool> Handle(UnlinkTelegramCommand request, CancellationToken ct)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, ct);
-            if (user == null) return false;
+            var updatedRows = await _db.Users
+                .Where(u => u.Id == request.UserId)
+                .ExecuteUpdateAsync(s => s.SetProperty(u => u.TelegramChatId, (long?)null), ct);
 
-            user.TelegramChatId = null;
-
-            await _db.SaveChangesAsync(ct);
-            return true;
+            return updatedRows > 0;
         }
     }
 }

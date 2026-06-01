@@ -20,6 +20,7 @@ namespace Karakatsiya.Features.Events.Queries.GetOccupiedDates
             var endDate = startDate.AddMonths(1);
 
             var dates = await _context.Events
+                .AsNoTracking()
                 .Where(e => e.Status == EventStatus.Approved &&
                             e.StartDate >= startDate &&
                             e.StartDate < endDate)

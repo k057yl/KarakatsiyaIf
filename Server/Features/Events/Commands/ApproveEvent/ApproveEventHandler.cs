@@ -4,6 +4,7 @@ using Karakatsiya.Models.Enums;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Karakatsiya.Features.Events.Commands.ApproveEvent
 {
@@ -11,11 +12,13 @@ namespace Karakatsiya.Features.Events.Commands.ApproveEvent
     {
         private readonly AppDbContext _context;
         private readonly INotificationDispatcher _dispatcher;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public ApproveEventHandler(AppDbContext context, INotificationDispatcher dispatcher)
+        public ApproveEventHandler(AppDbContext context, INotificationDispatcher dispatcher, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _dispatcher = dispatcher;
+            _localizer = localizer;
         }
 
         public async Task Handle(ApproveEventCommand request, CancellationToken cancellationToken)
@@ -26,7 +29,7 @@ namespace Karakatsiya.Features.Events.Commands.ApproveEvent
                 .FirstOrDefaultAsync(e => e.Id == request.EventId, cancellationToken);
 
             if (ev == null)
-                throw new Exception(AppConstants.Errors.EVENT_NOT_FOUND);
+                throw new InvalidOperationException(AppConstants.Errors.EVENT_NOT_FOUND);
 
             ev.Status = EventStatus.Approved;
             ev.IsVip = request.IsVip;
@@ -35,17 +38,23 @@ namespace Karakatsiya.Features.Events.Commands.ApproveEvent
 
             if (ev.Organizer != null)
             {
-                var text = string.Format(AppConstants.Success.NOTIFICATION_EVENT_APPROVED_BODY, ev.Title);
+                var tgTemplate = _localizer[AppConstants.Success.NOTIFICATION_EVENT_APPROVED_BODY].Value;
+                var tgMessage = string.Format(tgTemplate, ev.Title);
+
                 if (request.IsVip)
                 {
-                    text += AppConstants.Success.NOTIFICATION_EVENT_APPROVED_VIP;
+                    tgMessage += _localizer[AppConstants.Success.NOTIFICATION_EVENT_APPROVED_VIP].Value;
                 }
+
+                var emailSubject = _localizer["EMAIL_EVENT_APPROVED_SUBJECT"].Value;
+                var emailBodyTemplate = _localizer["EMAIL_EVENT_APPROVED_BODY"].Value;
+                var emailBody = string.Format(emailBodyTemplate, ev.Title);
 
                 await _dispatcher.SendAsync(
                     userId: ev.Organizer.UserId,
-                    message: text,
-                    emailSubject: AppConstants.Success.NOTIFICATION_EVENT_APPROVED_SUBJ,
-                    emailBody: text,
+                    message: tgMessage,
+                    emailSubject: emailSubject,
+                    emailBody: emailBody,
                     cancellationToken: cancellationToken
                 );
             }

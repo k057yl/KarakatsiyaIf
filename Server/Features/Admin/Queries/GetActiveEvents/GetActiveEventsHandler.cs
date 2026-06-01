@@ -19,6 +19,7 @@ namespace Karakatsiya.Features.Admin.Queries.GetActiveEvents
         public async Task<List<AdminActiveEventDto>> Handle(GetActiveEventsQuery request, CancellationToken cancellationToken)
         {
             return await _context.Events
+                .AsNoTracking()
                 .Where(e => e.Status == EventStatus.Approved && e.StartDate >= DateTime.UtcNow)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new AdminActiveEventDto(

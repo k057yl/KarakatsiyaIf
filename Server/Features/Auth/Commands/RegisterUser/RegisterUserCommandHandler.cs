@@ -28,7 +28,7 @@ namespace Karakatsiya.Features.Auth.Commands.RegisterUser
                 return (false, AppConstants.Errors.EMAIL_ALREADY_EXISTS);
             }
 
-            var code = new Random().Next(
+            var code = Random.Shared.Next(
                 AppConstants.Security.OTP_MIN_VALUE,
                 AppConstants.Security.OTP_MAX_VALUE + 1).ToString();
 

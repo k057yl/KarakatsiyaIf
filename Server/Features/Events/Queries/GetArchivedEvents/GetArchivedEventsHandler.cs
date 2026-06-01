@@ -16,6 +16,7 @@ namespace Karakatsiya.Features.Events.Queries.GetArchivedEvents
             var now = DateTime.UtcNow;
 
             return await _context.Events
+                .AsNoTracking()
                 .Where(e => e.Status == EventStatus.Approved && e.StartDate < now)
                 .OrderByDescending(e => e.StartDate)
                 .Select(e => new EventDto(

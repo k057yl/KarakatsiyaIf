@@ -4,6 +4,7 @@ using Karakatsiya.Models.Enums;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Karakatsiya.Features.Events.Commands.RejectEvent
 {
@@ -11,11 +12,13 @@ namespace Karakatsiya.Features.Events.Commands.RejectEvent
     {
         private readonly AppDbContext _context;
         private readonly INotificationDispatcher _dispatcher;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public RejectEventHandler(AppDbContext context, INotificationDispatcher dispatcher)
+        public RejectEventHandler(AppDbContext context, INotificationDispatcher dispatcher, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _dispatcher = dispatcher;
+            _localizer = localizer;
         }
 
         public async Task Handle(RejectEventCommand request, CancellationToken cancellationToken)
@@ -26,7 +29,7 @@ namespace Karakatsiya.Features.Events.Commands.RejectEvent
                 .FirstOrDefaultAsync(e => e.Id == request.EventId, cancellationToken);
 
             if (ev == null)
-                throw new Exception(AppConstants.Errors.EVENT_NOT_FOUND);
+                throw new InvalidOperationException(AppConstants.Errors.EVENT_NOT_FOUND);
 
             ev.Status = request.IsToFix ? EventStatus.Pending : EventStatus.Rejected;
             await _context.SaveChangesAsync(cancellationToken);
@@ -37,30 +40,26 @@ namespace Karakatsiya.Features.Events.Commands.RejectEvent
                     ? request.Reason
                     : AppConstants.Others.LOCATION_NOT_SPECIFIED;
 
-                try
-                {
-                    var bodyTemplate = request.IsToFix
-                        ? AppConstants.Success.NOTIFICATION_EVENT_REJECT_BODY
-                        : AppConstants.Success.NOTIFICATION_EVENT_REJECTED_FINAL_BODY;
+                var tgTemplateKey = request.IsToFix
+                    ? AppConstants.Success.NOTIFICATION_EVENT_REJECT_BODY
+                    : AppConstants.Success.NOTIFICATION_EVENT_REJECTED_FINAL_BODY;
 
-                    var subjectTemplate = request.IsToFix
-                        ? AppConstants.Success.NOTIFICATION_EVENT_REJECT_SUBJ
-                        : AppConstants.Success.NOTIFICATION_EVENT_REJECTED_FINAL_SUBJ;
+                var tgTemplate = _localizer[tgTemplateKey].Value;
+                var tgMessage = string.Format(tgTemplate, ev.Title, reasonText);
+                var emailSubjKey = request.IsToFix ? "EMAIL_EVENT_REJECT_SUBJECT" : "EMAIL_EVENT_REJECTED_FINAL_SUBJECT";
+                var emailBodyKey = request.IsToFix ? "EMAIL_EVENT_REJECT_BODY" : "EMAIL_EVENT_REJECTED_FINAL_BODY";
 
-                    var msg = string.Format(bodyTemplate, ev.Title, reasonText);
+                var emailSubject = _localizer[emailSubjKey].Value;
+                var emailBodyTemplate = _localizer[emailBodyKey].Value;
+                var emailBody = string.Format(emailBodyTemplate, ev.Title, reasonText);
 
-                    await _dispatcher.SendAsync(
-                        userId: ev.Organizer.UserId,
-                        message: msg,
-                        emailSubject: subjectTemplate,
-                        emailBody: msg,
-                        cancellationToken: cancellationToken
-                    );
-                }
-                catch (FormatException ex)
-                {
-                    throw new InvalidOperationException(AppConstants.Errors.INTERNAL_SERVER_ERROR, ex);
-                }
+                await _dispatcher.SendAsync(
+                    userId: ev.Organizer.UserId,
+                    message: tgMessage,
+                    emailSubject: emailSubject,
+                    emailBody: emailBody,
+                    cancellationToken: cancellationToken
+                );
             }
         }
     }

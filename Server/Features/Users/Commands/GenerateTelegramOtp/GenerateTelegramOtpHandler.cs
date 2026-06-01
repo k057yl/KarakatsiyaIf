@@ -16,14 +16,11 @@ namespace Karakatsiya.Features.Users.Commands.GenerateTelegramOtp
 
         public async Task<string> Handle(GenerateTelegramOtpCommand request, CancellationToken cancellationToken)
         {
-            var oldCodes = await _context.Set<TelegramConnectionCode>()
+            await _context.Set<TelegramConnectionCode>()
                 .Where(c => c.UserId == request.UserId)
-                .ToListAsync(cancellationToken);
+                .ExecuteDeleteAsync(cancellationToken);
 
-            _context.Set<TelegramConnectionCode>().RemoveRange(oldCodes);
-
-            var random = new Random();
-            var code = random.Next(100000, 999999).ToString();
+            var code = Random.Shared.Next(100000, 1000000).ToString();
 
             var connectionCode = new TelegramConnectionCode
             {

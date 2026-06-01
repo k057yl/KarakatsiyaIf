@@ -14,6 +14,7 @@ namespace Karakatsiya.Features.Events.Queries.GetPendingEvents
         public async Task<List<EventDto>> Handle(GetPendingEventsQuery request, CancellationToken cancellationToken)
         {
             return await _context.Events
+                .AsNoTracking()
                 .Where(e => e.Status == EventStatus.Pending)
                 .OrderBy(e => e.CreatedAt)
                 .Select(e => new EventDto(

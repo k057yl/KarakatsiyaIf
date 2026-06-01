@@ -18,6 +18,7 @@ namespace Karakatsiya.Features.Admin.Queries.GetPendingOrganizers
         public async Task<List<PendingOrganizerDto>> Handle(GetPendingOrganizersQuery request, CancellationToken cancellationToken)
         {
             var pendingUsers = await _context.Users
+                .AsNoTracking()
                 .Include(u => u.OrganizerProfile)
                 .Where(u => u.Role == UserRole.PendingOrganizer && u.OrganizerProfile != null)
                 .ToListAsync(cancellationToken);

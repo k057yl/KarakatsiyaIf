@@ -4,6 +4,7 @@ using Karakatsiya.Models.Enums;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Karakatsiya.Features.Admin.Commands.RejectOrganizer
 {
@@ -11,11 +12,13 @@ namespace Karakatsiya.Features.Admin.Commands.RejectOrganizer
     {
         private readonly AppDbContext _context;
         private readonly INotificationDispatcher _dispatcher;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public RejectOrganizerHandler(AppDbContext context, INotificationDispatcher dispatcher)
+        public RejectOrganizerHandler(AppDbContext context, INotificationDispatcher dispatcher, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _dispatcher = dispatcher;
+            _localizer = localizer;
         }
 
         public async Task<Unit> Handle(RejectOrganizerCommand request, CancellationToken cancellationToken)
@@ -26,12 +29,12 @@ namespace Karakatsiya.Features.Admin.Commands.RejectOrganizer
 
             if (organizer == null || organizer.User == null)
             {
-                throw new Exception(AppConstants.Errors.ORGANIZER_NOT_FOUND);
+                throw new InvalidOperationException(AppConstants.Errors.ORGANIZER_NOT_FOUND);
             }
 
             if (organizer.User.Role != UserRole.PendingOrganizer)
             {
-                throw new Exception(AppConstants.Errors.NOT_PENDING_ORGANIZER);
+                throw new InvalidOperationException(AppConstants.Errors.NOT_PENDING_ORGANIZER);
             }
 
             var userId = organizer.UserId;
@@ -40,13 +43,15 @@ namespace Karakatsiya.Features.Admin.Commands.RejectOrganizer
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            var msg = string.Format(AppConstants.Success.NOTIFICATION_ORG_REJECT_BODY, string.Empty, request.Reason);
+            var localizedSubject = _localizer[AppConstants.Success.NOTIFICATION_ORG_REJECT_SUBJ].Value;
+            var localizedBodyTemplate = _localizer[AppConstants.Success.NOTIFICATION_ORG_REJECT_BODY].Value;
+            var finalMessage = string.Format(localizedBodyTemplate, string.Empty, request.Reason);
 
             await _dispatcher.SendAsync(
                 userId: userId,
-                message: msg,
-                emailSubject: AppConstants.Success.NOTIFICATION_ORG_REJECT_SUBJ,
-                emailBody: msg,
+                message: finalMessage,
+                emailSubject: localizedSubject,
+                emailBody: finalMessage,
                 cancellationToken: cancellationToken
             );
 

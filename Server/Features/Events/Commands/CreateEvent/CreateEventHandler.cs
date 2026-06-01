@@ -1,4 +1,6 @@
-﻿using Karakatsiya.Constants;
+﻿using System.Text;
+using System.Text.RegularExpressions;
+using Karakatsiya.Constants;
 using Karakatsiya.Data;
 using Karakatsiya.Models.Entities.Audience;
 using Karakatsiya.Models.Entities.Showcase;
@@ -28,7 +30,7 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
 
             if (organizer == null)
             {
-                throw new Exception(AppConstants.Errors.ORGANIZER_NOT_FOUND);
+                throw new InvalidOperationException(AppConstants.Errors.ORGANIZER_NOT_FOUND);
             }
 
             var p = request.Payload;
@@ -40,7 +42,7 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
 
                 if (!categoryExists)
                 {
-                    throw new Exception(AppConstants.Errors.CATEGORY_NOT_EXIST);
+                    throw new InvalidOperationException(AppConstants.Errors.CATEGORY_NOT_EXIST);
                 }
             }
 
@@ -55,17 +57,17 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                     .FirstOrDefaultAsync(l => l.OsmId == p.OsmId, cancellationToken);
             }
 
-            if (location == null)
+            if (location == null && (!string.IsNullOrWhiteSpace(p.LocationName) || !string.IsNullOrWhiteSpace(p.City)))
             {
                 location = new Location
                 {
-                    Name = p.LocationName,
+                    Name = string.IsNullOrWhiteSpace(p.LocationName) ? AppConstants.General.NOT_NAME : p.LocationName,
                     OsmId = p.OsmId,
                     IsVerified = false,
                     Address = new Address(
-                        City: p.City,
-                        Street: p.Street,
-                        HouseNumber: p.HouseNumber,
+                        City: p.City ?? string.Empty,
+                        Street: p.Street ?? string.Empty,
+                        HouseNumber: p.HouseNumber ?? string.Empty,
                         Latitude: p.Latitude,
                         Longitude: p.Longitude
                     )
@@ -110,13 +112,33 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
 
         private static string GenerateSlug(string title)
         {
-            var slug = title.ToLower()
-                .Replace(" ", "-")
-                .Replace("'", "")
-                .Replace("\"", "")
-                .Replace(".", "");
+            var transliterated = Transliterate(title.ToLowerInvariant());
+            var clean = Regex.Replace(transliterated, @"[^a-z0-9\s-]", "");
+            clean = Regex.Replace(clean, @"\s+", "-").Trim('-');
 
-            return $"{slug}-{Guid.NewGuid().ToString()[..6]}";
+            if (string.IsNullOrWhiteSpace(clean))
+            {
+                clean = "event";
+            }
+
+            return $"{clean}-{Guid.NewGuid().ToString()[..6]}";
+        }
+
+        private static string Transliterate(string text)
+        {
+            string[] rus = { "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "і", "ї", "є", "ґ" };
+            string[] eng = { "a", "b", "v", "g", "d", "e", "e", "zh", "z", "i", "y", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "ts", "ch", "sh", "shch", "", "y", "", "e", "yu", "ya", "i", "yi", "ye", "g" };
+
+            var builder = new StringBuilder();
+            foreach (var ch in text)
+            {
+                var index = Array.IndexOf(rus, ch.ToString());
+                if (index != -1)
+                    builder.Append(eng[index]);
+                else
+                    builder.Append(ch);
+            }
+            return builder.ToString();
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Reflection;
-using Karakatsiya.Services.Interfaces;
+﻿using Karakatsiya.Services.Interfaces;
 using MediatR;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace Karakatsiya.Services.Behaviors
 {
@@ -9,6 +10,8 @@ namespace Karakatsiya.Services.Behaviors
         where TRequest : IRequest<TResponse>
     {
         private readonly ISanitizerService _sanitizer;
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _stringPropsCache = new();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _complexPropsCache = new();
 
         public SanitizationBehavior(ISanitizerService sanitizer)
         {
@@ -28,8 +31,9 @@ namespace Karakatsiya.Services.Behaviors
 
             var type = obj.GetType();
 
-            var stringProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(p => p.PropertyType == typeof(string) && p.CanWrite);
+            var stringProperties = _stringPropsCache.GetOrAdd(type, t => t.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.PropertyType == typeof(string) && p.CanWrite)
+                .ToArray());
 
             foreach (var prop in stringProperties)
             {
@@ -46,10 +50,11 @@ namespace Karakatsiya.Services.Behaviors
                 }
             }
 
-            var complexProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            var complexProperties = _complexPropsCache.GetOrAdd(type, t => t.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.PropertyType.IsClass
                          && p.PropertyType != typeof(string)
-                         && !typeof(IEnumerable).IsAssignableFrom(p.PropertyType));
+                         && !typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+                .ToArray());
 
             foreach (var prop in complexProperties)
             {

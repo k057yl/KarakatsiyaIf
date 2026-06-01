@@ -11,12 +11,14 @@ namespace Karakatsiya.Services.Infrastructure
     {
         private readonly AppDbContext _db;
         private readonly IEmailService _emailService;
+        private readonly ILogger<NotificationDispatcher> _logger;
         private readonly TelegramBotClient? _botClient;
 
-        public NotificationDispatcher(AppDbContext db, IEmailService emailService, IConfiguration configuration)
+        public NotificationDispatcher(AppDbContext db, IEmailService emailService, IConfiguration configuration, ILogger<NotificationDispatcher> logger)
         {
             _db = db;
             _emailService = emailService;
+            _logger = logger;
 
             var token = configuration[AppConstants.Config.TG_BOT_TOKEN];
             if (!string.IsNullOrWhiteSpace(token))
@@ -52,8 +54,9 @@ namespace Karakatsiya.Services.Infrastructure
                     );
                     return;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.LogWarning(ex, "Failed to send Telegram message to ChatId: {ChatId}. Fallback to email initiated.", user.TelegramChatId.Value);
                 }
             }
 

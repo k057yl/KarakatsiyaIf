@@ -4,6 +4,8 @@ using Karakatsiya.Models.Enums;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Karakatsiya.Resources;
 
 namespace Karakatsiya.Features.Admin.Commands.ApproveOrganizer
 {
@@ -11,11 +13,13 @@ namespace Karakatsiya.Features.Admin.Commands.ApproveOrganizer
     {
         private readonly AppDbContext _context;
         private readonly INotificationDispatcher _dispatcher;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public ApproveOrganizerHandler(AppDbContext context, INotificationDispatcher dispatcher)
+        public ApproveOrganizerHandler(AppDbContext context, INotificationDispatcher dispatcher, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _dispatcher = dispatcher;
+            _localizer = localizer;
         }
 
         public async Task<Unit> Handle(ApproveOrganizerCommand request, CancellationToken cancellationToken)
@@ -26,24 +30,27 @@ namespace Karakatsiya.Features.Admin.Commands.ApproveOrganizer
 
             if (organizer == null || organizer.User == null)
             {
-                throw new Exception(AppConstants.Errors.ORGANIZER_NOT_FOUND);
+                throw new InvalidOperationException(AppConstants.Errors.ORGANIZER_NOT_FOUND);
             }
 
             if (organizer.User.Role != UserRole.PendingOrganizer)
             {
-                throw new Exception(AppConstants.Errors.NOT_PENDING_ORGANIZER);
+                throw new InvalidOperationException(AppConstants.Errors.NOT_PENDING_ORGANIZER);
             }
 
             organizer.User.Role = UserRole.Organizer;
             await _context.SaveChangesAsync(cancellationToken);
 
-            var msg = AppConstants.Success.NOTIFICATION_ORG_APPROVED_BODY;
+            var tgMessage = _localizer[AppConstants.Success.NOTIFICATION_ORG_APPROVED_BODY].Value;
+
+            var emailSubjectKey = "EMAIL_ORGANIZER_APPROVED_SUBJECT";
+            var emailBodyKey = "EMAIL_ORGANIZER_APPROVED_BODY";
 
             await _dispatcher.SendAsync(
                 userId: organizer.UserId,
-                message: msg,
-                emailSubject: AppConstants.Success.NOTIFICATION_ORG_APPROVED_SUBJ,
-                emailBody: msg,
+                message: tgMessage,
+                emailSubject: emailSubjectKey,
+                emailBody: emailBodyKey,
                 cancellationToken: cancellationToken
             );
 

@@ -17,7 +17,7 @@ namespace Karakatsiya.Services.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Воркер очистки запущен и готов к карательным операциям...");
+            _logger.LogInformation("UnconfirmedUserCleanupWorker started successfully.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -29,8 +29,9 @@ namespace Karakatsiya.Services.BackgroundServices
                     var now = DateTime.UtcNow;
                     var emailCutoff = now.AddHours(-24);
                     var pendingCutoff = now.AddDays(-7);
+
                     var usersToDelete = await context.Users
-                        .Where(u => !u.IsEmailVerified 
+                        .Where(u => !u.IsEmailVerified
                                     && u.CreatedAt < emailCutoff
                                     && u.Role != UserRole.SuperAdmin)
                         .ToListAsync(stoppingToken);
@@ -38,7 +39,7 @@ namespace Karakatsiya.Services.BackgroundServices
                     if (usersToDelete.Any())
                     {
                         context.Users.RemoveRange(usersToDelete);
-                        _logger.LogInformation("Удалено {Count} неподтвержденных аккаунтов (боты/мусор).", usersToDelete.Count);
+                        _logger.LogInformation("Successfully removed {Count} unverified accounts.", usersToDelete.Count);
                     }
 
                     var usersToDowngrade = await context.Users
@@ -52,7 +53,7 @@ namespace Karakatsiya.Services.BackgroundServices
                     {
                         foreach (var user in usersToDowngrade)
                         {
-                            _logger.LogInformation("Юзер {Email} не прошел фейсконтроль вовремя. Понижаем до Visitor.", user.Email);
+                            _logger.LogInformation("User {Email} pending status expired. Downgrading to Visitor.", user.Email);
 
                             user.Role = UserRole.Visitor;
 
@@ -70,7 +71,7 @@ namespace Karakatsiya.Services.BackgroundServices
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Ой, бля! Ошибка во время зачистки базы.");
+                    _logger.LogError(ex, "An error occurred during the database cleanup process.");
                 }
 
                 await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
