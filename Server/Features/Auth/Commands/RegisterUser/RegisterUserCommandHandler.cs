@@ -1,7 +1,7 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.Audience;
-using Karakatsiya.Models.Enums;
+using Karakatsiya.Data.Enums;
+using Karakatsiya.Data.Entities.Audience;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

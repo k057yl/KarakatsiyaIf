@@ -1,6 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Enums;
+using Karakatsiya.Data.Enums;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

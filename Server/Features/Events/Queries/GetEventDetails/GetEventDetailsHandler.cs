@@ -1,6 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Dtos.Event;
+using Karakatsiya.Features.Events.Dtos;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

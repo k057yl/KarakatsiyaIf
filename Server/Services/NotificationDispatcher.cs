@@ -1,6 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.Audience;
+using Karakatsiya.Data.Entities.Audience;
 using Karakatsiya.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;

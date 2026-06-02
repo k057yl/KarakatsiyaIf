@@ -1,4 +1,4 @@
-﻿using Karakatsiya.Models.Entities.Showcase;
+﻿using Karakatsiya.Data.Entities.Showcase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

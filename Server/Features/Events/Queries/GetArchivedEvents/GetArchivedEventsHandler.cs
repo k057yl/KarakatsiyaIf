@@ -1,8 +1,8 @@
 ﻿using Karakatsiya.Data;
 using Microsoft.EntityFrameworkCore;
-using Karakatsiya.Models.Dtos.Event;
-using Karakatsiya.Models.Enums;
 using MediatR;
+using Karakatsiya.Features.Events.Dtos;
+using Karakatsiya.Data.Enums;
 
 namespace Karakatsiya.Features.Events.Queries.GetArchivedEvents
 {

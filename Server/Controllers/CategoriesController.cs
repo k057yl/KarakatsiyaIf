@@ -1,11 +1,10 @@
-﻿using Karakatsiya.Constants;
-using Karakatsiya.Data;
-using Karakatsiya.Models.Dtos.Category;
-using Karakatsiya.Models.Entities.Showcase;
-using Karakatsiya.Models.Enums;
+﻿using Karakatsiya.Data.Enums;
+using Karakatsiya.Features.Admin.Commands.CreateCategory;
+using Karakatsiya.Features.Admin.Commands.DeleteCategory;
+using Karakatsiya.Features.Admin.Queries.GetCategories;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Karakatsiya.Controllers
 {
@@ -13,77 +12,33 @@ namespace Karakatsiya.Controllers
     [Route("api/events/categories")]
     public class CategoriesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IMediator _mediator;
 
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
         {
-            var categories = await _context.EventCategories
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Name,
-                    c.Slug,
-                    c.Icon
-                })
-                .ToListAsync(cancellationToken);
-
-            return Ok(categories);
+            var result = await _mediator.Send(new GetCategoriesQuery(), cancellationToken);
+            return Ok(result);
         }
 
         [HttpPost]
         [Authorize(Roles = nameof(UserRole.SuperAdmin))]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Icon))
-            {
-                return BadRequest(new { Message = AppConstants.Errors.VALIDATION_FAILED });
-            }
-
-            var slug = dto.Name.ToLower()
-                .Trim()
-                .Replace(" ", "-")
-                .Replace("'", "")
-                .Replace("\"", "");
-
-            var exists = await _context.EventCategories.AnyAsync(c => c.Slug == slug, cancellationToken);
-            if (exists)
-            {
-                return BadRequest(new { Message = "Такая категория уже существует." });
-            }
-
-            var category = new EventCategory
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                Slug = slug,
-                Icon = dto.Icon
-            };
-
-            await _context.EventCategories.AddAsync(category, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return Ok(category);
+            var result = await _mediator.Send(command, cancellationToken);
+            return Ok(result);
         }
 
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = nameof(UserRole.SuperAdmin))]
         public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
         {
-            var category = await _context.EventCategories.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _context.EventCategories.Remove(category);
-            await _context.SaveChangesAsync(cancellationToken);
-
+            await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
             return NoContent();
         }
     }

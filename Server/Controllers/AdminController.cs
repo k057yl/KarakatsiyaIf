@@ -9,9 +9,9 @@ using Karakatsiya.Features.Events.Queries.GetPendingEvents;
 using Karakatsiya.Features.Admin.Queries.GetReportedComments;
 using Karakatsiya.Features.Admin.Commands.DeleteCommentByReport;
 using Karakatsiya.Features.Admin.Commands.DismissReport;
-using Karakatsiya.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Karakatsiya.Data.Enums;
 
 namespace Karakatsiya.Controllers
 {

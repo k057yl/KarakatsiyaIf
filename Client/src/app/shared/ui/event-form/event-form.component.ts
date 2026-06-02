@@ -233,29 +233,31 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateLocationData(lat: number, lon: number) {
-    this.mapService.reverseGeocode(lat, lon).subscribe({
-      next: (res: any) => {
-        if (res && res.address) {
-          this.selectedLat = lat;
-          this.selectedLon = lon;
-          this.selectedOsmId = res.osmId?.toString() || undefined;
+  this.mapService.reverseGeocode(lat, lon).subscribe({
+    next: (res: any) => {
+      const address = res?.address;
+      
+      if (res && address) {
+        this.selectedLat = lat;
+        this.selectedLon = lon;
+        this.selectedOsmId = undefined; 
 
-          const addr = res.address;
-          const locName = res.displayName ? res.displayName.split(',')[0] : ''; 
+        const displayName = res.displayName || '';
+        const locName = displayName ? displayName.split(',')[0] : ''; 
 
-          this.eventForm.patchValue({
-            locationName: locName,
-            city: addr.city || addr.town || addr.village || '',
-            street: addr.road || '',
-            houseNumber: addr.houseNumber || ''
-          });
-        }
-      },
-      error: (err: unknown) => {
-        console.error(this.translate.instant('EVENT_MODAL.ERROR_GEOCODER'), err);
+        this.eventForm.patchValue({
+          locationName: locName,
+          city: address.city || address.town || address.village || '',
+          street: address.road || '',
+          houseNumber: address.houseNumber || ''
+        });
       }
-    });
-  }
+    },
+    error: (err: unknown) => {
+      console.error(this.translate.instant('EVENT_MODAL.ERROR_GEOCODER'), err);
+    }
+  });
+}
 
   public submitForm() {
     const hasMainPhoto = this.uploadedPhotos().some(p => p.isMain);

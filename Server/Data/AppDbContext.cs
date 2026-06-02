@@ -1,7 +1,7 @@
-﻿using Karakatsiya.Models.Entities.Admin;
-using Karakatsiya.Models.Entities.Audience;
-using Karakatsiya.Models.Entities.Common;
-using Karakatsiya.Models.Entities.Showcase;
+﻿using Karakatsiya.Data.Entities.Admin;
+using Karakatsiya.Data.Entities.Audience;
+using Karakatsiya.Data.Entities.Common;
+using Karakatsiya.Data.Entities.Showcase;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class MapService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/geo/reverse`;
+  private apiUrl = `${environment.apiUrl}/events/geo/reverse`;
 
   searchLocation(query: string): Observable<any[]> {
     return this.http.get<any[]>(`https://nominatim.openstreetmap.org/search`, {

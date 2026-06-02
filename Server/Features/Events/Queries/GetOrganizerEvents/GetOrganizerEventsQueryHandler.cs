@@ -1,5 +1,5 @@
 ﻿using Karakatsiya.Data;
-using Karakatsiya.Models.Dtos.Organizer;
+using Karakatsiya.Features.Organizers.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

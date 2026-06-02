@@ -1,7 +1,7 @@
-﻿using Karakatsiya.Models.Entities.Audience;
-using Karakatsiya.Constants;
+﻿using Karakatsiya.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Karakatsiya.Data.Entities.Audience;
 
 namespace Karakatsiya.Data.Configurations
 {

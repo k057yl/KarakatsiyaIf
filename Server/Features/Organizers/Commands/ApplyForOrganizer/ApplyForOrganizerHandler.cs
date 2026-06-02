@@ -1,8 +1,8 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.Showcase;
-using Karakatsiya.Models.Entities.ValueObjects;
-using Karakatsiya.Models.Enums;
+using Karakatsiya.Data.Enums;
+using Karakatsiya.Data.Entities.Showcase;
+using Karakatsiya.Data.Entities.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

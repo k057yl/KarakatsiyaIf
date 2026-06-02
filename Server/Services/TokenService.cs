@@ -1,5 +1,5 @@
 ﻿using Karakatsiya.Constants;
-using Karakatsiya.Models.Entities.Audience;
+using Karakatsiya.Data.Entities.Audience;
 using Karakatsiya.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

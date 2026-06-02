@@ -1,7 +1,7 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Karakatsiya.Constants;
-using Karakatsiya.Models.Entities.Common;
+using Karakatsiya.Data.Entities.Common;
 using Karakatsiya.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using SkiaSharp;

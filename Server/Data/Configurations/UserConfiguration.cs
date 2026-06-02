@@ -1,6 +1,6 @@
 ﻿using Karakatsiya.Constants;
-using Karakatsiya.Models.Entities.Audience;
-using Karakatsiya.Models.Entities.Showcase;
+using Karakatsiya.Data.Entities.Audience;
+using Karakatsiya.Data.Entities.Showcase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

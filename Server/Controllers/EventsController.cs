@@ -1,4 +1,5 @@
 ﻿using Karakatsiya.Constants;
+using Karakatsiya.Data.Enums;
 using Karakatsiya.Features.Events.Commands.CreateEvent;
 using Karakatsiya.Features.Events.Commands.UpdateEvent;
 using Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto;
@@ -8,8 +9,6 @@ using Karakatsiya.Features.Events.Queries.GetArchivedEvents;
 using Karakatsiya.Features.Events.Queries.GetEventDetails;
 using Karakatsiya.Features.Events.Queries.GetOccupiedDates;
 using Karakatsiya.Features.Events.Queries.GetOrganizerEvents;
-using Karakatsiya.Models.Dtos.Event;
-using Karakatsiya.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -21,7 +20,7 @@ namespace Karakatsiya.Controllers
     {
         [HttpPost]
         [Authorize(Roles = nameof(UserRole.Organizer))]
-        public async Task<IActionResult> CreateEvent([FromBody] CreateEventDto payload)
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventCommand command)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -30,8 +29,8 @@ namespace Karakatsiya.Controllers
                 return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
             }
 
-            var command = new CreateEventCommand(userId, payload);
-            var eventId = await Mediator.Send(command);
+            var finalCommand = command with { UserId = userId };
+            var eventId = await Mediator.Send(finalCommand);
 
             return Ok(new
             {
@@ -80,7 +79,7 @@ namespace Karakatsiya.Controllers
 
         [HttpPut("{id:guid}")]
         [Authorize(Roles = nameof(UserRole.Organizer))]
-        public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] CreateEventDto payload)
+        public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] UpdateEventCommand command)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -89,8 +88,8 @@ namespace Karakatsiya.Controllers
                 return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
             }
 
-            var command = new UpdateEventCommand(id, userId, payload);
-            var success = await Mediator.Send(command);
+            var finalCommand = command with { EventId = id, OrganizerId = userId };
+            var success = await Mediator.Send(finalCommand);
 
             if (!success)
             {
@@ -104,8 +103,8 @@ namespace Karakatsiya.Controllers
         [Authorize(Roles = nameof(UserRole.Organizer))]
         public async Task<IActionResult> UploadOrganizerPhoto(
             Guid id,
-            [FromForm(Name = "file")] IFormFile file,
-            [FromForm(Name = "isMain")] bool isMain)
+            [FromForm] IFormFile file,
+            [FromForm] bool isMain)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -114,7 +113,13 @@ namespace Karakatsiya.Controllers
                 return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
             }
 
-            var command = new UploadOrganizerPhotoCommand(id, userId, file, isMain);
+            var command = new UploadOrganizerPhotoCommand(
+                EventId: id,
+                UserId: userId,
+                File: file,
+                IsMain: isMain
+            );
+
             var result = await Mediator.Send(command);
 
             if (!result.Success)
@@ -132,7 +137,7 @@ namespace Karakatsiya.Controllers
             return Ok(result);
         }
 
-        [HttpGet("api/geo/reverse")]
+        [HttpGet("geo/reverse")]
         public async Task<IActionResult> ReverseGeocode([FromQuery] double lat, [FromQuery] double lon)
         {
             var result = await Mediator.Send(new GetAddressByCoordsQuery(lat, lon));

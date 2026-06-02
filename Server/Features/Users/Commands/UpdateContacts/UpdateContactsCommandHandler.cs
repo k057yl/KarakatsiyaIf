@@ -1,6 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.ValueObjects;
+using Karakatsiya.Data.Entities.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

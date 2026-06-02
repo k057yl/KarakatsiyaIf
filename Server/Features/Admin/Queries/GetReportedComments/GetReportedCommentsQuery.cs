@@ -1,4 +1,4 @@
-﻿using Karakatsiya.Models.Dtos.Comment;
+﻿using Karakatsiya.Features.Comments.Commands.ReportComment;
 using MediatR;
 
 namespace Karakatsiya.Features.Admin.Queries.GetReportedComments

@@ -1,4 +1,4 @@
-﻿using Karakatsiya.Models.Dtos.Event;
+﻿using Karakatsiya.Features.Events.Dtos;
 using MediatR;
 
 namespace Karakatsiya.Features.Events.Queries.GetArchivedEvents

@@ -1,6 +1,5 @@
 ﻿using Karakatsiya.Features.Comments.Commands.CreateComment;
 using Karakatsiya.Features.Comments.Commands.ReportComment;
-using Karakatsiya.Models.Dtos.Comment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

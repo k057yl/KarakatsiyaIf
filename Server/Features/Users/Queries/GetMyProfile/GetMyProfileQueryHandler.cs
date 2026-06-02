@@ -1,8 +1,8 @@
 ﻿using Karakatsiya.Data;
-using Karakatsiya.Models.Dtos.User;
-using Karakatsiya.Models.Entities.ValueObjects;
+using Karakatsiya.Data.Entities.ValueObjects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Karakatsiya.Features.Users.Dtos;
 
 namespace Karakatsiya.Features.Users.Queries.GetMyProfile
 {

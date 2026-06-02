@@ -1,5 +1,5 @@
 ﻿using Karakatsiya.Constants;
-using Karakatsiya.Models.Entities.Audience;
+using Karakatsiya.Data.Entities.Audience;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

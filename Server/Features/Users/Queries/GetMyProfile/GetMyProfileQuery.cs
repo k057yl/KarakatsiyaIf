@@ -1,4 +1,4 @@
-﻿using Karakatsiya.Models.Dtos.User;
+﻿using Karakatsiya.Features.Users.Dtos;
 using MediatR;
 
 namespace Karakatsiya.Features.Users.Queries.GetMyProfile

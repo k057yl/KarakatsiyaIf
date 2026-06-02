@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Data;
-using Karakatsiya.Models.Enums;
+using Karakatsiya.Data.Entities.Showcase;
+using Karakatsiya.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Karakatsiya.Services.BackgroundServices
@@ -59,7 +60,7 @@ namespace Karakatsiya.Services.BackgroundServices
 
                             if (user.OrganizerProfile != null)
                             {
-                                context.Set<Karakatsiya.Models.Entities.Showcase.Organizer>().Remove(user.OrganizerProfile);
+                                context.Set<Organizer>().Remove(user.OrganizerProfile);
                             }
                         }
                     }

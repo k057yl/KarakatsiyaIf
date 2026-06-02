@@ -1,4 +1,4 @@
-﻿using Karakatsiya.Models.Dtos.Organizer;
+﻿using Karakatsiya.Features.Admin.Dtos;
 using MediatR;
 
 namespace Karakatsiya.Features.Admin.Queries.GetPendingOrganizers

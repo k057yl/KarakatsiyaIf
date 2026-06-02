@@ -2,10 +2,10 @@
 using System.Text.RegularExpressions;
 using Karakatsiya.Constants;
 using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.Audience;
-using Karakatsiya.Models.Entities.Showcase;
-using Karakatsiya.Models.Entities.ValueObjects;
-using Karakatsiya.Models.Enums;
+using Karakatsiya.Data.Entities.Showcase;
+using Karakatsiya.Data.Enums;
+using Karakatsiya.Data.Entities.Audience;
+using Karakatsiya.Data.Entities.ValueObjects;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -33,12 +33,10 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 throw new InvalidOperationException(AppConstants.Errors.ORGANIZER_NOT_FOUND);
             }
 
-            var p = request.Payload;
-
-            if (p.CategoryId.HasValue && p.CategoryId.Value != Guid.Empty)
+            if (request.CategoryId.HasValue && request.CategoryId.Value != Guid.Empty)
             {
                 var categoryExists = await _context.EventCategories
-                    .AnyAsync(c => c.Id == p.CategoryId.Value, cancellationToken);
+                    .AnyAsync(c => c.Id == request.CategoryId.Value, cancellationToken);
 
                 if (!categoryExists)
                 {
@@ -46,30 +44,30 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 }
             }
 
-            var cleanTitle = _sanitizer.StripAllHtml(p.Title);
-            var safeDescription = _sanitizer.SanitizeHtml(p.Description);
+            var cleanTitle = _sanitizer.StripAllHtml(request.Title);
+            var safeDescription = _sanitizer.SanitizeHtml(request.Description);
 
             Location? location = null;
 
-            if (!string.IsNullOrEmpty(p.OsmId))
+            if (!string.IsNullOrEmpty(request.OsmId))
             {
                 location = await _context.Set<Location>()
-                    .FirstOrDefaultAsync(l => l.OsmId == p.OsmId, cancellationToken);
+                    .FirstOrDefaultAsync(l => l.OsmId == request.OsmId, cancellationToken);
             }
 
-            if (location == null && (!string.IsNullOrWhiteSpace(p.LocationName) || !string.IsNullOrWhiteSpace(p.City)))
+            if (location == null && (!string.IsNullOrWhiteSpace(request.LocationName) || !string.IsNullOrWhiteSpace(request.City)))
             {
                 location = new Location
                 {
-                    Name = string.IsNullOrWhiteSpace(p.LocationName) ? AppConstants.General.NOT_NAME : p.LocationName,
-                    OsmId = p.OsmId,
+                    Name = string.IsNullOrWhiteSpace(request.LocationName) ? AppConstants.General.NOT_NAME : request.LocationName,
+                    OsmId = request.OsmId,
                     IsVerified = false,
                     Address = new Address(
-                        City: p.City ?? string.Empty,
-                        Street: p.Street ?? string.Empty,
-                        HouseNumber: p.HouseNumber ?? string.Empty,
-                        Latitude: p.Latitude,
-                        Longitude: p.Longitude
+                        City: request.City ?? string.Empty,
+                        Street: request.Street ?? string.Empty,
+                        HouseNumber: request.HouseNumber ?? string.Empty,
+                        Latitude: request.Latitude,
+                        Longitude: request.Longitude
                     )
                 };
                 _context.Set<Location>().Add(location);
@@ -81,18 +79,18 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 Title = cleanTitle,
                 Slug = GenerateSlug(cleanTitle),
                 Description = safeDescription,
-                StartDate = p.StartDate.ToUniversalTime(),
+                StartDate = request.StartDate.ToUniversalTime(),
                 Status = EventStatus.Pending,
                 Location = location,
                 OrganizerId = organizer.Id,
-                ExternalTicketUrl = p.ExternalTicketUrl,
-                ContactLinks = p.ContactLinks,
-                CategoryId = p.CategoryId
+                ExternalTicketUrl = request.ExternalTicketUrl,
+                ContactLinks = request.ContactLinks,
+                CategoryId = request.CategoryId
             };
 
-            if (p.Photos != null && p.Photos.Any())
+            if (request.Photos != null && request.Photos.Any())
             {
-                newEvent.Photos = p.Photos.Select(photo => new EventPhoto
+                newEvent.Photos = request.Photos.Select(photo => new EventPhoto
                 {
                     Id = Guid.NewGuid(),
                     EventId = newEvent.Id,

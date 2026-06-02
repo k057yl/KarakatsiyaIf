@@ -1,7 +1,7 @@
 ﻿using Karakatsiya.Data;
-using Karakatsiya.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using Karakatsiya.Data.Enums;
 
 namespace Karakatsiya.Features.Events.Queries.GetOccupiedDates
 {

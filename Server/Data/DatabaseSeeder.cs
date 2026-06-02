@@ -1,6 +1,6 @@
 ﻿using Karakatsiya.Constants;
-using Karakatsiya.Models.Entities.Audience;
-using Karakatsiya.Models.Enums;
+using Karakatsiya.Data.Entities.Audience;
+using Karakatsiya.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using BC = BCrypt.Net.BCrypt;
 

@@ -1,5 +1,5 @@
 ﻿using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.Audience;
+using Karakatsiya.Data.Entities.Audience;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

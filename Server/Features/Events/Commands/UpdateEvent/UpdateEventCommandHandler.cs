@@ -1,6 +1,7 @@
-﻿using Karakatsiya.Data;
-using Karakatsiya.Models.Entities.ValueObjects;
-using Karakatsiya.Models.Enums;
+﻿using Karakatsiya.Constants;
+using Karakatsiya.Data;
+using Karakatsiya.Data.Entities.ValueObjects;
+using Karakatsiya.Data.Enums;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -33,22 +34,22 @@ namespace Karakatsiya.Features.Events.Commands.UpdateEvent
 
             if (ev == null) return false;
 
-            ev.Title = _sanitizer.StripAllHtml(request.Payload.Title);
-            ev.Description = _sanitizer.SanitizeHtml(request.Payload.Description);
-            ev.StartDate = request.Payload.StartDate;
+            ev.Title = _sanitizer.StripAllHtml(request.Title);
+            ev.Description = _sanitizer.SanitizeHtml(request.Description);
+            ev.StartDate = request.StartDate.ToUniversalTime();
             ev.Status = EventStatus.Pending;
 
             if (ev.Location != null)
             {
-                ev.Location.Name = request.Payload.LocationName;
-                ev.Location.OsmId = request.Payload.OsmId;
+                ev.Location.Name = string.IsNullOrWhiteSpace(request.LocationName) ? AppConstants.General.NOT_NAME : request.LocationName;
+                ev.Location.OsmId = request.OsmId;
 
                 ev.Location.Address = new Address(
-                    request.Payload.City,
-                    request.Payload.Street,
-                    request.Payload.HouseNumber,
-                    request.Payload.Latitude,
-                    request.Payload.Longitude
+                    request.City ?? string.Empty,
+                    request.Street ?? string.Empty,
+                    request.HouseNumber ?? string.Empty,
+                    request.Latitude,
+                    request.Longitude
                 );
             }
 

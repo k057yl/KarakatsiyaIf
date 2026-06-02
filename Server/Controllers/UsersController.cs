@@ -4,8 +4,6 @@ using Karakatsiya.Features.Users.Commands.GenerateTelegramOtp;
 using Karakatsiya.Features.Users.Commands.UnlinkTelegram;
 using Karakatsiya.Features.Users.Commands.UpdateContacts;
 using Karakatsiya.Features.Users.Queries.GetMyProfile;
-using Karakatsiya.Models.Dtos.Organizer;
-using Karakatsiya.Models.Dtos.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,19 +28,14 @@ namespace Karakatsiya.Controllers
         }
 
         [HttpPost("me/apply-organizer")]
-        public async Task<IActionResult> ApplyForOrganizer([FromBody] ApplyOrganizerRequestDto request)
+        public async Task<IActionResult> ApplyForOrganizer([FromBody] ApplyForOrganizerCommand command)
         {
-            var command = new ApplyForOrganizerCommand(
-                UserId: CurrentUserId,
-                Name: request.Name,
-                Phone: request.Phone,
-                Email: request.Email,
-                Website: request.Website,
-                Telegram: request.Telegram,
-                Instagram: request.Instagram
-            );
+            if (CurrentUserId == Guid.Empty)
+                return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
 
-            var organizerId = await Mediator.Send(command);
+            var finalCommand = command with { UserId = CurrentUserId };
+            var organizerId = await Mediator.Send(finalCommand);
+
             return Ok(new { Id = organizerId, Message = AppConstants.Others.APPLICATION_SUCCESS });
         }
 
@@ -69,16 +62,13 @@ namespace Karakatsiya.Controllers
         }
 
         [HttpPut("me/contacts")]
-        public async Task<IActionResult> UpdateContacts([FromBody] UpdateContactsRequest request)
+        public async Task<IActionResult> UpdateContacts([FromBody] UpdateContactsCommand command)
         {
-            var command = new UpdateContactsCommand(
-                CurrentUserId,
-                request.Phone,
-                request.Website,
-                request.Telegram,
-                request.Instagram);
+            if (CurrentUserId == Guid.Empty)
+                return Unauthorized(new { Message = AppConstants.Errors.INVALID_TOKEN });
 
-            var (success, messageKey) = await Mediator.Send(command);
+            var finalCommand = command with { UserId = CurrentUserId };
+            var (success, messageKey) = await Mediator.Send(finalCommand);
 
             if (!success)
             {

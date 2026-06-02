@@ -1,5 +1,4 @@
-﻿using Karakatsiya.Models.Dtos.Event;
-using MediatR;
+﻿using MediatR;
 
 namespace Karakatsiya.Features.Events.Queries.GetAddressByCoords
 {

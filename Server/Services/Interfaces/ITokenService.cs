@@ -1,4 +1,4 @@
-﻿using Karakatsiya.Models.Entities.Audience;
+﻿using Karakatsiya.Data.Entities.Audience;
 using System.Security.Claims;
 
 namespace Karakatsiya.Services.Interfaces

@@ -1,7 +1,7 @@
-﻿using Karakatsiya.Models.Entities.Admin;
-using Karakatsiya.Constants;
+﻿using Karakatsiya.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Karakatsiya.Data.Entities.Admin;
 
 namespace Karakatsiya.Data.Configurations
 {
