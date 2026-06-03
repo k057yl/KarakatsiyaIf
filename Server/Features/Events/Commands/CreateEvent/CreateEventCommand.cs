@@ -17,7 +17,8 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
         string? ExternalTicketUrl,
         string? ContactLinks,
         Guid? CategoryId,
-        List<NestedCreateEventPhotoDto> Photos
+        List<NestedCreateEventPhotoDto> Photos,
+        List<string>? Performers
     ) : IRequest<Guid>;
 
     public record NestedCreateEventPhotoDto(string ImageUrl, string PublicId, bool IsMain);

@@ -29,6 +29,10 @@ export const routes: Routes = [
       {
         path: 'categories',
         loadComponent: () => import('./features/admin/categories/categories.component').then(m => m.AdminCategoriesComponent)
+      },
+      {
+        path: 'performers',
+        loadComponent: () => import('./features/admin/pending-performers/pending-performers.component').then(m => m.AdminPerformersComponent)
       }
     ]
   },

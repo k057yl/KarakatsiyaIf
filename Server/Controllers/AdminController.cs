@@ -9,6 +9,9 @@ using Karakatsiya.Features.Events.Queries.GetPendingEvents;
 using Karakatsiya.Features.Admin.Queries.GetReportedComments;
 using Karakatsiya.Features.Admin.Commands.DeleteCommentByReport;
 using Karakatsiya.Features.Admin.Commands.DismissReport;
+using Karakatsiya.Features.Admin.Queries.GetPendingPerformers;
+using Karakatsiya.Features.Admin.Commands.VerifyPerformer;
+using Karakatsiya.Features.Admin.Commands.MergePerformer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Karakatsiya.Data.Enums;
@@ -113,6 +116,30 @@ namespace Karakatsiya.Controllers
         {
             await Mediator.Send(new DismissReportCommand(id));
             return Ok(new { Message = AppConstants.Success.REQUEST_APPROVED });
+        }
+
+        // --- УПРАВЛЕНИЕ АРТИСТАМИ ---
+
+        [HttpGet("performers/pending")]
+        public async Task<IActionResult> GetPendingPerformers()
+        {
+            var result = await Mediator.Send(new GetPendingPerformersQuery());
+            return Ok(result);
+        }
+
+        [HttpPut("performers/{id:guid}/verify")]
+        public async Task<IActionResult> VerifyPerformer(Guid id, [FromBody] VerifyPerformerCommand command)
+        {
+            var finalCommand = command with { Id = id };
+            await Mediator.Send(finalCommand);
+            return Ok(new { Message = "Артист успешно верифицирован!" });
+        }
+
+        [HttpPost("performers/{id:guid}/merge-into/{targetId:guid}")]
+        public async Task<IActionResult> MergePerformer(Guid id, Guid targetId)
+        {
+            await Mediator.Send(new MergePerformerCommand(id, targetId));
+            return Ok(new { Message = "Мусорный артист успешно слит с оригиналом!" });
         }
     }
 }

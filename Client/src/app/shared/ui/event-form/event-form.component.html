@@ -24,6 +24,27 @@
     </select>
   </div>
 
+  <div class="field performer-section">
+    <label>{{ 'EVENT_MODAL.PERFORMERS_LABEL' | translate }}</label>
+    <div class="performer-input-row" style="display: flex; gap: 10px;">
+      <input 
+        formControlName="performerInput" 
+        [placeholder]="'EVENT_MODAL.PERFORMERS_PLACEHOLDER' | translate"
+        (keydown.enter)="addPerformerTag($event)" 
+      />
+      <button type="button" class="btn-secondary" (click)="addPerformerTag($event)">＋</button>
+    </div>
+
+    <div class="tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+      @for (tag of performerTags(); track $index) {
+        <div class="performer-chip" style="background: var(--bg-card, #2a2a2a); border: 1px solid #444; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.9rem;">
+          <span>🤘 {{ tag }}</span>
+          <button type="button" class="close-chip" (click)="removePerformerTag($index)" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-weight: bold; padding: 0 2px;">×</button>
+        </div>
+      }
+    </div>
+  </div>
+
   <div class="field photo-upload-section">
     <label>{{ 'EVENT_MODAL.FIELD_PHOTO_LABEL' | translate }}</label>
     

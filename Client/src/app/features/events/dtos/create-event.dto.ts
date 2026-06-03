@@ -8,6 +8,7 @@ export interface CreateEventDto {
   city: string;
   street: string;
   categoryId: string;
+  performers: string[];
   houseNumber?: string;
   latitude?: number;
   longitude?: number;

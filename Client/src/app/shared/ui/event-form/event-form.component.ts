@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MapService } from '../../services/map.service';
 import { CreateEventPhotoDto } from '../../../features/events/dtos/create-event-photo.dto';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event-form',
@@ -28,8 +29,10 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   private translate = inject(TranslateService);
 
   private readonly DRAFT_KEY = 'event_draft_form';
+  private draftSubscription: Subscription | null = null;
 
   public uploadedPhotos = signal<CreateEventPhotoDto[]>([]);
+  public performerTags = signal<string[]>([]);
   public selectedFiles: { file: File, isMain: boolean }[] = [];
 
   private selectedLat: number | undefined = undefined;
@@ -49,7 +52,8 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
     street: ['', Validators.required],
     houseNumber: [''],
     externalTicketUrl: [''],
-    contactLinks: ['']
+    contactLinks: [''],
+    performerInput: ['']
   });
 
   ngOnInit() {
@@ -77,6 +81,10 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
       if (data.photos) {
         this.uploadedPhotos.set(data.photos);
       }
+      
+      if (data.performers) {
+        this.performerTags.set(data.performers);
+      }
     }
   }
 
@@ -92,7 +100,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (!this.isEditMode) {
         this.loadDraft();
-        this.eventForm.valueChanges.subscribe(() => this.saveDraft());
+        this.draftSubscription = this.eventForm.valueChanges.subscribe(() => this.saveDraft());
       } else if (this.selectedLat && this.selectedLon) {
         this.moveMarkerAndSetView(this.selectedLat, this.selectedLon);
       }
@@ -128,14 +136,14 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public removePhoto(index: number) {
     this.uploadedPhotos.update((list: CreateEventPhotoDto[]) => {
-    const updated = list.filter((_, i: number) => i !== index);
-    if (list[index]?.isMain && updated.length > 0) {
+      const updated = list.filter((_, i: number) => i !== index);
+      if (list[index]?.isMain && updated.length > 0) {
         updated[0].isMain = true;
         if (!this.isEditMode && this.selectedFiles[0]) {
-        this.selectedFiles[0].isMain = true;
+          this.selectedFiles[0].isMain = true;
         }
-    }
-    return updated;
+      }
+      return updated;
     });
 
     if (!this.isEditMode) {
@@ -160,6 +168,9 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.draftSubscription) {
+      this.draftSubscription.unsubscribe();
+    }
     if (this.map) {
       this.map.remove();
     }
@@ -171,7 +182,8 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
       form: this.eventForm.getRawValue(),
       lat: this.selectedLat,
       lon: this.selectedLon,
-      osmId: this.selectedOsmId
+      osmId: this.selectedOsmId,
+      performers: this.performerTags()
     };
     localStorage.setItem(this.DRAFT_KEY, JSON.stringify(draft));
   }
@@ -183,6 +195,10 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const draft = JSON.parse(saved);
         this.eventForm.patchValue(draft.form);
         
+        if (draft.performers) {
+          this.performerTags.set(draft.performers);
+        }
+
         if (draft.lat && draft.lon) {
           this.selectedLat = draft.lat;
           this.selectedLon = draft.lon;
@@ -233,31 +249,47 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateLocationData(lat: number, lon: number) {
-  this.mapService.reverseGeocode(lat, lon).subscribe({
-    next: (res: any) => {
-      const address = res?.address;
-      
-      if (res && address) {
-        this.selectedLat = lat;
-        this.selectedLon = lon;
-        this.selectedOsmId = undefined; 
+    this.mapService.reverseGeocode(lat, lon).subscribe({
+      next: (res: any) => {
+        const address = res?.address;
+        
+        if (res && address) {
+          this.selectedLat = lat;
+          this.selectedLon = lon;
+          this.selectedOsmId = undefined; 
 
-        const displayName = res.displayName || '';
-        const locName = displayName ? displayName.split(',')[0] : ''; 
+          const displayName = res.displayName || '';
+          const locName = displayName ? displayName.split(',')[0] : ''; 
 
-        this.eventForm.patchValue({
-          locationName: locName,
-          city: address.city || address.town || address.village || '',
-          street: address.road || '',
-          houseNumber: address.houseNumber || ''
-        });
+          this.eventForm.patchValue({
+            locationName: locName,
+            city: address.city || address.town || address.village || '',
+            street: address.road || '',
+            houseNumber: address.houseNumber || ''
+          });
+        }
+      },
+      error: (err: unknown) => {
+        console.error(this.translate.instant('EVENT_MODAL.ERROR_GEOCODER'), err);
       }
-    },
-    error: (err: unknown) => {
-      console.error(this.translate.instant('EVENT_MODAL.ERROR_GEOCODER'), err);
+    });
+  }
+
+  public addPerformerTag(event: Event) {
+    event.preventDefault();
+    const inputVal = this.eventForm.controls.performerInput.value?.trim();
+    
+    if (inputVal) {
+      if (!this.performerTags().some(t => t.toLowerCase() === inputVal.toLowerCase())) {
+        this.performerTags.update(tags => [...tags, inputVal]);
+      }
+      this.eventForm.controls.performerInput.setValue('');
     }
-  });
-}
+  }
+
+  public removePerformerTag(index: number) {
+    this.performerTags.update(tags => tags.filter((_, i) => i !== index));
+  }
 
   public submitForm() {
     const hasMainPhoto = this.uploadedPhotos().some(p => p.isMain);
@@ -269,12 +301,15 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.eventForm.invalid) return;
 
     const formValue = this.eventForm.getRawValue();
+    const { performerInput, ...cleanFormValue } = formValue;
+
     const basePayload = {
-      ...formValue,
+      ...cleanFormValue,
       startDate: new Date(formValue.startDate).toISOString(),
       latitude: this.selectedLat,
       longitude: this.selectedLon,
-      osmId: this.selectedOsmId
+      osmId: this.selectedOsmId,
+      performers: this.performerTags()
     };
 
     this.formSubmit.emit({ basePayload, selectedFiles: this.selectedFiles });
@@ -283,6 +318,8 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   public clearFormAndStorage() {
     this.selectedFiles = [];
     this.uploadedPhotos.set([]);
+    this.performerTags.set([]);
     this.eventForm.reset();
+    localStorage.removeItem(this.DRAFT_KEY);
   }
 }

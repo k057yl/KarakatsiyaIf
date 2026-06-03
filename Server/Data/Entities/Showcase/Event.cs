@@ -37,6 +37,8 @@ namespace Karakatsiya.Data.Entities.Showcase
         public List<Ticket> Tickets { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
         public List<EventPhoto> Photos { get; set; } = new();
+
+        public List<EventPerformer> EventPerformers { get; set; } = new();
         public int ViewsCount { get; set; } = 0;
     }
 }

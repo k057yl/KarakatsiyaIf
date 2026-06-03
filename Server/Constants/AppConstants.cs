@@ -115,6 +115,8 @@
             public const string CATEGORY_NOT_EXIST = "ERRORS.CATEGORY_NOT_EXIST";
             public const string CATEGORY_ALREADY_EXISTS = "ERRORS.CATEGORY_ALREADY_EXISTS";
             public const string TG_TOKEN_MISSING = "ERRORS.TG_TOKEN_MISSING";
+            public const string PERFORMER_NOT_FOUND = "PERFORMER_NOT_FOUND";
+            public const string PERFORMER_MERGE_FAILED = "PERFORMER_MERGE_FAILED";
         }
 
         public static class Success

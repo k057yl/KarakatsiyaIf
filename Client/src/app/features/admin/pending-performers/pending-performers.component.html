@@ -1,0 +1,87 @@
+<div class="performers-moderation">
+  <h3>Модерация артистов («Оцтеки» контроль) 🎸</h3>
+  <p class="subtitle">Здесь висит всё говно уровня «Ой, да похуй», созданное оргами. Наведи тут порядок.</p>
+
+  @if (isLoading()) {
+    <div class="loader">Загрузка зверинца...</div>
+  } @else if (performers().length === 0) {
+    <div class="empty-state">🎉 Чисто! Все орги внезапно написали имена правильно, либо ты всех отмодерировал.</div>
+  } @else {
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Что написал орг</th>
+          <th>Слаг в БД</th>
+          <th>ID для копирования</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (perf of performers(); track perf.id) {
+          <tr>
+            <td class="perf-name">🤘 {{ perf.name }}</td>
+            <td class="perf-slug"><code>{{ perf.slug }}</code></td>
+            <td class="perf-id">
+              <span class="id-badge" (click)="verifyForm.patchValue({})" title="Кликни, чтобы скопировать (в девтулзах)">
+                {{ perf.id }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-verify" (click)="openVerifyModal(perf)">Заебись (Верифицировать)</button>
+              <button class="btn-merge" (click)="openMergeModal(perf)">Иди нахуй (Слить)</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (selectedPerformer()) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        
+        @if (!isMergeMode()) {
+          <h4>Статус «ЗАЕБИСЬ» для: {{ selectedPerformer()?.name }}</h4>
+          <form [formGroup]="verifyForm" (ngSubmit)="submitVerify()">
+            <div class="form-group">
+              <label>Правильное имя артиста</label>
+              <input formControlName="name" />
+            </div>
+            <div class="form-group">
+              <label>Описание / Биография</label>
+              <textarea formControlName="description" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Ссылка на аватарку (Cloudinary/Каракацица URL)</label>
+              <input formControlName="avatarUrl" />
+            </div>
+            <div class="form-row">
+              <input formControlName="instagramUrl" placeholder="Instagram URL" />
+              <input formControlName="telegramUrl" placeholder="Telegram URL" />
+              <input formControlName="youtubeUrl" placeholder="YouTube URL" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
+              <button type="submit" class="btn-submit" [disabled]="verifyForm.invalid">Сохранить и верифицировать</button>
+            </div>
+          </form>
+        } @else {
+          <h4>Статус «ИДИ НАХУЙ» (Слияние артистов)</h4>
+          <p class="warning-text">Ты сливаешь кривой вариант <strong>«{{ selectedPerformer()?.name }}»</strong>. Все связанные с ним ивенты перепривяжутся к целевому артисту, а этот мусор удалится подчистую.</p>
+          
+          <form [formGroup]="mergeForm" (ngSubmit)="submitMerge()">
+            <div class="form-group">
+              <label>Вставь Guid целевого (нормального) артиста из базы</label>
+              <input formControlName="targetId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
+              <button type="submit" class="btn-danger" [disabled]="mergeForm.invalid">Слить и уничтожить мусор</button>
+            </div>
+          </form>
+        }
+
+      </div>
+    </div>
+  }
+</div>

@@ -22,6 +22,8 @@ namespace Karakatsiya.Data
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<CommentReport> CommentReports => Set<CommentReport>();
         public DbSet<TelegramConnectionCode> TelegramConnectionCodes => Set<TelegramConnectionCode>();
+        public DbSet<Performer> Performers => Set<Performer>();
+        public DbSet<EventPerformer> EventPerformers => Set<EventPerformer>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

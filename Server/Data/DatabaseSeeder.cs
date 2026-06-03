@@ -53,6 +53,9 @@ namespace Karakatsiya.Data
 
             var technoUser = new User
             {
+                romank057yl@gmail.com
+                galablackcat2020@gmail.com
+
                 Email = "galablackcat2020@gmail.com",
                 PasswordHash = testPassword,
                 Role = UserRole.PendingOrganizer,
