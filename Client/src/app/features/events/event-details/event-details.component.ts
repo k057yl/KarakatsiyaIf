@@ -2,8 +2,8 @@ import { Component, inject, OnInit, OnDestroy, ElementRef, viewChild, effect, In
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EventService } from '../services/event.service';
-import { CommentService } from '../../../core/services/comment.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { CommentService } from '../services/comment.service';
+import { AuthService } from '../../auth/services/auth.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 

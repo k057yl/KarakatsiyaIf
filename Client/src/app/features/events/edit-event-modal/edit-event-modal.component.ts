@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { EventService } from '../services/event.service';
 import { EventFormComponent } from '../../../shared/ui/event-form/event-form.component';
-import { CreateEventPhotoDto } from '../../../core/models/dtos/event.dto';
+import { CreateEventPhotoDto } from '../dtos/create-event-photo.dto';
 
 @Component({
   selector: 'app-edit-event-modal',

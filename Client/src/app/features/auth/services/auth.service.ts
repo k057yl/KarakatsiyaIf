@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest, RegisterRequest, VerifyCodeRequest } from '../models/dtos/auth.dto';
+import { AuthResponse, LoginRequest, RegisterRequest, VerifyCodeRequest } from '../dtos/auth.dto';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

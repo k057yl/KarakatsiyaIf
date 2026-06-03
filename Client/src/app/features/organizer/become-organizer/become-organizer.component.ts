@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { OrganizerService } from '../../../core/services/organizer.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { OrganizerService } from '../services/organizer.service';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-become-organizer',

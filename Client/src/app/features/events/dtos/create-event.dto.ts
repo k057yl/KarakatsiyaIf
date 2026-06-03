@@ -1,8 +1,4 @@
-export interface CreateEventPhotoDto {
-  imageUrl: string;
-  publicId: string;
-  isMain: boolean;
-}
+import { CreateEventPhotoDto } from "./create-event-photo.dto";
 
 export interface CreateEventDto {
   title: string;

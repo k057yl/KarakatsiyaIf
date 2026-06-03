@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService} from '../services/admin.service';
-import { PendingOrganizer } from '../../../core/models/dtos/admin.dto';
+import { PendingOrganizer } from '../dtos/admin.dto';
 
 @Component({
   selector: 'app-pending-organizers',

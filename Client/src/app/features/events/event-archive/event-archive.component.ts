@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../services/event.service';
 import { AdminService } from '../../admin/services/admin.service';
-// Предполагаем, что у тебя есть AuthService для проверки роли
-import { AuthService } from '../../../core/services/auth.service'; 
+import { AuthService } from '../../auth/services/auth.service'; 
 
 @Component({
   selector: 'app-event-archive',

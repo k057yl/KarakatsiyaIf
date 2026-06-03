@@ -2,8 +2,8 @@ import { Component, EventEmitter, inject, Output, signal, AfterViewInit, OnDestr
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MapService } from '../../../core/services/map.service';
-import { CreateEventPhotoDto } from '../../../core/models/dtos/event.dto';
+import { MapService } from '../../services/map.service';
+import { CreateEventPhotoDto } from '../../../features/events/dtos/create-event-photo.dto';
 
 @Component({
   selector: 'app-event-form',

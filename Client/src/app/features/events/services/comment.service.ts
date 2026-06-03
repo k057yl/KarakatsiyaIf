@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { CreateCommentDto } from '../models/dtos/comment.dto';
+import { environment } from '../../../../environments/environment';
+import { CreateCommentDto } from '../dtos/comment.dto';
 
 @Injectable({
   providedIn: 'root'

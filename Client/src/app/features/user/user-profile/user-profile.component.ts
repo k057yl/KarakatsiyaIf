@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { UpdateContactsDto } from '../../../core/models/dtos/user.dto';
+import { UserService } from '../services/user.service';
+import { UpdateContactsDto } from '../dtos/user.dto';
 
 @Component({
   selector: 'app-user-profile',

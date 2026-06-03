@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Output, signal, OnInit, ViewChild } fr
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { EventService } from '../services/event.service';
-import { PaymentService } from '../../../core/services/payment.service';
+import { PaymentService } from '../../../shared/services/payment.service';
 import { EventFormComponent } from '../../../shared/ui/event-form/event-form.component';
 import { forkJoin } from 'rxjs';
 
