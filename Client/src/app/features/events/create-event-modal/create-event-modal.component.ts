@@ -36,51 +36,47 @@ export class CreateEventModalComponent implements OnInit {
   }
 
   public onCreateSubmit(eventData: { basePayload: any, selectedFiles: { file: File, isMain: boolean }[] }) {
-  this.isSubmitting.set(true);
+    this.isSubmitting.set(true);
 
-  const createPayload = { 
-    ...eventData.basePayload, 
-    photos: [],
-    performers: eventData.basePayload.performers || [] 
-  };
+    const createPayload = { 
+      ...eventData.basePayload, 
+      photos: []
+    };
 
-  this.eventService.createEvent(createPayload).subscribe({
-    next: (res) => {
-      this.createdEventId.set(res.eventId);
-      
-      if (this.innerForm) {
+    this.eventService.createEvent(createPayload).subscribe({
+      next: (res) => {
+        this.createdEventId.set(res.eventId);
         localStorage.removeItem('event_draft_form');
-      }
 
-      if (eventData.selectedFiles.length > 0) {
-        this.isUploadingPhoto.set(true);
-        const uploadObservables = eventData.selectedFiles.map(f => 
-          this.eventService.uploadPhoto(res.eventId, f.file, f.isMain)
-        );
+        if (eventData.selectedFiles.length > 0) {
+          this.isUploadingPhoto.set(true);
+          const uploadObservables = eventData.selectedFiles.map(f => 
+            this.eventService.uploadPhoto(res.eventId, f.file, f.isMain)
+          );
 
-        forkJoin(uploadObservables).subscribe({
-          next: () => {
-            this.isUploadingPhoto.set(false);
-            this.isSubmitting.set(false);
-            this.isSuccessScreen.set(true);
-          },
-          error: (err) => {
-            this.isUploadingPhoto.set(false);
-            this.isSubmitting.set(false);
-            console.error('Ошибка пакетной загрузки медиа:', err);
-          }
-        });
-      } else {
-        this.isSubmitting.set(false);
-        this.isSuccessScreen.set(true);
+          forkJoin(uploadObservables).subscribe({
+            next: () => {
+              this.isUploadingPhoto.set(false);
+              this.isSubmitting.set(false);
+              this.isSuccessScreen.set(true);
+            },
+            error: (err) => {
+              this.isUploadingPhoto.set(false);
+              this.isSubmitting.set(false);
+              console.error('Ошибка пакетной загрузки медиа:', err);
+            }
+          });
+        } else {
+          this.isSubmitting.set(false);
+          this.isSuccessScreen.set(true);
+        }
+      },
+      error: (err) => { 
+        this.isSubmitting.set(false); 
+        console.error('Ошибка создания события:', err); 
       }
-    },
-    error: (err) => { 
-      this.isSubmitting.set(false); 
-      console.error('Ошибка создания события:', err); 
-    }
-  });
-}
+    });
+  }
 
   public close() {
     if (this.innerForm) {

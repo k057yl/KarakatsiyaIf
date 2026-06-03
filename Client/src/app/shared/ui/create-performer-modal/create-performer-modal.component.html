@@ -1,0 +1,20 @@
+<div class="inner-modal-backdrop" (click)="close()">
+  <div class="inner-modal-window" (click)="$event.stopPropagation()">
+    <h4>👑 Создать артиста / группу</h4>
+    <p class="subtitle">Артист моментально появится в твоем списке, а после модерации админом получит полноценную страницу.</p>
+    
+    <form [formGroup]="performerForm" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>Название коллектива или имя</label>
+        <input formControlName="name" placeholder="Например: группа ТОЛ" />
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="close()" [disabled]="isCreating()">Отмена</button>
+        <button type="submit" class="btn-primary" [disabled]="performerForm.invalid || isCreating()">
+          {{ isCreating() ? 'Сохранение...' : 'Добавить' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

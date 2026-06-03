@@ -132,14 +132,14 @@ namespace Karakatsiya.Controllers
         {
             var finalCommand = command with { Id = id };
             await Mediator.Send(finalCommand);
-            return Ok(new { Message = "Артист успешно верифицирован!" });
+            return Ok(new { Message = AppConstants.Success.PERFORMER_VERIFIED });
         }
 
         [HttpPost("performers/{id:guid}/merge-into/{targetId:guid}")]
         public async Task<IActionResult> MergePerformer(Guid id, Guid targetId)
         {
             await Mediator.Send(new MergePerformerCommand(id, targetId));
-            return Ok(new { Message = "Мусорный артист успешно слит с оригиналом!" });
+            return Ok(new { Message = AppConstants.Success.PERFORMER_MERGED });
         }
     }
 }

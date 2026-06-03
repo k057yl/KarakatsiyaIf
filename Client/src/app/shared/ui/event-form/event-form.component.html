@@ -26,20 +26,23 @@
 
   <div class="field performer-section">
     <label>{{ 'EVENT_MODAL.PERFORMERS_LABEL' | translate }}</label>
-    <div class="performer-input-row" style="display: flex; gap: 10px;">
-      <input 
-        formControlName="performerInput" 
-        [placeholder]="'EVENT_MODAL.PERFORMERS_PLACEHOLDER' | translate"
-        (keydown.enter)="addPerformerTag($event)" 
-      />
-      <button type="button" class="btn-secondary" (click)="addPerformerTag($event)">＋</button>
+    <div class="performer-input-row">
+      <select formControlName="performerSelect" (change)="onPerformerSelected()">
+        <option value="" selected disabled>{{ 'EVENT_MODAL.PERFORMERS_PLACEHOLDER' | translate }}</option>
+        @for (perf of allPerformers(); track perf.id) {
+          <option [value]="perf.id">🎸 {{ perf.name }}</option>
+        }
+      </select>
+      <button type="button" class="btn-secondary" (click)="openNewPerformerModal($event)" title="Создать нового артиста">
+        ＋
+      </button>
     </div>
 
-    <div class="tags-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
-      @for (tag of performerTags(); track $index) {
-        <div class="performer-chip" style="background: var(--bg-card, #2a2a2a); border: 1px solid #444; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 6px; font-size: 0.9rem;">
-          <span>🤘 {{ tag }}</span>
-          <button type="button" class="close-chip" (click)="removePerformerTag($index)" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-weight: bold; padding: 0 2px;">×</button>
+    <div class="tags-container">
+      @for (tag of selectedPerformers(); track tag.id) {
+        <div class="performer-chip">
+          <span>🤘 {{ tag.name }}</span>
+          <button type="button" class="close-chip" (click)="removePerformerTag($index)">×</button>
         </div>
       }
     </div>
@@ -104,3 +107,10 @@
     </button>
   </div>
 </form>
+
+@if (isPerformerModalOpen()) {
+  <app-create-performer-modal
+    (closeModal)="isPerformerModalOpen.set(false)"
+    (performerCreated)="onPerformerCreated($event)">
+  </app-create-performer-modal>
+}

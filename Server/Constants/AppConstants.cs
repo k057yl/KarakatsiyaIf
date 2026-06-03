@@ -7,6 +7,7 @@
             public const string DEFAULT_CURRENCY = "UAH";
             public const int MAX_TITLE_LENGTH = 300;
             public const string NOT_NAME = "GENERAL.NOT_NAME";
+            public const string SLUG_DEFAULT_PERFORMER = "performer";
         }
 
         public static class Shared
@@ -115,8 +116,12 @@
             public const string CATEGORY_NOT_EXIST = "ERRORS.CATEGORY_NOT_EXIST";
             public const string CATEGORY_ALREADY_EXISTS = "ERRORS.CATEGORY_ALREADY_EXISTS";
             public const string TG_TOKEN_MISSING = "ERRORS.TG_TOKEN_MISSING";
-            public const string PERFORMER_NOT_FOUND = "PERFORMER_NOT_FOUND";
-            public const string PERFORMER_MERGE_FAILED = "PERFORMER_MERGE_FAILED";
+
+            // Артисты
+            public const string PERFORMER_NOT_FOUND = "ERRORS.PERFORMER_NOT_FOUND";
+            public const string PERFORMER_MERGE_FAILED = "ERRORS.PERFORMER_MERGE_FAILED";
+            public const string PERFORMER_NAME_EMPTY = "ERRORS.PERFORMER_NAME_EMPTY";
+            public const string PERFORMER_ALREADY_EXISTS = "ERRORS.PERFORMER_ALREADY_EXISTS";
         }
 
         public static class Success
@@ -133,6 +138,11 @@
             public const string EVENT_SENT_TO_FIX = "SUCCESS.EVENT_SENT_TO_FIX";
             public const string EVENT_VIP_TOGGLED = "SUCCESS.EVENT_VIP_TOGGLED";
             public const string CONTACTS_UPDATED = "SUCCESS.CONTACTS_UPDATED";
+
+            // Артисты
+            public const string PERFORMER_PENDING_MODERATION = "SUCCESS.PERFORMER_PENDING_MODERATION";
+            public const string PERFORMER_VERIFIED = "SUCCESS.PERFORMER_VERIFIED";
+            public const string PERFORMER_MERGED = "SUCCESS.PERFORMER_MERGED";
 
             public const string NOTIFICATION_EVENT_APPROVED_SUBJ = "NOTIFICATIONS.EVENT_APPROVED_SUBJECT";
             public const string NOTIFICATION_EVENT_APPROVED_BODY = "NOTIFICATIONS.EVENT_APPROVED_BODY";

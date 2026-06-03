@@ -13,3 +13,49 @@ header {
   h3 { margin: 0; color: var(--primary-color); }
   .close-x { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
 }
+
+.vip-upsell-body {
+  padding: 20px;
+  text-align: center;
+
+  .success-desc {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+
+  .vip-promo-box {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid #ffd700;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+
+    .promo-title {
+      color: #ffd700;
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+    }
+
+    .promo-desc {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .btn-vip-pay {
+    background: linear-gradient(45deg, #ffd700, #ffaa00);
+    color: #000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}

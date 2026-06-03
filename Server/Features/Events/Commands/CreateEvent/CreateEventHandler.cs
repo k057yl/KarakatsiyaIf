@@ -102,33 +102,19 @@ namespace Karakatsiya.Features.Events.Commands.CreateEvent
                 }).ToList();
             }
 
-            if (request.Performers != null && request.Performers.Any())
+            if (request.PerformerIds != null && request.PerformerIds.Any())
             {
-                foreach (var rawName in request.Performers)
+                var validPerformerIds = await _context.Performers
+                    .Where(p => request.PerformerIds.Contains(p.Id))
+                    .Select(p => p.Id)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var performerId in validPerformerIds)
                 {
-                    if (string.IsNullOrWhiteSpace(rawName)) continue;
-
-                    var cleanName = rawName.Trim();
-
-                    var performer = await _context.Performers
-                        .FirstOrDefaultAsync(p => p.Name.ToLower() == cleanName.ToLower(), cancellationToken);
-
-                    if (performer == null)
-                    {
-                        performer = new Performer
-                        {
-                            Id = Guid.NewGuid(),
-                            Name = cleanName,
-                            Slug = GenerateSlug(cleanName),
-                            IsVerified = false
-                        };
-                        _context.Performers.Add(performer);
-                    }
-
                     newEvent.EventPerformers.Add(new EventPerformer
                     {
                         EventId = newEvent.Id,
-                        PerformerId = performer.Id
+                        PerformerId = performerId
                     });
                 }
             }

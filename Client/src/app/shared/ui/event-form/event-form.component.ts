@@ -5,11 +5,19 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MapService } from '../../services/map.service';
 import { CreateEventPhotoDto } from '../../../features/events/dtos/create-event-photo.dto';
 import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { CreatePerformerModalComponent, PerformerCreatedEvent } from '../create-performer-modal/create-performer-modal.component';
+
+interface PerformerLookup {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-event-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, CreatePerformerModalComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
@@ -27,13 +35,19 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   private fb = inject(FormBuilder);
   private mapService = inject(MapService);
   private translate = inject(TranslateService);
+  private http = inject(HttpClient);
 
   private readonly DRAFT_KEY = 'event_draft_form';
+  private readonly PERFORMERS_API = `${environment.apiUrl}/performers`;
   private draftSubscription: Subscription | null = null;
 
   public uploadedPhotos = signal<CreateEventPhotoDto[]>([]);
-  public performerTags = signal<string[]>([]);
   public selectedFiles: { file: File, isMain: boolean }[] = [];
+
+  public allPerformers = signal<PerformerLookup[]>([]);
+  public selectedPerformers = signal<PerformerLookup[]>([]);
+
+  public isPerformerModalOpen = signal<boolean>(false);
 
   private selectedLat: number | undefined = undefined;
   private selectedLon: number | undefined = undefined;
@@ -53,10 +67,12 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
     houseNumber: [''],
     externalTicketUrl: [''],
     contactLinks: [''],
-    performerInput: ['']
+    performerSelect: ['']
   });
 
   ngOnInit() {
+    this.loadPerformersLookup();
+
     if (this.isEditMode && this.initialData) {
       const data = this.initialData;
       const formattedDate = data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : '';
@@ -83,7 +99,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       
       if (data.performers) {
-        this.performerTags.set(data.performers);
+        this.selectedPerformers.set(data.performers);
       }
     }
   }
@@ -105,6 +121,39 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.moveMarkerAndSetView(this.selectedLat, this.selectedLon);
       }
     }, 50);
+  }
+
+  private loadPerformersLookup() {
+    this.http.get<PerformerLookup[]>(`${this.PERFORMERS_API}/lookup`).subscribe({
+      next: (list) => this.allPerformers.set(list),
+      error: (err) => console.error('Не удалось загрузить справочник артистов', err)
+    });
+  }
+
+  public onPerformerSelected() {
+    const id = this.eventForm.controls.performerSelect.value;
+    if (!id) return;
+
+    const found = this.allPerformers().find(p => p.id === id);
+    if (found && !this.selectedPerformers().some(p => p.id === id)) {
+      this.selectedPerformers.update(list => [...list, found]);
+    }
+    this.eventForm.controls.performerSelect.setValue('');
+  }
+
+  public removePerformerTag(index: number) {
+    this.selectedPerformers.update(list => list.filter((_, i) => i !== index));
+  }
+
+  public openNewPerformerModal(event: Event) {
+    event.preventDefault();
+    this.isPerformerModalOpen.set(true);
+  }
+
+  public onPerformerCreated(performer: PerformerCreatedEvent) {
+    this.allPerformers.update(list => [performer, ...list].sort((a, b) => a.name.localeCompare(b.name)));
+    this.selectedPerformers.update(list => [...list, performer]);
+    this.isPerformerModalOpen.set(false);
   }
 
   public onFilesSelected(event: Event) {
@@ -183,7 +232,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
       lat: this.selectedLat,
       lon: this.selectedLon,
       osmId: this.selectedOsmId,
-      performers: this.performerTags()
+      performers: this.selectedPerformers()
     };
     localStorage.setItem(this.DRAFT_KEY, JSON.stringify(draft));
   }
@@ -196,7 +245,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.eventForm.patchValue(draft.form);
         
         if (draft.performers) {
-          this.performerTags.set(draft.performers);
+          this.selectedPerformers.set(draft.performers);
         }
 
         if (draft.lat && draft.lon) {
@@ -275,22 +324,6 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  public addPerformerTag(event: Event) {
-    event.preventDefault();
-    const inputVal = this.eventForm.controls.performerInput.value?.trim();
-    
-    if (inputVal) {
-      if (!this.performerTags().some(t => t.toLowerCase() === inputVal.toLowerCase())) {
-        this.performerTags.update(tags => [...tags, inputVal]);
-      }
-      this.eventForm.controls.performerInput.setValue('');
-    }
-  }
-
-  public removePerformerTag(index: number) {
-    this.performerTags.update(tags => tags.filter((_, i) => i !== index));
-  }
-
   public submitForm() {
     const hasMainPhoto = this.uploadedPhotos().some(p => p.isMain);
     if (!hasMainPhoto) {
@@ -301,7 +334,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.eventForm.invalid) return;
 
     const formValue = this.eventForm.getRawValue();
-    const { performerInput, ...cleanFormValue } = formValue;
+    const { performerSelect, ...cleanFormValue } = formValue;
 
     const basePayload = {
       ...cleanFormValue,
@@ -309,7 +342,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
       latitude: this.selectedLat,
       longitude: this.selectedLon,
       osmId: this.selectedOsmId,
-      performers: this.performerTags()
+      performerIds: this.selectedPerformers().map(p => p.id) 
     };
 
     this.formSubmit.emit({ basePayload, selectedFiles: this.selectedFiles });
@@ -318,7 +351,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   public clearFormAndStorage() {
     this.selectedFiles = [];
     this.uploadedPhotos.set([]);
-    this.performerTags.set([]);
+    this.selectedPerformers.set([]);
     this.eventForm.reset();
     localStorage.removeItem(this.DRAFT_KEY);
   }

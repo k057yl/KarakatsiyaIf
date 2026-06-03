@@ -66,3 +66,41 @@
   background: var(--input-bg); border: 1px dashed var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.2s;
   &:hover { border-color: var(--primary-color); }
 }
+
+.performer-section {
+  .performer-input-row {
+    display: flex;
+    gap: 10px;
+
+    select {
+      flex: 1;
+    }
+  }
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .performer-chip {
+    background: var(--bg-card, #2a2a2a);
+    border: 1px solid #444;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+
+    .close-chip {
+      background: none;
+      border: none;
+      color: #ff4d4d;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 0 2px;
+    }
+  }
+}
