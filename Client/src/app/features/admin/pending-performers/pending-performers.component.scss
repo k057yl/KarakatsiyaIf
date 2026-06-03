@@ -1,6 +1,56 @@
 .performers-moderation {
-  h3 { color: #fff; margin-bottom: 5px; }
-  .subtitle { color: var(--text-muted, #888); margin-bottom: 20px; font-size: 0.95rem; }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  h3 { margin: 0 0 5px 0; color: #fff; }
+  .subtitle { margin: 0; color: var(--text-muted, #888); font-size: 0.9rem; }
+
+  .inner-tabs {
+    display: flex;
+    background: #111;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #333;
+
+    button {
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      color: #aaa;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+
+      &:hover { color: #fff; }
+      &.active { background: #252525; color: var(--primary-color, #ffd700); box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+    }
+  }
+
+  .search-bar {
+    margin-bottom: 20px;
+    input {
+      width: 100%;
+      max-width: 400px;
+      background: var(--input-bg, #222);
+      border: 1px solid var(--border-color, #333);
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      &:focus { border-color: var(--primary-color, #ffd700); outline: none; }
+    }
+  }
+
+  .loader-box, .empty-state {
+    padding: 40px; text-align: center; background: var(--bg-card, #1e1e1e); border: 1px solid var(--border-color, #333); border-radius: 8px; color: var(--text-muted, #888);
+  }
 
   .admin-table {
     width: 100%;
@@ -11,26 +61,30 @@
     overflow: hidden;
 
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color, #333); }
-    th { background: #252525; color: #fff; font-weight: 600; }
+    th { background: #252525; color: #fff; font-weight: 600; font-size: 0.9rem; }
     tr:hover { background: #252525; }
 
     .perf-name { font-weight: 500; color: #fff; }
     .perf-slug code { background: #111; padding: 2px 6px; border-radius: 4px; color: #ff9f43; font-size: 0.85rem; }
-    .id-badge { background: #2d2d2d; font-family: monospace; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; cursor: pointer; color: #aaa; }
     
+    .badge {
+      font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; background: rgba(255,159,67,0.15); color: #ff9f43;
+      &.verified { background: rgba(40,199,111,0.15); color: #28c76f; }
+    }
+
     .actions-cell {
       display: flex;
+      align-items: center;
       gap: 10px;
+      
       button { padding: 6px 12px; border: none; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
       .btn-verify { background: #28c76f; color: #fff; &:hover { background: #20a058; } }
       .btn-merge { background: #ff9f43; color: #fff; &:hover { background: #e08532; } }
+      .btn-delete { background: #ea5455; color: #fff; font-size: 1.1rem; padding: 3px 10px; border-radius: 4px; &:hover { background: #bd3e3f; } }
     }
   }
 
-  // Модалка
-  .modal-backdrop {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 999;
-  }
+  .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 999; }
   .modal-card {
     background: #1e1e1e; border: 1px solid #444; width: 100%; max-width: 550px; padding: 25px; border-radius: 10px; color: #fff;
     h4 { margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
@@ -40,7 +94,7 @@
   .form-group {
     display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;
     label { font-size: 0.85rem; color: #aaa; }
-    input, textarea { background: #2d2d2d; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 6px; &:focus { border-color: var(--primary-color); outline: none; } }
+    input, textarea { background: #2d2d2d; border: 1px solid #444; color: #fff; padding: 8px 12px; border-radius: 6px; &:focus { border-color: var(--primary-color, #ffd700); outline: none; } }
   }
   .form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
     input { background: #2d2d2d; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 6px; font-size: 0.85rem; }

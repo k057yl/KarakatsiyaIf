@@ -1,0 +1,34 @@
+<div class="perf-modal-overlay" (click)="close()">
+  <div class="perf-modal-card" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="close()">×</button>
+    
+    <div class="perf-modal-header">
+      <div class="perf-modal-avatar">
+        <img [src]="performer.avatarUrl || 'assets/images/default-performer.png'" [alt]="performer.name" />
+      </div>
+      <h2>{{ performer.name }}</h2>
+    </div>
+
+    <div class="perf-modal-body">
+      <h4>{{ 'EVENT_DETAILS.PERFORMER_BIO' | translate }}</h4>
+      <p class="bio-text">
+        {{ performer.description || ('EVENT_DETAILS.PERFORMER_NO_BIO' | translate) }}
+      </p>
+
+      @if (performer.instagramUrl || performer.telegramUrl || performer.youtubeUrl) {
+        <h4 class="links-title">{{ 'EVENT_DETAILS.PERFORMER_LINKS' | translate }}</h4>
+        <div class="perf-socials-grid">
+          @if (performer.instagramUrl) {
+            <a [href]="performer.instagramUrl" target="_blank" class="social-btn insta">Instagram</a>
+          }
+          @if (performer.telegramUrl) {
+            <a [href]="performer.telegramUrl" target="_blank" class="social-btn tg">Telegram</a>
+          }
+          @if (performer.youtubeUrl) {
+            <a [href]="performer.youtubeUrl" target="_blank" class="social-btn yt">YouTube</a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

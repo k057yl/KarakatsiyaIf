@@ -1,18 +1,18 @@
 <div class="details-container">
   @if (isLoading()) {
-    <div class="loading-spinner">Загрузка...</div>
+    <div class="loading-spinner">{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</div>
   } @else if (errorMessage()) {
     <div class="error-msg">{{ errorMessage() | translate }}</div>
-    <a routerLink="/events" class="btn-outline">Вернуться к афише</a>
+    <a routerLink="/events" class="btn-outline">{{ 'EVENT_MODAL.CANCEL_BTN' | translate }}</a>
   } @else {
     @if (eventDetails(); as event) {
       <div class="event-header">
-        <a routerLink="/events" class="back-link">← Назад</a>
+        <a routerLink="/events" class="back-link">← {{ 'ADMIN_PERFORMERS.TAB_PENDING' | translate }}</a>
         <h1>{{ event.title }}</h1>
         <div class="event-meta">
-          <span class="organizer">👤 Орг: {{ event.organizerName }}</span>
+          <span class="organizer">👤 {{ 'OTHERS.ORGANIZER_NOT_SPECIFIED' | translate }}: {{ event.organizerName }}</span>
           <span class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</span>
-          <span class="views">👀 Просмотров: {{ event.viewsCount || 0 }}</span>
+          <span class="views">👀 {{ event.viewsCount || 0 }}</span>
         </div>
       </div>
 
@@ -23,19 +23,37 @@
               <img [src]="event.mainPhotoUrl || event.photos[0].imageUrl" alt="Event Cover" class="cover-image" />
             } @else {
               <div class="cover-image-placeholder">
-                🖼️ Организатор поленился добавить обложку
+                🖼️ {{ 'EVENT_MODAL.ERROR_NO_MAIN_PHOTO' | translate }}
               </div>
             }
           </div>
           
           <div class="description-block">
-            <h3>О мероприятии</h3>
+            <h3>{{ 'EVENT_MODAL.FIELD_DESC_LABEL' | translate }}</h3>
             <div [innerHTML]="event.description" class="html-content"></div>
           </div>
 
+          @if ((event.performers || event.Performers); as eventPerformers) {
+            @if (eventPerformers.length > 0) {
+              <div class="performers-block">
+                <h3>{{ 'EVENT_DETAILS.PERFORMERS_TITLE' | translate }} 🤘</h3>
+                <div class="performers-grid">
+                  @for (perf of eventPerformers; track perf.id) {
+                    <div class="performer-card-mini" (click)="openPerformerInfo(perf)">
+                      <div class="avatar-wrapper">
+                        <img [src]="perf.avatarUrl || 'assets/images/default-performer.png'" [alt]="perf.name" />
+                      </div>
+                      <span class="name">{{ perf.name }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+
           @if (event.photos && event.photos.length > 1) {
             <div class="gallery-block">
-              <h3>Галерея</h3>
+              <h3>{{ 'EVENT_MODAL.FIELD_PHOTO_LABEL' | translate }}</h3>
               <div class="gallery-grid">
                 @for (photo of event.photos; track photo.publicId) {
                   @if (!photo.isMain) {
@@ -48,12 +66,12 @@
 
           @if (event.externalTicketUrl || event.contactLinks) {
             <div class="links-block">
-              <h3>Полезные ссылки</h3>
+              <h3>{{ 'EVENT_DETAILS.PERFORMER_LINKS' | translate }}</h3>
               @if (event.externalTicketUrl) {
-                <a [href]="event.externalTicketUrl" target="_blank" class="btn-primary">🎟️ Купить билеты</a>
+                <a [href]="event.externalTicketUrl" target="_blank" class="btn-primary">🎟️ {{ 'EVENT_MODAL.PAY_VIP_BTN' | translate }}</a>
               }
               @if (event.contactLinks) {
-                <p class="contacts-text">Связь: {{ event.contactLinks }}</p>
+                <p class="contacts-text">{{ event.contactLinks }}</p>
               }
             </div>
           }
@@ -61,7 +79,7 @@
 
         <div class="sidebar-info">
           <div class="location-card">
-            <h3>Локация</h3>
+            <h3>{{ 'OTHERS.LOCATION_NOT_SPECIFIED' | translate }}</h3>
             <p class="location-title"><strong>{{ event.locationName }}</strong></p>
             <p class="location-address">{{ event.city }}, {{ event.street }} {{ event.houseNumber }}</p>
             <div #mapContainer id="event-map" class="map-container"></div>
@@ -69,17 +87,14 @@
         </div>
 
         <div class="comments-section">
-          <h2>💬 Обсуждение события ({{ event.comments?.length || 0 }})</h2>
+          <h2>💬 {{ event.comments?.length || 0 }}</h2>
 
           @if (authService.currentUser$ | async; as user) {
-            
             @if (canLeaveComment(event.startDate)) {
               <div class="comment-form-card">
-                <h3>Оставь свой след в истории</h3>
                 <textarea 
                   [ngModel]="commentText()" 
                   (ngModelChange)="commentText.set($event)" 
-                  placeholder="Как всё прошло? Поделись эмоциями, накинь говна или похвали орга..." 
                   rows="3"
                   maxlength="1000">
                 </textarea>
@@ -88,11 +103,11 @@
                   <div class="privacy-checkboxes">
                     <label class="checkbox-label">
                       <input type="checkbox" [ngModel]="showInst()" (ngModelChange)="showInst.set($event)" />
-                      Прикрепить Insta 📸
+                      Insta 📸
                     </label>
                     <label class="checkbox-label">
                       <input type="checkbox" [ngModel]="showTg()" (ngModelChange)="showTg.set($event)" />
-                      Светить Телегегу 📱
+                      Telegram 📱
                     </label>
                   </div>
 
@@ -100,57 +115,21 @@
                     (click)="sendComment()" 
                     class="btn-submit-comment" 
                     [disabled]="!commentText().trim() || isCommentSubmitting()">
-                    {{ isCommentSubmitting() ? 'Отправка...' : 'Отправить' }}
+                    {{ (isCommentSubmitting() ? 'EVENT_MODAL.SUBMITTING_BTN' : 'CREATE_EVENT_BTN') | translate }}
                   </button>
                 </div>
               </div>
-            } @else {
-              <div class="login-prompt">
-                <p>⏳ Обсуждение пока закрыто. Возможность писать отзывы появится через час после начала мероприятия!</p>
-              </div>
             }
-
-          } @else {
-            <div class="login-prompt">
-              <p>Хочешь вставить свои пять копеек и оставить ссылку на свои соцсети? <a routerLink="/auth/login">Войди на сайт</a>.</p>
-            </div>
           }
-
-          <div class="comments-list">
-            @for (comment of event.comments; track comment.id) {
-              <div class="comment-item">
-                <div class="comment-meta">
-                  <span class="author">👤 {{ comment.authorName }}</span>
-                  <span class="time">{{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
-                  
-                  <div class="author-socials">
-                    @if (comment.instagramUrl) {
-                      <a [href]="'https://instagram.com/' + comment.instagramUrl" target="_blank" class="social-badge insta">
-                        📸 &#64;{{ comment.instagramUrl }}
-                      </a>
-                    }
-                    @if (comment.telegramUsername) {
-                      <a [href]="'https://t.me/' + comment.telegramUsername" target="_blank" class="social-badge tg">
-                        📱 &#64;{{ comment.telegramUsername }}
-                      </a>
-                    }
-                    
-                    @if (authService.currentUser$ | async) {
-                      <button (click)="reportComment(comment.id)" class="btn-report-comment" title="Пожаловаться админу">
-                        🚩
-                      </button>
-                    }
-                  </div>
-                </div>
-                <p class="comment-text">{{ comment.text }}</p>
-              </div>
-            } @empty {
-              <div class="no-comments">Пока тишина... Будь первым, кто нарушит это молчание!</div>
-            }
-          </div>
         </div>
-
       </div>
     }
   }
 </div>
+
+@if (activePerformer(); as perf) {
+  <app-performer-info-modal
+    [performer]="perf"
+    (closeModal)="closePerformerInfo()">
+  </app-performer-info-modal>
+}

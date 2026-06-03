@@ -159,6 +159,9 @@
 
             public const string NOTIFICATION_ORG_REJECT_SUBJ = "NOTIFICATIONS.ORGANIZER_REJECT_SUBJECT";
             public const string NOTIFICATION_ORG_REJECT_BODY = "NOTIFICATIONS.ORGANIZER_REJECT_BODY";
+
+            public const string PERFORMER_UPDATED = "SUCCESS.PERFORMER_UPDATED";
+            public const string PERFORMER_DELETED = "SUCCESS.PERFORMER_DELETED";
         }
 
         public static class Others

@@ -17,6 +17,7 @@
         bool IsVip,
         List<EventDetailsPhotoDto> Photos,
         List<EventCommentDto> Comments,
-        int ViewsCount
+        int ViewsCount,
+        List<EventDetailsPerformerDto> Performers
     );
 }

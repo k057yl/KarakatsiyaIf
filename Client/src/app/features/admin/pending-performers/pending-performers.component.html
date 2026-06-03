@@ -1,18 +1,42 @@
 <div class="performers-moderation">
-  <h3>Модерация артистов («Оцтеки» контроль) 🎸</h3>
-  <p class="subtitle">Здесь висит всё говно уровня «Ой, да похуй», созданное оргами. Наведи тут порядок.</p>
+  <div class="header-row">
+    <div>
+      <h3>Управление артистами 🎸</h3>
+      <p class="subtitle">Контроль базы исполнителей и зачистка косяков за оргами-моллюсками.</p>
+    </div>
+    
+    <div class="inner-tabs">
+      <button [class.active]="currentTab() === 'pending'" (click)="switchTab('pending')">
+        На модерации ({{ currentTab() === 'pending' ? performers().length : '...' }})
+      </button>
+      <button [class.active]="currentTab() === 'all'" (click)="switchTab('all')">
+        Вся база данных
+      </button>
+    </div>
+  </div>
+
+  @if (currentTab() === 'all') {
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [value]="searchQuery()" 
+        (input)="onSearch($event)" 
+        placeholder="Поиск артиста по имени..." 
+      />
+    </div>
+  }
 
   @if (isLoading()) {
-    <div class="loader">Загрузка зверинца...</div>
+    <div class="loader-box">Загрузка исполнителей...</div>
   } @else if (performers().length === 0) {
-    <div class="empty-state">🎉 Чисто! Все орги внезапно написали имена правильно, либо ты всех отмодерировал.</div>
+    <div class="empty-state">🎉 Список пуст. На этой вкладке пока нет записей.</div>
   } @else {
     <table class="admin-table">
       <thead>
         <tr>
-          <th>Что написал орг</th>
-          <th>Слаг в БД</th>
-          <th>ID для копирования</th>
+          <th>Имя артиста</th>
+          <th>Слаг</th>
+          <th>Статус</th>
           <th>Действия</th>
         </tr>
       </thead>
@@ -21,14 +45,23 @@
           <tr>
             <td class="perf-name">🤘 {{ perf.name }}</td>
             <td class="perf-slug"><code>{{ perf.slug }}</code></td>
-            <td class="perf-id">
-              <span class="id-badge" (click)="verifyForm.patchValue({})" title="Кликни, чтобы скопировать (в девтулзах)">
-                {{ perf.id }}
+            <td>
+              <span class="badge" [class.verified]="perf.isVerified">
+                {{ perf.isVerified ? 'Заебись' : 'Ой, да похуй' }}
               </span>
             </td>
             <td class="actions-cell">
-              <button class="btn-verify" (click)="openVerifyModal(perf)">Заебись (Верифицировать)</button>
-              <button class="btn-merge" (click)="openMergeModal(perf)">Иди нахуй (Слить)</button>
+              <button class="btn-verify" (click)="openVerifyModal(perf)">
+                {{ perf.isVerified ? 'Редактировать' : 'Заебись (Верифицировать)' }}
+              </button>
+              
+              @if (!perf.isVerified) {
+                <button class="btn-merge" (click)="openMergeModal(perf)">Слить мусор</button>
+              }
+              
+              <button class="btn-delete" (click)="deletePerformer(perf.id)" title="Удалить насовсем">
+                ×
+              </button>
             </td>
           </tr>
         }
@@ -41,10 +74,10 @@
       <div class="modal-card" (click)="$event.stopPropagation()">
         
         @if (!isMergeMode()) {
-          <h4>Статус «ЗАЕБИСЬ» для: {{ selectedPerformer()?.name }}</h4>
+          <h4>Карточка артиста: {{ selectedPerformer()?.name }}</h4>
           <form [formGroup]="verifyForm" (ngSubmit)="submitVerify()">
             <div class="form-group">
-              <label>Правильное имя артиста</label>
+              <label>Имя артиста (исправление опечаток)</label>
               <input formControlName="name" />
             </div>
             <div class="form-group">
@@ -52,31 +85,31 @@
               <textarea formControlName="description" rows="4"></textarea>
             </div>
             <div class="form-group">
-              <label>Ссылка на аватарку (Cloudinary/Каракацица URL)</label>
+              <label>Ссылка на аватарку</label>
               <input formControlName="avatarUrl" />
             </div>
             <div class="form-row">
-              <input formControlName="instagramUrl" placeholder="Instagram URL" />
-              <input formControlName="telegramUrl" placeholder="Telegram URL" />
-              <input formControlName="youtubeUrl" placeholder="YouTube URL" />
+              <input formControlName="instagramUrl" placeholder="Instagram" />
+              <input formControlName="telegramUrl" placeholder="Telegram" />
+              <input formControlName="youtubeUrl" placeholder="YouTube" />
             </div>
             <div class="modal-actions">
               <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
-              <button type="submit" class="btn-submit" [disabled]="verifyForm.invalid">Сохранить и верифицировать</button>
+              <button type="submit" class="btn-submit" [disabled]="verifyForm.invalid">Сохранить карточку</button>
             </div>
           </form>
         } @else {
-          <h4>Статус «ИДИ НАХУЙ» (Слияние артистов)</h4>
-          <p class="warning-text">Ты сливаешь кривой вариант <strong>«{{ selectedPerformer()?.name }}»</strong>. Все связанные с ним ивенты перепривяжутся к целевому артисту, а этот мусор удалится подчистую.</p>
+          <h4>Слияние дубликатов</h4>
+          <p class="warning-text">Ты сливаешь кривой вариант <strong>«{{ selectedPerformer()?.name }}»</strong>. Все связанные с ним ивенты перепривяжутся к целевому артисту, а этот мусор удалится.</p>
           
           <form [formGroup]="mergeForm" (ngSubmit)="submitMerge()">
             <div class="form-group">
-              <label>Вставь Guid целевого (нормального) артиста из базы</label>
+              <label>Guid правильного артиста из базы</label>
               <input formControlName="targetId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
             </div>
             <div class="modal-actions">
               <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
-              <button type="submit" class="btn-danger" [disabled]="mergeForm.invalid">Слить и уничтожить мусор</button>
+              <button type="submit" class="btn-danger" [disabled]="mergeForm.invalid">Слить и уничтожить</button>
             </div>
           </form>
         }

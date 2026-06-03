@@ -6,11 +6,13 @@ import { CommentService } from '../services/comment.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
+import { PerformerInfoModalComponent } from './performer-info-modal/performer-info-modal.component';
+import { PerformerDetails } from '../dtos/performer-details.dto';
 
 @Component({
   selector: 'app-event-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, FormsModule],
+  imports: [CommonModule, RouterLink, TranslateModule, FormsModule, PerformerInfoModalComponent],
   templateUrl: './event-details.component.html',
   styleUrls: ['./event-details.component.scss']
 })
@@ -31,6 +33,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   public showInst = signal<boolean>(false);
   public showTg = signal<boolean>(false);
   public isCommentSubmitting = signal<boolean>(false);
+  public activePerformer = signal<PerformerDetails | null>(null);
 
   private map: any;
 
@@ -129,6 +132,14 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
         window.alert(err.error?.message || 'Не удалось отправить жалобу.');
       }
     });
+  }
+
+  public openPerformerInfo(performer: PerformerDetails): void {
+    this.activePerformer.set(performer);
+  }
+
+  public closePerformerInfo(): void {
+    this.activePerformer.set(null);
   }
 
   private async initMap(container: HTMLDivElement, lat: number, lng: number): Promise<void> {

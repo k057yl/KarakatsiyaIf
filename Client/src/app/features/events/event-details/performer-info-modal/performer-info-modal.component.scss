@@ -1,0 +1,87 @@
+.perf-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+
+  .perf-modal-card {
+    background: #1c1c1c;
+    border: 1px solid #333;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 14px;
+    padding: 30px;
+    position: relative;
+    color: #fff;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    animation: scaleUp 0.15s ease-out;
+
+    .close-btn {
+      position: absolute;
+      top: 15px; right: 20px;
+      background: none; border: none;
+      color: #888; font-size: 1.8rem; cursor: pointer;
+      &:hover { color: #fff; }
+    }
+  }
+
+  .perf-modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    text-align: center;
+
+    .perf-modal-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--primary-color, #ffd700);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+
+      img { width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    h2 { margin: 0; font-weight: 800; font-size: 1.6rem; color: #fff; }
+  }
+
+  .perf-modal-body {
+    h4 { margin: 0 0 8px 0; font-size: 1rem; color: var(--primary-color, #ffd700); text-transform: uppercase; letter-spacing: 0.5px; }
+    .bio-text { color: #ccc; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; white-space: pre-line; }
+    .links-title { margin-top: 20px; }
+
+    .perf-socials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+
+      .social-btn {
+        padding: 10px;
+        text-align: center;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.85rem;
+        transition: transform 0.1s;
+
+        &:hover { transform: translateY(-1px); }
+        &.insta { background: #e1306c; color: #fff; }
+        &.tg { background: #0088cc; color: #fff; }
+        &.yt { background: #ff0000; color: #fff; }
+      }
+    }
+  }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

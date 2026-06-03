@@ -1,20 +1,22 @@
 ﻿using Karakatsiya.Constants;
+using Karakatsiya.Data.Enums;
 using Karakatsiya.Features.Admin.Commands.ApproveOrganizer;
+using Karakatsiya.Features.Admin.Commands.DeleteCommentByReport;
+using Karakatsiya.Features.Admin.Commands.DeletePerformer;
+using Karakatsiya.Features.Admin.Commands.DismissReport;
+using Karakatsiya.Features.Admin.Commands.MergePerformer;
 using Karakatsiya.Features.Admin.Commands.RejectOrganizer;
+using Karakatsiya.Features.Admin.Commands.VerifyPerformer;
 using Karakatsiya.Features.Admin.Queries.GetActiveEvents;
+using Karakatsiya.Features.Admin.Queries.GetAllPerformers;
 using Karakatsiya.Features.Admin.Queries.GetPendingOrganizers;
+using Karakatsiya.Features.Admin.Queries.GetPendingPerformers;
+using Karakatsiya.Features.Admin.Queries.GetReportedComments;
 using Karakatsiya.Features.Events.Commands.ApproveEvent;
 using Karakatsiya.Features.Events.Commands.RejectEvent;
 using Karakatsiya.Features.Events.Queries.GetPendingEvents;
-using Karakatsiya.Features.Admin.Queries.GetReportedComments;
-using Karakatsiya.Features.Admin.Commands.DeleteCommentByReport;
-using Karakatsiya.Features.Admin.Commands.DismissReport;
-using Karakatsiya.Features.Admin.Queries.GetPendingPerformers;
-using Karakatsiya.Features.Admin.Commands.VerifyPerformer;
-using Karakatsiya.Features.Admin.Commands.MergePerformer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Karakatsiya.Data.Enums;
 
 namespace Karakatsiya.Controllers
 {
@@ -140,6 +142,20 @@ namespace Karakatsiya.Controllers
         {
             await Mediator.Send(new MergePerformerCommand(id, targetId));
             return Ok(new { Message = AppConstants.Success.PERFORMER_MERGED });
+        }
+
+        [HttpGet("performers")]
+        public async Task<IActionResult> GetAllPerformers([FromQuery] string? search = null)
+        {
+            var result = await Mediator.Send(new GetAllPerformersQuery(search));
+            return Ok(result);
+        }
+
+        [HttpDelete("performers/{id:guid}")]
+        public async Task<IActionResult> DeletePerformer(Guid id)
+        {
+            await Mediator.Send(new DeletePerformerCommand(id));
+            return Ok(new { Message = AppConstants.Success.PERFORMER_DELETED });
         }
     }
 }

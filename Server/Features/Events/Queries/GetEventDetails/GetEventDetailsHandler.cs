@@ -24,6 +24,7 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 .Include(e => e.Location)
                 .Include(e => e.Organizer)
                 .Include(e => e.Photos)
+                .Include(e => e.EventPerformers).ThenInclude(ep => ep.Performer)
                 .Include(e => e.Comments).ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
 
@@ -50,6 +51,21 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                   )).OrderByDescending(c => c.CreatedAt).ToList()
                 : new List<EventCommentDto>();
 
+            var performersDto = ev.EventPerformers != null
+                ? ev.EventPerformers
+                    .Where(ep => ep.Performer != null && ep.Performer.IsVerified)
+                    .Select(ep => new EventDetailsPerformerDto(
+                        ep.Performer.Id,
+                        ep.Performer.Name,
+                        ep.Performer.Slug,
+                        ep.Performer.AvatarUrl,
+                        ep.Performer.Description,
+                        ep.Performer.InstagramUrl,
+                        ep.Performer.TelegramUrl,
+                        ep.Performer.YouTubeUrl
+                    )).ToList()
+                : new List<EventDetailsPerformerDto>();
+
             return new EventDetailsDto(
                 ev.Id,
                 _sanitizer.StripAllHtml(ev.Title),
@@ -67,7 +83,8 @@ namespace Karakatsiya.Features.Events.Queries.GetEventDetails
                 ev.IsVip,
                 photosDto,
                 commentsDto,
-                ev.ViewsCount
+                ev.ViewsCount,
+                performersDto
             );
         }
     }
