@@ -2,12 +2,15 @@
 using Karakatsiya.Data.Enums;
 using Karakatsiya.Features.Admin.Commands.ApproveOrganizer;
 using Karakatsiya.Features.Admin.Commands.DeleteCommentByReport;
+using Karakatsiya.Features.Admin.Commands.DeleteOrganizer;
 using Karakatsiya.Features.Admin.Commands.DeletePerformer;
 using Karakatsiya.Features.Admin.Commands.DismissReport;
 using Karakatsiya.Features.Admin.Commands.MergePerformer;
 using Karakatsiya.Features.Admin.Commands.RejectOrganizer;
+using Karakatsiya.Features.Admin.Commands.UpdateOrganizer;
 using Karakatsiya.Features.Admin.Commands.VerifyPerformer;
 using Karakatsiya.Features.Admin.Queries.GetActiveEvents;
+using Karakatsiya.Features.Admin.Queries.GetAllOrganizers;
 using Karakatsiya.Features.Admin.Queries.GetAllPerformers;
 using Karakatsiya.Features.Admin.Queries.GetPendingOrganizers;
 using Karakatsiya.Features.Admin.Queries.GetPendingPerformers;
@@ -46,6 +49,28 @@ namespace Karakatsiya.Controllers
         {
             await Mediator.Send(new RejectOrganizerCommand(id, reason));
             return Ok(new { Message = AppConstants.Success.ORGANIZER_REJECTED });
+        }
+
+        [HttpGet("organizers")]
+        public async Task<IActionResult> GetAllOrganizers([FromQuery] string? search = null)
+        {
+            var result = await Mediator.Send(new GetAllOrganizersQuery(search));
+            return Ok(result);
+        }
+
+        [HttpPut("organizers/{id:guid}")]
+        public async Task<IActionResult> UpdateOrganizer(Guid id, [FromBody] UpdateOrganizerCommand command)
+        {
+            if (id != command.Id) return BadRequest();
+            await Mediator.Send(command);
+            return Ok(new { Message = AppConstants.Success.CONTACTS_UPDATED });
+        }
+
+        [HttpDelete("organizers/{id:guid}")]
+        public async Task<IActionResult> DeleteOrganizer(Guid id)
+        {
+            await Mediator.Send(new DeleteOrganizerCommand(id));
+            return Ok(new { Message = AppConstants.Success.EVENT_DELETED });
         }
 
         // --- ИВЕНТЫ (МОДЕРАЦИЯ) ---

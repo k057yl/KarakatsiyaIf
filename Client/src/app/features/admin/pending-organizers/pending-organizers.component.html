@@ -1,43 +1,117 @@
-<div class="admin-container">
-  <h2>Заявки на Организаторов (Модерация)</h2>
+<div class="organizers-moderation">
+  <div class="header-row">
+    <div>
+      <h3>{{ 'ADMIN_ORGANIZERS.TITLE' | translate }}</h3>
+      <p class="subtitle">{{ 'ADMIN_ORGANIZERS.SUBTITLE' | translate }}</p>
+    </div>
+    
+    <div class="inner-tabs">
+      <button [class.active]="currentTab() === 'requests'" (click)="switchTab('requests')">
+        {{ 'ADMIN_ORGANIZERS.TAB_REQUESTS' | translate }}
+      </button>
+      <button [class.active]="currentTab() === 'all'" (click)="switchTab('all')">
+        {{ 'ADMIN_ORGANIZERS.TAB_BASE' | translate }}
+      </button>
+    </div>
+  </div>
 
-    @if (message()) {
-    <div class="info-msg">{{ message() }}</div>
+  @if (currentTab() === 'all') {
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [value]="searchQuery()" 
+        (input)="onSearch($event)" 
+        [placeholder]="'ADMIN_ORGANIZERS.SEARCH_PLACEHOLDER' | translate" 
+      />
+    </div>
   }
 
   @if (isLoading()) {
-    <p>Грузим данные, погодь...</p>
+    <div class="loader-box">{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</div>
+  } @else if (organizers().length === 0) {
+    <div class="empty-state">{{ 'ADMIN_PERFORMERS.EMPTY' | translate }}</div>
   } @else {
-    @if (organizers().length === 0) {
-      <p class="empty-state">Никто не хочет делать ивенты. Заявок нет.</p>
-    } @else {
-      <table class="win98-table">
-        <thead>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>{{ 'ADMIN_ORGANIZERS.TH_NAME' | translate }}</th>
+          <th>{{ 'ADMIN_ORGANIZERS.TH_EMAIL' | translate }}</th>
+          <th>{{ 'ADMIN_ORGANIZERS.TH_PHONE' | translate }}</th>
+          <th>{{ 'ADMIN_PERFORMERS.TH_ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (org of organizers(); track org.id) {
           <tr>
-            <th>Название (Name)</th>
-            <th>Контакты</th>
-            <th>Дата заявки</th>
-            <th>Действия</th>
+            <td><strong>👑 {{ org.name }}</strong></td>
+            <td><code>{{ org.email }}</code></td>
+            <td>{{ org.phone || '—' }}</td>
+            <td class="actions-cell">
+              @if (!org.isApproved) {
+                <button class="btn-verify" (click)="approve(org.id)">
+                  {{ 'SUCCESS.REQUEST_APPROVED' | translate }}
+                </button>
+              } @else {
+                <button class="btn-edit" (click)="openEditModal(org)">
+                  {{ 'ADMIN_PERFORMERS.BTN_EDIT' | translate }}
+                </button>
+              }
+              <button class="btn-delete" (click)="deleteOrganizer(org.id)">
+                ×
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          @for (org of organizers(); track org.organizerId) {
-            <tr>
-              <td><strong>{{ org.name }}</strong></td>
-              <td>
-                <div>📱 {{ org.phone || '—' }}</div>
-                <div>📧 {{ org.email || '—' }}</div>
-                <div>✈️ {{ org.telegram || '—' }}</div>
-              </td>
-              <td>{{ org.appliedAt | date:'dd.MM.yyyy HH:mm' }}</td>
-              <td class="actions">
-                <button class="btn-approve" (click)="approve(org.organizerId)">Одобрить</button>
-                <button class="btn-reject" (click)="reject(org.organizerId)">Нахуй</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (selectedOrganizer()) {
+    <div class="modal-backdrop" (click)="selectedOrganizer.set(null)">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <h4>{{ 'ADMIN_ORGANIZERS.MODAL_EDIT_TITLE' | translate }} {{ selectedOrganizer()?.name }}</h4>
+        
+        <form [formGroup]="editForm" (ngSubmit)="submitEdit()">
+          <div class="form-group">
+            <label>{{ 'ADMIN_PERFORMERS.TH_NAME' | translate }}</label>
+            <input formControlName="name" />
+          </div>
+          
+          <div class="form-group">
+            <label>{{ 'ADMIN_ORGANIZERS.TH_EMAIL' | translate }}</label>
+            <input formControlName="email" />
+          </div>
+          
+          <div class="form-group">
+            <label>{{ 'ADMIN_ORGANIZERS.FIELD_PHONE' | translate }}</label>
+            <input formControlName="phone" />
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label>Website</label>
+              <input formControlName="website" />
+            </div>
+            <div>
+              <label>Telegram</label>
+              <input formControlName="telegram" />
+            </div>
+            <div>
+              <label>Instagram</label>
+              <input formControlName="instagram" />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="selectedOrganizer.set(null)">
+              {{ 'EVENT_MODAL.CANCEL_BTN' | translate }}
+            </button>
+            <button type="submit" class="btn-submit" [disabled]="editForm.invalid">
+              {{ 'EVENT_MODAL.SAVE_CHANGES_BTN' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   }
 </div>
