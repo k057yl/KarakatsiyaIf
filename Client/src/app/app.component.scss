@@ -1,17 +1,29 @@
-// Layout Structure
+// Привязываем каркас приложения к Grid-сетке (10vh / 80vh / 10vh)
+:host {
+  display: grid;
+  grid-template-rows: 10vh 80vh 10vh;
+  grid-template-areas: 
+    "header"
+    "content"
+    "footer";
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; // Предотвращаем двойные скроллы на уровне всего окна
+}
+
 .main-header {
-  height: 70px;
-  background-color: var(--card-bg);
-  border-bottom: 1px solid var(--border-color);
+  grid-area: header;
+  background-color: var(--card-bg, #1e1e1e);
+  border-bottom: 1px solid var(--border-color, #333);
   display: flex;
   align-items: center;
 
-  .container {
+  .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
   }
@@ -20,7 +32,7 @@
 .logo {
   font-size: 24px;
   font-weight: 800;
-  color: var(--primary-color);
+  color: var(--primary-color, #ffd700);
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -32,134 +44,83 @@
   gap: 30px;
 
   a {
-    color: var(--text-main);
+    color: var(--text-main, #fff);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 
     &:hover, &.active {
-      color: var(--primary-color);
+      color: var(--primary-color, #ffd700);
     }
   }
 }
 
-// Auth & Role Area
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: 15px; // Увеличил зазор, чтобы всё не слипалось в кашу
+  gap: 15px;
+
+  .lang-switcher {
+    display: flex;
+    gap: 5px;
+    button {
+      background: none; border: none; color: #888; font-size: 0.8rem; cursor: pointer; font-weight: bold;
+      &:hover { color: #fff; }
+    }
+  }
 
   .user-email {
     font-size: 14px;
-    color: var(--text-muted);
+    color: var(--text-muted, #888);
   }
 }
 
-// Content Area
+// Контентная область занимает ровно 80% высоты экрана и имеет внутренний независимый скроллбаро
 .main-content {
-  min-height: calc(100vh - 70px - 60px); 
-  padding: 40px 0;
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
+  grid-area: content;
+  overflow-y: auto;
+  background-color: var(--bg-main, #121212);
 }
 
 .main-footer {
-  height: 60px;
-  border-top: 1px solid var(--border-color);
+  grid-area: footer;
+  border-top: 1px solid var(--border-color, #333);
+  background-color: var(--card-bg, #1e1e1e);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: var(--text-muted, #888);
   font-size: 14px;
 }
 
-// --- BUTTONS TOOLKIT ---
-
-.btn-link {
-  color: var(--text-main);
-  text-decoration: none;
-  font-weight: 500;
-}
-
+// --- КНОПКИ ---
 .btn-primary {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 8px 20px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  border: none;
-  &:hover { background-color: var(--primary-hover); }
+  background-color: var(--primary-color, #ffd700); color: #000;
+  padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; border: none;
+  &:hover { filter: brightness(1.1); }
 }
 
 .btn-outline {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  &:hover { background-color: var(--input-bg); }
+  background: transparent; border: 1px solid var(--border-color, #333); color: var(--text-main, #fff);
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  &:hover { background-color: var(--input-bg, #252525); }
 }
 
-// Role-Specific Buttons
 .btn-admin {
-  padding: 5px 12px;
-  background-color: #ffc107; // Царское золото
-  color: #212529;
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  transition: opacity 0.2s;
-
-  &:hover { opacity: 0.8; }
-  &.active { outline: 2px solid #fff; }
+  padding: 6px 12px; background-color: #ffc107; color: #212529; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold;
+  &:hover { opacity: 0.9; }
 }
 
 .btn-dashboard {
-  background-color: #00f5ff; // Твой любимый неон
-  color: #000;
-  padding: 5px 12px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: bold;
-  &:hover { filter: brightness(1.1); }
+  background-color: #00f5ff; color: #000; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: bold;
 }
 
 .btn-highlight {
-  background-color: #ff00ff;
-  color: #fff;
-  padding: 5px 12px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: bold;
-  &:hover { filter: brightness(1.1); }
+  background-color: #ff00ff; color: #fff; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: bold;
 }
 
 .status-badge {
-  color: #ffcc00;
-  font-size: 0.8rem;
-  font-weight: 600;
-  background: rgba(255, 204, 0, 0.1);
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 204, 0, 0.3);
-  white-space: nowrap;
+  color: #ffcc00; font-size: 0.8rem; font-weight: 600; background: rgba(255, 204, 0, 0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255, 204, 0, 0.3);
 }
 
-.profile-link {
-  text-decoration: none;
-  transition: color 0.2s;
-  cursor: pointer;
-  
-  &:hover {
-    color: var(--primary-color);
-  }
-}
+.theme-toggle-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; }

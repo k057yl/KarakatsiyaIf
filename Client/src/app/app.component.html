@@ -1,53 +1,52 @@
 <header class="main-header">
-  <div class="container">
+  <div class="header-container">
     <a routerLink="/" class="logo">Showcase</a>
     
     <nav class="main-nav">
-      <a routerLink="/events" routerLinkActive="active">Афиша</a>
-      <a routerLink="/archive" routerLinkActive="active">Архив</a>
+      <a routerLink="/events" routerLinkActive="active">{{ 'HEADER.POSTER' | translate }}</a>
+      <a routerLink="/archive" routerLinkActive="active">{{ 'HEADER.ARCHIVE' | translate }}</a>
 
       <div class="auth-buttons">
         @if (authService.currentUser$ | async; as user) {
           
           @switch (user.role) {
             @case ('SuperAdmin') {
-              <a routerLink="/admin" class="btn-admin" routerLinkActive="active">{{ 'HEADER.ADMIN_BTN' | translate }}</a>
-            }
-
-            @case ('Organizer') {
-              <a routerLink="/organizer/dashboard" class="btn-dashboard" routerLinkActive="active">
-                🚀 Мой Кабинет
+              <a routerLink="/admin" class="btn-admin" routerLinkActive="active">
+                {{ 'HEADER.ADMIN_BTN' | translate }}
               </a>
             }
-
+            @case ('Organizer') {
+              <a routerLink="/organizer/dashboard" class="btn-dashboard" routerLinkActive="active">
+                {{ 'HEADER.DASHBOARD_BTN' | translate }}
+              </a>
+            }
             @case ('PendingOrganizer') {
-              <span class="status-badge" title="Твоя заявка на проверке у админа">
-                ⏳ На модерации
+              <span class="status-badge" [title]="'HEADER.STATUS_MODERATION_HINT' | translate">
+                {{ 'HEADER.STATUS_MODERATION' | translate }}
               </span>
             }
-
             @case ('Visitor') {
               <a routerLink="/become-organizer" class="btn-highlight">
-                Стать организатором
+                {{ 'HEADER.BECOME_ORGANIZER' | translate }}
               </a>
             }
           }
 
           <div class="lang-switcher">
             <button (click)="switchLanguage('uk')">UA</button>
+            <button (click)="switchLanguage('ru')">RU</button>
             <button (click)="switchLanguage('en')">EN</button>
           </div>
 
-          <a routerLink="/profile" class="user-email profile-link" title="Настройки профиля">
+          <a routerLink="/profile" class="user-email profile-link" [title]="'HEADER.PROFILE_HINT' | translate">
             ⚙️ {{ user.email }}
           </a>
 
-          <span class="user-email">{{ user.email }}</span>
           <button (click)="logout()" class="btn-outline">{{ 'HEADER.LOGOUT_BTN' | translate }}</button>
 
         } @else {
-          <a routerLink="/auth/login" class="btn-link">Вход</a>
-          <a routerLink="/auth/register" class="btn-primary">Регистрация</a>
+          <a routerLink="/auth/login" class="btn-link">{{ 'HEADER.LOGIN' | translate }}</a>
+          <a routerLink="/auth/register" class="btn-primary">{{ 'HEADER.REGISTER' | translate }}</a>
         }
 
         <button class="theme-toggle-btn" (click)="toggleTheme()">
@@ -59,13 +58,9 @@
 </header>
 
 <main class="main-content">
-  <div class="container">
-    <router-outlet></router-outlet>
-  </div>
+  <router-outlet></router-outlet>
 </main>
 
 <footer class="main-footer">
-  <div class="container">
-    <p>&copy; 2026 Showcase Project. Created with hate & Angular.</p>
-  </div>
+  <div class="footer-container" [innerHTML]="'FOOTER.TEXT' | translate"></div>
 </footer>

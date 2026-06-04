@@ -84,8 +84,20 @@
   },
 
   "HEADER": {
+    "POSTER": "Афиша",
+    "ARCHIVE": "Архив",
     "ADMIN_BTN": "Администратор",
-    "LOGOUT_BTN": "Выйти"
+    "DASHBOARD_BTN": "🚀 Мой Кабинет",
+    "STATUS_MODERATION": "⏳ На модерации",
+    "STATUS_MODERATION_HINT": "Твоя заявка на проверке у админа",
+    "BECOME_ORGANIZER": "Стать организатором",
+    "PROFILE_HINT": "Настройки профиля",
+    "LOGOUT_BTN": "Выйти",
+    "LOGIN": "Вход",
+    "REGISTER": "Регистрация"
+  },
+  "FOOTER": {
+    "TEXT": "&copy; 2026 Showcase Project. Создано с ненавистью и Angular."
   },
   "EVENT_MODAL": {
     "TITLE_EDIT": "Ремонт события 🛠",
@@ -171,5 +183,22 @@
     "MODAL_EDIT_TITLE": "Редактирование организатора:",
     "FIELD_PHONE": "Номер телефона",
     "DELETE_CONFIRM": "Ты уверен, что хочешь полностью удалить профиль организатора из системы?"
+  },
+  "EVENT_LIST": {
+    "HERO_TITLE": "Актуальные тусовки ⚡",
+    "HERO_SUBTITLE": "Все события города в одном месте",
+    "LOADING": "Ищем, где сегодня можно нажраться...",
+    "EMPTY": "🏜️ Событий пока нет. Будь первым, кто создаст движ!",
+    "BTN_BECOME_ORG": "Стать организатором",
+    "BTN_DETAILS": "Подробнее",
+    "TAB_TODAY": "Сегодня",
+    "TAB_THREE_DAYS": "Ближайшие 3 дня",
+    "TAB_WEEK": "Неделя",
+    "MOCK_CALENDAR": "[Интерактивный календарь]",
+    "CARD_IMAGE_PLACEHOLDER": "🖼️ Нет обложки",
+    "HUB_TITLE": "Мероприятия",
+    "BTN_RESET_DATE": "Сбросить дату",
+    "SORT_BY_DATE": "По дате",
+    "SORT_BY_LOCATION": "По локации"
   }
 }

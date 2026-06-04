@@ -1,32 +1,66 @@
-<div class="events-page">
-  <div class="welcome-hero">
-    <h1>Актуальные тусовки ⚡</h1>
-    <p>Все события города в одном месте</p>
+<div class="events-dashboard-layout">
+  
+  <div class="map-section-wrapper">
+    <div id="dashboard-map" class="full-map"></div>
   </div>
 
-  <div class="events-grid">
-    @if (isLoading()) {
-      <p>Ищем, где сегодня можно нажраться...</p>
-    } @else if (events().length === 0) {
-      <div class="empty-placeholder">
-        <span>🏜️</span>
-        <p>Событий пока нет. Будь первым, кто создаст движ!</p>
-        @if (isVisitor()) {
-          <a routerLink="/become-organizer" class="btn-primary">Стать организатором</a>
-        }
+  <div class="content-sidebar-section">
+    
+    <div class="welcome-hero">
+      <h1>{{ 'EVENT_LIST.HERO_TITLE' | translate }}</h1>
+      <p>{{ 'EVENT_LIST.HERO_SUBTITLE' | translate }}</p>
+    </div>
+
+    <div class="calendar-card-box">
+      <div class="mock-calendar">{{ 'EVENT_LIST.MOCK_CALENDAR' | translate }}</div>
+    </div>
+
+    <div class="events-grid-box">
+      <div class="filter-buttons-row">
+        <button class="active">{{ 'EVENT_LIST.TAB_TODAY' | translate }}</button>
+        <button>{{ 'EVENT_LIST.TAB_THREE_DAYS' | translate }}</button>
+        <button>{{ 'EVENT_LIST.TAB_WEEK' | translate }}</button>
       </div>
-    } @else {
-      @for (event of events(); track event.id) {
-        <div class="event-card">
-          <div class="card-image">🖼️ Тут будет обложка</div>
-          <div class="card-content">
-            <h3>{{ event.title }}</h3>
-            <p class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
-            <p class="location">📍 {{ event.locationName }}, {{ event.street }} {{ event.houseNumber }}</p>
-            <a [routerLink]="['/events', event.id]" class="btn-outline">Подробнее</a>
-          </div>
+
+      @if (isLoading()) {
+        <p class="loading-text">{{ 'EVENT_LIST.LOADING' | translate }}</p>
+      } @else if (events().length === 0) {
+        <div class="empty-placeholder">
+          <p>{{ 'EVENT_LIST.EMPTY' | translate }}</p>
+          @if (isVisitor()) {
+            <a routerLink="/become-organizer" class="btn-primary">{{ 'EVENT_LIST.BTN_BECOME_ORG' | translate }}</a>
+          }
         </div>
+      } @else {
+        <div class="tiles-wrapper">
+          @for (event of pagedEvents(); track event.id) {
+            <div class="event-tile-card">
+              <div class="tile-image">
+                @if (event.mainPhotoUrl) {
+                  <img [src]="event.mainPhotoUrl" alt="Cover" />
+                } @else {
+                  <div class="placeholder-text">{{ 'EVENT_LIST.CARD_IMAGE_PLACEHOLDER' | translate }}</div>
+                }
+              </div>
+              <div class="tile-content">
+                <h3>{{ event.title }}</h3>
+                <p class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
+                <p class="location">📍 {{ event.locationName }}, {{ event.street }} {{ event.houseNumber }}</p>
+                <a [routerLink]="['/events', event.id]" class="btn-outline-tile">{{ 'EVENT_LIST.BTN_DETAILS' | translate }}</a>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (totalEventsCount() > pageSize()) {
+          <div class="pagination-controls">
+            <button [disabled]="currentPage() === 1" (click)="changePage(currentPage() - 1)">←</button>
+            <span class="page-indicator">{{ currentPage() }} / {{ totalPagesCount() }}</span>
+            <button [disabled]="currentPage() === totalPagesCount()" (click)="changePage(currentPage() + 1)">→</button>
+          </div>
+        }
       }
-    }
+    </div>
+
   </div>
 </div>

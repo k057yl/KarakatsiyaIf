@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, OnDestroy, afterNextRender, ElementRef, viewChild, effect } from '@angular/core';
+import { Component, inject, OnInit, signal, OnDestroy, afterNextRender, ElementRef, viewChild, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../services/event.service';
@@ -25,6 +25,15 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public isLoading = signal<boolean>(true);
   public isMapReady = signal<boolean>(false);
   public currentSort = signal<'date' | 'location'>('date');
+  public currentPage = signal<number>(1);
+  public pageSize = signal<number>(6);
+  public pagedEvents = computed(() => {
+    const startIndex = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredEvents().slice(startIndex, startIndex + this.pageSize());
+  });
+
+  public totalEventsCount = computed(() => this.filteredEvents().length);
+  public totalPagesCount = computed(() => Math.ceil(this.totalEventsCount() / this.pageSize()) || 1);
   
   private map: LType.Map | undefined;
   private markerMap = new Map<string, LType.Marker>();
@@ -42,10 +51,9 @@ export class EventHubComponent implements OnInit, OnDestroy {
 
     effect(() => {
       const eventList = this.filteredEvents(); 
-      const loading = this.isLoading();
       const mapReady = this.isMapReady();
 
-      if (!loading && mapReady && this.map && this.LeafletLib) {
+      if (!this.isLoading() && mapReady && this.map && this.LeafletLib) {
         this.renderMarkers(this.LeafletLib, eventList);
         this.adjustMapBounds(this.LeafletLib, eventList);
       }
@@ -95,6 +103,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
 
   public filterByCalendarDate(dateStr: string): void {
     this.selectedCalendarDate.set(dateStr);
+    this.currentPage.set(1);
     
     const allEvents = this.events();
     const filtered = allEvents.filter(e => {
@@ -113,6 +122,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
 
   public resetCalendarFilter(): void {
     this.selectedCalendarDate.set(null);
+    this.currentPage.set(1);
     this.filteredEvents.set(this.events());
     this.sortEvents(this.currentSort());
   }
@@ -209,13 +219,19 @@ export class EventHubComponent implements OnInit, OnDestroy {
     this.currentSort.set(criteria);
     
     const sorted = [...this.filteredEvents()].sort((a, b) => {
-        if (criteria === 'date') {
+      if (criteria === 'date') {
         return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
-        } else {
+      } else {
         return a.locationName.localeCompare(b.locationName);
-        }
+      }
     });
 
     this.filteredEvents.set(sorted);
+  }
+
+  public changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPagesCount()) {
+      this.currentPage.set(page);
+    }
   }
 }
