@@ -1,16 +1,16 @@
 <div class="performers-moderation">
   <div class="header-row">
     <div>
-      <h3>Управление артистами 🎸</h3>
-      <p class="subtitle">Контроль базы исполнителей и зачистка косяков за оргами-моллюсками.</p>
+      <h3>{{ 'ADMIN_PERFORMERS.TITLE' | translate }}</h3>
+      <p class="subtitle">{{ 'ADMIN_PERFORMERS.SUBTITLE' | translate }}</p>
     </div>
     
     <div class="inner-tabs">
       <button [class.active]="currentTab() === 'pending'" (click)="switchTab('pending')">
-        На модерации ({{ currentTab() === 'pending' ? performers().length : '...' }})
+        {{ 'ADMIN_PERFORMERS.TAB_PENDING' | translate }} ({{ currentTab() === 'pending' ? performers().length : '...' }})
       </button>
       <button [class.active]="currentTab() === 'all'" (click)="switchTab('all')">
-        Вся база данных
+        {{ 'ADMIN_PERFORMERS.TAB_ALL' | translate }}
       </button>
     </div>
   </div>
@@ -21,23 +21,23 @@
         type="text" 
         [value]="searchQuery()" 
         (input)="onSearch($event)" 
-        placeholder="Поиск артиста по имени..." 
+        [placeholder]="'ADMIN_PERFORMERS.SEARCH_PLACEHOLDER' | translate" 
       />
     </div>
   }
 
   @if (isLoading()) {
-    <div class="loader-box">Загрузка исполнителей...</div>
+    <div class="loader-box">{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</div>
   } @else if (performers().length === 0) {
-    <div class="empty-state">🎉 Список пуст. На этой вкладке пока нет записей.</div>
+    <div class="empty-state">{{ 'ADMIN_PERFORMERS.EMPTY' | translate }}</div>
   } @else {
     <table class="admin-table">
       <thead>
         <tr>
-          <th>Имя артиста</th>
-          <th>Слаг</th>
-          <th>Статус</th>
-          <th>Действия</th>
+          <th>{{ 'ADMIN_PERFORMERS.TH_NAME' | translate }}</th>
+          <th>{{ 'ADMIN_PERFORMERS.TH_SLUG' | translate }}</th>
+          <th>{{ 'ADMIN_PERFORMERS.TH_STATUS' | translate }}</th>
+          <th>{{ 'ADMIN_PERFORMERS.TH_ACTIONS' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -47,19 +47,21 @@
             <td class="perf-slug"><code>{{ perf.slug }}</code></td>
             <td>
               <span class="badge" [class.verified]="perf.isVerified">
-                {{ perf.isVerified ? 'Заебись' : 'Ой, да похуй' }}
+                {{ (perf.isVerified ? 'ADMIN_PERFORMERS.STATUS_VERIFIED' : 'ADMIN_PERFORMERS.STATUS_PENDING') | translate }}
               </span>
             </td>
             <td class="actions-cell">
               <button class="btn-verify" (click)="openVerifyModal(perf)">
-                {{ perf.isVerified ? 'Редактировать' : 'Заебись (Верифицировать)' }}
+                {{ (perf.isVerified ? 'ADMIN_PERFORMERS.BTN_EDIT' : 'ADMIN_PERFORMERS.BTN_VERIFY') | translate }}
               </button>
               
               @if (!perf.isVerified) {
-                <button class="btn-merge" (click)="openMergeModal(perf)">Слить мусор</button>
+                <button class="btn-merge" (click)="openMergeModal(perf)">
+                  {{ 'ADMIN_PERFORMERS.BTN_MERGE' | translate }}
+                </button>
               }
               
-              <button class="btn-delete" (click)="deletePerformer(perf.id)" title="Удалить насовсем">
+              <button class="btn-delete" (click)="deletePerformer(perf.id)" [title]="'ADMIN_PERFORMERS.BTN_DELETE' | translate">
                 ×
               </button>
             </td>
@@ -74,42 +76,65 @@
       <div class="modal-card" (click)="$event.stopPropagation()">
         
         @if (!isMergeMode()) {
-          <h4>Карточка артиста: {{ selectedPerformer()?.name }}</h4>
+          <h4>{{ 'ADMIN_PERFORMERS.MODAL_VERIFY_TITLE' | translate }} {{ selectedPerformer()?.name }}</h4>
           <form [formGroup]="verifyForm" (ngSubmit)="submitVerify()">
             <div class="form-group">
-              <label>Имя артиста (исправление опечаток)</label>
+              <label>{{ 'ADMIN_PERFORMERS.FIELD_NAME' | translate }}</label>
               <input formControlName="name" />
             </div>
             <div class="form-group">
-              <label>Описание / Биография</label>
+              <label>{{ 'ADMIN_PERFORMERS.FIELD_BIO' | translate }}</label>
               <textarea formControlName="description" rows="4"></textarea>
             </div>
-            <div class="form-group">
-              <label>Ссылка на аватарку</label>
-              <input formControlName="avatarUrl" />
+            
+            <div class="form-group avatar-upload-container">
+              <label>{{ 'ADMIN_PERFORMERS.FIELD_AVATAR_LABEL' | translate }}</label>
+              <div class="avatar-uploader-row">
+                <div class="avatar-preview-box">
+                  <img [src]="avatarPreview" alt="Preview" />
+                </div>
+                <div class="upload-controls">
+                  <button type="button" class="btn-upload-trigger" (click)="fileInput.click()" [disabled]="isUploadingFile()">
+                    {{ (isUploadingFile() ? 'ADMIN_PERFORMERS.FIELD_AVATAR_UPLOADING' : 'ADMIN_PERFORMERS.FIELD_AVATAR_UPLOAD') | translate }}
+                  </button>
+                  <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+                  <span class="file-path-hint">
+                    {{ verifyForm.controls.avatarUrl.value || ('ADMIN_PERFORMERS.FIELD_AVATAR_DEFAULT_HINT' | translate) }}
+                  </span>
+                </div>
+              </div>
             </div>
+
             <div class="form-row">
               <input formControlName="instagramUrl" placeholder="Instagram" />
               <input formControlName="telegramUrl" placeholder="Telegram" />
               <input formControlName="youtubeUrl" placeholder="YouTube" />
             </div>
             <div class="modal-actions">
-              <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
-              <button type="submit" class="btn-submit" [disabled]="verifyForm.invalid">Сохранить карточку</button>
+              <button type="button" class="btn-cancel" (click)="closeModal()">
+                {{ 'EVENT_MODAL.CANCEL_BTN' | translate }}
+              </button>
+              <button type="submit" class="btn-submit" [disabled]="verifyForm.invalid || isUploadingFile()">
+                {{ 'EVENT_MODAL.SAVE_CHANGES_BTN' | translate }}
+              </button>
             </div>
           </form>
         } @else {
-          <h4>Слияние дубликатов</h4>
-          <p class="warning-text">Ты сливаешь кривой вариант <strong>«{{ selectedPerformer()?.name }}»</strong>. Все связанные с ним ивенты перепривяжутся к целевому артисту, а этот мусор удалится.</p>
+          <h4>{{ 'ADMIN_PERFORMERS.MODAL_MERGE_TITLE' | translate }}</h4>
+          <p class="warning-text" [innerHTML]="'ADMIN_PERFORMERS.MERGE_WARNING' | translate:{ name: selectedPerformer()?.name }"></p>
           
           <form [formGroup]="mergeForm" (ngSubmit)="submitMerge()">
             <div class="form-group">
-              <label>Guid правильного артиста из базы</label>
+              <label>{{ 'ADMIN_PERFORMERS.FIELD_TARGET_GUID' | translate }}</label>
               <input formControlName="targetId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
             </div>
             <div class="modal-actions">
-              <button type="button" class="btn-cancel" (click)="closeModal()">Отмена</button>
-              <button type="submit" class="btn-danger" [disabled]="mergeForm.invalid">Слить и уничтожить</button>
+              <button type="button" class="btn-cancel" (click)="closeModal()">
+                {{ 'EVENT_MODAL.CANCEL_BTN' | translate }}
+              </button>
+              <button type="submit" class="btn-danger" [disabled]="mergeForm.invalid">
+                {{ 'ADMIN_PERFORMERS.BTN_MERGE' | translate }}
+              </button>
             </div>
           </form>
         }

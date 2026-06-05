@@ -70,7 +70,7 @@ namespace Karakatsiya.Controllers
         public async Task<IActionResult> DeleteOrganizer(Guid id)
         {
             await Mediator.Send(new DeleteOrganizerCommand(id));
-            return Ok(new { Message = AppConstants.Success.EVENT_DELETED });
+            return Ok(new { Message = AppConstants.Success.ORGANIZER_REJECTED });
         }
 
         // --- ИВЕНТЫ (МОДЕРАЦИЯ) ---
@@ -181,6 +181,40 @@ namespace Karakatsiya.Controllers
         {
             await Mediator.Send(new DeletePerformerCommand(id));
             return Ok(new { Message = AppConstants.Success.PERFORMER_DELETED });
+        }
+
+        [HttpPost("performers/upload-avatar")]
+        public async Task<IActionResult> UploadPerformerAvatar(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { Message = AppConstants.Errors.FILE_MISSING });
+
+            var extension = Path.GetExtension(file.FileName).ToLower();
+
+            if (!AppConstants.Storage.ALLOWED_EXTENSIONS.Contains(extension))
+                return BadRequest(new { Message = AppConstants.Errors.INVALID_IMAGE_FORMAT });
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+
+            var folderPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                AppConstants.Storage.WWWROOT_FOLDER,
+                AppConstants.Storage.UPLOADS_FOLDER,
+                AppConstants.Storage.USER_PHOTOS_SUBFOLDER
+            );
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            var filePath = Path.Combine(folderPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var relativeUrl = $"/{AppConstants.Storage.UPLOADS_FOLDER}/{AppConstants.Storage.USER_PHOTOS_SUBFOLDER}/{fileName}";
+            return Ok(new { Url = relativeUrl });
         }
     }
 }

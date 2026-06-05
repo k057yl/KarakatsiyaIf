@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { PerformerInfoModalComponent } from './performer-info-modal/performer-info-modal.component';
 import { PerformerDetails } from '../dtos/performer-details.dto';
+import { ASSET_CONSTANTS } from '../../../core/constants/asset-constants'; 
 
 @Component({
   selector: 'app-event-details',
@@ -69,6 +70,10 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  public getAvatar(avatarUrl: string | null, performerId: string): string {
+    return ASSET_CONSTANTS.getPerformerAvatar(avatarUrl, performerId);
+  }
+
   private loadEventDetails(id: string): void {
     this.eventService.getEventDetails(id).subscribe({
       next: (data) => {
@@ -87,13 +92,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   public canLeaveComment(startDate: string): boolean {
-    if (!startDate) return false;
-    
-    const eventTime = new Date(startDate).getTime();
-    const now = new Date().getTime();
-    const oneHourOffset = 60 * 60 * 1000; 
-    
-    return now >= (eventTime + oneHourOffset);
+    return true; 
   }
 
   public sendComment(): void {

@@ -23,7 +23,7 @@
               <img [src]="event.mainPhotoUrl || event.photos[0].imageUrl" alt="Event Cover" class="cover-image" />
             } @else {
               <div class="cover-image-placeholder">
-                🖼️ {{ 'EVENT_MODAL.ERROR_NO_MAIN_PHOTO' | translate }}
+                 Rhine 🖼️ {{ 'EVENT_MODAL.ERROR_NO_MAIN_PHOTO' | translate }}
               </div>
             }
           </div>
@@ -41,7 +41,7 @@
                   @for (perf of eventPerformers; track perf.id) {
                     <div class="performer-card-mini" (click)="openPerformerInfo(perf)">
                       <div class="avatar-wrapper">
-                        <img [src]="perf.avatarUrl || 'assets/images/default-performer.png'" [alt]="perf.name" />
+                        <img [src]="getAvatar(perf.avatarUrl, perf.id)" [alt]="perf.name" />
                       </div>
                       <span class="name">{{ perf.name }}</span>
                     </div>
@@ -125,8 +125,6 @@
       </div>
     }
   }
-</div>
-
 @if (activePerformer(); as perf) {
   <app-performer-info-modal
     [performer]="perf"

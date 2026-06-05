@@ -6,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddBusinessServices();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -27,12 +26,15 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedUICultures(supportedCultures);
 
 app.UseRequestLocalization(localizationOptions);
-
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseCors(AppConstants.Shared.CORS_POLICY_NAME);
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 await Karakatsiya.Data.DatabaseSeeder.SeedAsync(app.Services);

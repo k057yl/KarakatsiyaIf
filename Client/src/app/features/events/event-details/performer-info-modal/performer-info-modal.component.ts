@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { PerformerDetails } from '../../dtos/performer-details.dto';
+import { ASSET_CONSTANTS } from '../../../../core/constants/asset-constants';
 
 @Component({
   selector: 'app-performer-info-modal',
@@ -13,6 +14,10 @@ import { PerformerDetails } from '../../dtos/performer-details.dto';
 export class PerformerInfoModalComponent {
   @Input({ required: true }) performer!: PerformerDetails;
   @Output() closeModal = new EventEmitter<void>();
+
+  public get avatarSrc(): string {
+    return ASSET_CONSTANTS.getPerformerAvatar(this.performer.avatarUrl, this.performer.id);
+  }
 
   public close(): void {
     this.closeModal.emit();
