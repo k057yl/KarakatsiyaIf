@@ -15,6 +15,7 @@ namespace Karakatsiya.Features.Events.Queries.GetPendingEvents
         {
             return await _context.Events
                 .AsNoTracking()
+                .Include(e => e.Photos)
                 .Where(e => e.Status == EventStatus.Pending)
                 .OrderBy(e => e.CreatedAt)
                 .Select(e => new EventDto(
@@ -27,7 +28,9 @@ namespace Karakatsiya.Features.Events.Queries.GetPendingEvents
                     e.Location != null ? e.Location.Address.HouseNumber : string.Empty,
                     e.Location != null ? e.Location.Address.Latitude : null,
                     e.Location != null ? e.Location.Address.Longitude : null,
-                    e.IsVipRequested
+                    e.IsVipRequested,
+                    e.Photos.Where(p => p.IsMain).Select(p => p.ImageUrl).FirstOrDefault()
+                        ?? e.Photos.Select(p => p.ImageUrl).FirstOrDefault()
                 ))
                 .ToListAsync(cancellationToken);
         }

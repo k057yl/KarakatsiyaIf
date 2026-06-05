@@ -16,6 +16,7 @@ using Karakatsiya.Features.Admin.Queries.GetPendingOrganizers;
 using Karakatsiya.Features.Admin.Queries.GetPendingPerformers;
 using Karakatsiya.Features.Admin.Queries.GetReportedComments;
 using Karakatsiya.Features.Events.Commands.ApproveEvent;
+using Karakatsiya.Features.Events.Commands.DeleteEvent;
 using Karakatsiya.Features.Events.Commands.RejectEvent;
 using Karakatsiya.Features.Events.Queries.GetPendingEvents;
 using Microsoft.AspNetCore.Authorization;
@@ -113,6 +114,7 @@ namespace Karakatsiya.Controllers
         [HttpDelete("events/{id:guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
+            await Mediator.Send(new DeleteEventCommand(id));
             return Ok(new { Message = AppConstants.Success.EVENT_DELETED });
         }
 

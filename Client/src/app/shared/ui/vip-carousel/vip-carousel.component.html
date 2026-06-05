@@ -1,0 +1,36 @@
+@if (vipEvents().length > 0) {
+  <div class="carousel-container">
+    <button class="nav-btn prev" (click)="prevSlide()">‹</button>
+    <button class="nav-btn next" (click)="nextSlide()">›</button>
+
+    <div class="carousel-track" #carouselTrack>
+      @for (event of vipEvents(); track event.id; let i = $index) {
+        <div class="carousel-slide" [routerLink]="['/events', event.id]">
+          <div class="slide-image-wrapper">
+            @if (event.imageUrl) {
+              <img [src]="event.imageUrl" [alt]="event.title" />
+            } @else {
+              <div class="gradient-placeholder"></div>
+            }
+          </div>
+          
+          <div class="slide-info">
+            <span class="slide-date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</span>
+            <h2 class="slide-title">{{ event.title }}</h2>
+            <p class="slide-location">📍 {{ event.locationName }} ({{ event.city }})</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="carousel-dots">
+      @for (dot of vipEvents(); track $index; let i = $index) {
+        <button 
+          class="dot" 
+          [class.active]="i === currentIndex()" 
+          (click)="setSlide(i)">
+        </button>
+      }
+    </div>
+  </div>
+}

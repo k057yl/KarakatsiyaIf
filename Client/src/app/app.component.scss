@@ -1,18 +1,14 @@
-// Привязываем каркас приложения к Grid-сетке (10vh / 80vh / 10vh)
 :host {
-  display: grid;
-  grid-template-rows: 10vh 80vh 10vh;
-  grid-template-areas: 
-    "header"
-    "content"
-    "footer";
+  display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
-  overflow: hidden; // Предотвращаем двойные скроллы на уровне всего окна
+  overflow: hidden;
 }
 
 .main-header {
-  grid-area: header;
+  height: 10vh;
+  flex-shrink: 0;
   background-color: var(--card-bg, #1e1e1e);
   border-bottom: 1px solid var(--border-color, #333);
   display: flex;
@@ -27,6 +23,31 @@
     margin: 0 auto;
     padding: 0 20px;
   }
+}
+
+.global-vip-zone {
+  width: 100%;
+  background-color: var(--bg-main, #121212);
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--bg-main, #121212);
+  min-height: 0;
+}
+
+.main-footer {
+  height: 6vh;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-color, #333);
+  background-color: var(--card-bg, #1e1e1e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #888);
+  font-size: 14px;
 }
 
 .logo {
@@ -64,7 +85,13 @@
     display: flex;
     gap: 5px;
     button {
-      background: none; border: none; color: #888; font-size: 0.8rem; cursor: pointer; font-weight: bold;
+      background: none; 
+      border: none; 
+      color: #888; 
+      font-size: 0.8rem; 
+      cursor: pointer; 
+      font-weight: bold;
+      
       &:hover { color: #fff; }
     }
   }
@@ -75,52 +102,72 @@
   }
 }
 
-// Контентная область занимает ровно 80% высоты экрана и имеет внутренний независимый скроллбаро
-.main-content {
-  grid-area: content;
-  overflow-y: auto;
-  background-color: var(--bg-main, #121212);
-}
-
-.main-footer {
-  grid-area: footer;
-  border-top: 1px solid var(--border-color, #333);
-  background-color: var(--card-bg, #1e1e1e);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted, #888);
-  font-size: 14px;
-}
-
 // --- КНОПКИ ---
 .btn-primary {
-  background-color: var(--primary-color, #ffd700); color: #000;
-  padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; border: none;
+  background-color: var(--primary-color, #ffd700); 
+  color: #000;
+  padding: 8px 20px; 
+  border-radius: 8px; 
+  text-decoration: none; 
+  font-weight: 600; 
+  border: none;
   &:hover { filter: brightness(1.1); }
 }
 
 .btn-outline {
-  background: transparent; border: 1px solid var(--border-color, #333); color: var(--text-main, #fff);
-  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  background: transparent; 
+  border: 1px solid var(--border-color, #333); 
+  color: var(--text-main, #fff);
+  padding: 8px 16px; 
+  border-radius: 8px; 
+  cursor: pointer;
   &:hover { background-color: var(--input-bg, #252525); }
 }
 
 .btn-admin {
-  padding: 6px 12px; background-color: #ffc107; color: #212529; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold;
+  padding: 6px 12px; 
+  background-color: #ffc107; 
+  color: #212529; 
+  text-decoration: none; 
+  border-radius: 4px; 
+  font-size: 0.85rem; 
+  font-weight: bold;
   &:hover { opacity: 0.9; }
 }
 
 .btn-dashboard {
-  background-color: #00f5ff; color: #000; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: bold;
+  background-color: #00f5ff; 
+  color: #000; 
+  padding: 6px 12px; 
+  border-radius: 4px; 
+  text-decoration: none; 
+  font-size: 0.85rem; 
+  font-weight: bold;
 }
 
 .btn-highlight {
-  background-color: #ff00ff; color: #fff; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; font-weight: bold;
+  background-color: #ff00ff; 
+  color: #fff; 
+  padding: 6px 12px; 
+  border-radius: 4px; 
+  text-decoration: none; 
+  font-size: 0.85rem; 
+  font-weight: bold;
 }
 
 .status-badge {
-  color: #ffcc00; font-size: 0.8rem; font-weight: 600; background: rgba(255, 204, 0, 0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255, 204, 0, 0.3);
+  color: #ffcc00; 
+  font-size: 0.8rem; 
+  font-weight: 600; 
+  background: rgba(255, 204, 0, 0.1); 
+  padding: 4px 10px; 
+  border-radius: 20px; 
+  border: 1px solid rgba(255, 204, 0, 0.3);
 }
 
-.theme-toggle-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+.theme-toggle-btn { 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  font-size: 1.1rem; 
+}

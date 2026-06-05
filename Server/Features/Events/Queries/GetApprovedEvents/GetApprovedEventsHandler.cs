@@ -17,6 +17,8 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
 
             return await _context.Events
                 .AsNoTracking()
+                .Include(e => e.Photos)
+                .Include(e => e.Location)
                 .Where(e => e.Status == EventStatus.Approved && e.StartDate >= now)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventDto(
@@ -29,7 +31,9 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                     e.Location != null ? e.Location.Address.HouseNumber : string.Empty,
                     e.Location != null ? e.Location.Address.Latitude : null,
                     e.Location != null ? e.Location.Address.Longitude : null,
-                    e.IsVip
+                    e.IsVip,
+                    e.Photos.Where(p => p.IsMain).Select(p => p.ImageUrl).FirstOrDefault()
+                        ?? e.Photos.Select(p => p.ImageUrl).FirstOrDefault()
                 ))
                 .ToListAsync(cancellationToken);
         }

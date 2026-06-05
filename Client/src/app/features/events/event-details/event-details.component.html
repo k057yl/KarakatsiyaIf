@@ -119,12 +119,55 @@
                   </button>
                 </div>
               </div>
+            } @else {
+              <div class="comment-lock-notice">
+                🔒 {{ 'EVENT_DETAILS.COMMENTS_LOCKED_HINT' | translate }}
+              </div>
             }
+          } @else {
+            <div class="login-prompt">
+              🔑 Чтобы оставить комментарий, пожалуйста, <a routerLink="/auth/login">войдите в аккаунт</a>.
+            </div>
+          }
+
+          @if (event.comments && event.comments.length > 0) {
+            <div class="comments-list">
+              @for (comment of event.comments; track comment.id) {
+                <div class="comment-item">
+                  <div class="comment-meta">
+                    <span class="author">👤 {{ comment.authorEmail || 'Аноним' }}</span>
+                    <span class="time">📅 {{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+                    
+                    <div class="author-socials">
+                      @if (comment.showInstagram && comment.authorInstagram) {
+                        <span class="social-badge insta">Insta</span>
+                      }
+                      @if (comment.showTelegram && comment.authorTelegram) {
+                        <span class="social-badge tg">TG</span>
+                      }
+                    </div>
+
+                    <button 
+                      class="btn-report-comment" 
+                      (click)="reportComment(comment.id)" 
+                      title="Пожаловаться на комментарий">
+                      🚩
+                    </button>
+                  </div>
+                  
+                  <p class="comment-text">{{ comment.text }}</p>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="no-comments">
+              {{ 'EVENT_DETAILS.NO_COMMENTS' | translate }}
+            </div>
           }
         </div>
       </div>
-    }
-  }
+    } } </div>
+
 @if (activePerformer(); as perf) {
   <app-performer-info-modal
     [performer]="perf"

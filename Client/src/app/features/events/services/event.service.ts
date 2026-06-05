@@ -37,7 +37,7 @@ export class EventService {
 
   uploadPhoto(eventId: string, file: File, isMain: boolean): Observable<{ url: string, publicId: string }> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file, file.name);
     formData.append('isMain', isMain ? 'true' : 'false'); 
     return this.http.post<{ url: string, publicId: string }>(`${this.apiUrl}/${eventId}/photos/organizer`, formData);
   }

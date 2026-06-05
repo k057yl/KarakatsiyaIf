@@ -1,16 +1,12 @@
 <div class="map-page-container">
   
-  <div class="map-side">
-    <div #mapContainer id="main-events-map" class="full-map"></div>
-  </div>
-
-  <div class="list-side">
-    
-    <div class="calendar-section">
+  <!-- КОЛОНКА 1: Календарь и фильтры (Слева) -->
+  <div class="filter-side">
+    <div class="calendar-wrapper">
       <app-event-calendar (dateSelected)="filterByCalendarDate($event)"></app-event-calendar>
     </div>
 
-    <div class="list-header">
+    <div class="filter-controls-box">
       <div class="title-row">
         <h2>{{ 'EVENT_LIST.HUB_TITLE' | translate }}</h2>
         @if (selectedCalendarDate()) {
@@ -42,11 +38,19 @@
         </button>
       </div>
     </div>
+  </div>
 
+  <!-- КОЛОНКА 2: Интерактивная карта (Центр) -->
+  <div class="map-side">
+    <div #mapContainer id="main-events-map" class="full-map"></div>
+  </div>
+
+  <!-- КОЛОНКА 3: Список плиток и пагинация (Справа) -->
+  <div class="list-side">
     @if (isLoading()) {
       <div class="center-state">{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</div>
     } @else if (filteredEvents().length === 0) {
-      <div class="center-state">{{ 'EVENT_LIST.EMPTY' | translate }}</div>
+      <div class="center-state">📭 {{ 'EVENT_LIST.EMPTY' | translate }}</div>
     } @else {
       <div class="scrollable-list tiles-grid-wrapper">
         @for (event of pagedEvents(); track event.id) {

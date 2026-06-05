@@ -91,8 +91,15 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  public canLeaveComment(startDate: string): boolean {
-    return true; 
+  public canLeaveComment(startDate: string | null | undefined): boolean {
+    if (!startDate) return false;
+
+    const now = new Date();
+    const eventTime = new Date(startDate);
+    const diffMs = now.getTime() - eventTime.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    return diffHours >= 1;
   }
 
   public sendComment(): void {

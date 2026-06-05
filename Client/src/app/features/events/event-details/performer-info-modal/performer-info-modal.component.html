@@ -19,13 +19,13 @@
         <h4 class="links-title">{{ 'EVENT_DETAILS.PERFORMER_LINKS' | translate }}</h4>
         <div class="perf-socials-grid">
           @if (performer.instagramUrl) {
-            <a [href]="performer.instagramUrl" target="_blank" class="social-btn insta">Instagram</a>
+            <a [href]="instagramLink" target="_blank" class="social-btn insta">Instagram</a>
           }
           @if (performer.telegramUrl) {
-            <a [href]="performer.telegramUrl" target="_blank" class="social-btn tg">Telegram</a>
+            <a [href]="telegramLink" target="_blank" class="social-btn tg">Telegram</a>
           }
           @if (performer.youtubeUrl) {
-            <a [href]="performer.youtubeUrl" target="_blank" class="social-btn yt">YouTube</a>
+            <a [href]="youtubeLink" target="_blank" class="social-btn yt">YouTube</a>
           }
         </div>
       }

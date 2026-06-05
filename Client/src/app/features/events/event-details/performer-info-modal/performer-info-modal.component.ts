@@ -19,6 +19,27 @@ export class PerformerInfoModalComponent {
     return ASSET_CONSTANTS.getPerformerAvatar(this.performer.avatarUrl, this.performer.id);
   }
 
+  public get instagramLink(): string {
+    if (!this.performer.instagramUrl) return '';
+    return this.performer.instagramUrl.startsWith('http')
+      ? this.performer.instagramUrl
+      : `https://instagram.com/${this.performer.instagramUrl.replace(/^@/, '')}`;
+  }
+
+  public get telegramLink(): string {
+    if (!this.performer.telegramUrl) return '';
+    return this.performer.telegramUrl.startsWith('http')
+      ? this.performer.telegramUrl
+      : `https://t.me/${this.performer.telegramUrl.replace(/^@/, '')}`;
+  }
+
+  public get youtubeLink(): string {
+    if (!this.performer.youtubeUrl) return '';
+    return this.performer.youtubeUrl.startsWith('http')
+      ? this.performer.youtubeUrl
+      : `https://youtube.com/${this.performer.youtubeUrl}`;
+  }
+
   public close(): void {
     this.closeModal.emit();
   }

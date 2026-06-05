@@ -35,7 +35,7 @@ export class CreateEventModalComponent implements OnInit {
     });
   }
 
-  public onCreateSubmit(eventData: { basePayload: any, selectedFiles: { file: File, isMain: boolean }[] }) {
+  public async onCreateSubmit(eventData: { basePayload: any, selectedFiles: { file: File, isMain: boolean }[] }) {
     this.isSubmitting.set(true);
 
     const createPayload = { 
@@ -44,28 +44,29 @@ export class CreateEventModalComponent implements OnInit {
     };
 
     this.eventService.createEvent(createPayload).subscribe({
-      next: (res) => {
+      next: async (res) => {
         this.createdEventId.set(res.eventId);
         localStorage.removeItem('event_draft_form');
 
         if (eventData.selectedFiles.length > 0) {
           this.isUploadingPhoto.set(true);
-          const uploadObservables = eventData.selectedFiles.map(f => 
-            this.eventService.uploadPhoto(res.eventId, f.file, f.isMain)
-          );
-
-          forkJoin(uploadObservables).subscribe({
-            next: () => {
-              this.isUploadingPhoto.set(false);
-              this.isSubmitting.set(false);
-              this.isSuccessScreen.set(true);
-            },
-            error: (err) => {
-              this.isUploadingPhoto.set(false);
-              this.isSubmitting.set(false);
-              console.error('Ошибка пакетной загрузки медиа:', err);
+          
+          try {
+            for (const item of eventData.selectedFiles) {
+              await this.eventService.uploadPhoto(res.eventId, item.file, item.isMain).toPromise();
             }
-          });
+
+            this.isUploadingPhoto.set(false);
+            this.isSubmitting.set(false);
+            this.isSuccessScreen.set(true);
+
+          } catch (err) {
+            this.isUploadingPhoto.set(false);
+            this.isSubmitting.set(false);
+            console.error('Ошибка поочередной загрузки медиа:', err);
+            alert('Не удалось загрузить одну или несколько фотографий. Проверь размер файлов.');
+          }
+
         } else {
           this.isSubmitting.set(false);
           this.isSuccessScreen.set(true);

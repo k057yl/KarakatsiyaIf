@@ -25,7 +25,17 @@ namespace Karakatsiya.Features.Admin.Queries.GetAllPerformers
 
             return await query
                 .OrderBy(p => p.Name)
-                .Select(p => new AdminPerformerViewModel(p.Id, p.Name, p.Slug, p.IsVerified))
+                .Select(p => new AdminPerformerViewModel(
+                    p.Id,
+                    p.Name,
+                    p.Slug,
+                    p.IsVerified,
+                    p.AvatarUrl,
+                    p.Description,
+                    p.InstagramUrl,
+                    p.TelegramUrl,
+                    p.YouTubeUrl
+                ))
                 .ToListAsync(cancellationToken);
         }
     }

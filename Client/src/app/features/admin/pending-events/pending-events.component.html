@@ -1,19 +1,19 @@
 <div class="admin-container">
-  @if (message()) { <div class="info-msg">{{ message() }}</div> }
+  @if (message()) { <div class="info-msg">{{ message() | translate }}</div> }
 
   @if (isLoading()) {
-    <p>Ищем неодобренный движ...</p>
+    <p>{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</p>
   } @else {
     @if (events().length === 0) {
-      <p class="empty-state">Пока тихо. Модерировать нечего.</p>
+      <p class="empty-state">{{ 'ADMIN_PERFORMERS.EMPTY' | translate }}</p>
     } @else {
       <table class="win98-table">
         <thead>
           <tr>
-            <th>Название</th>
-            <th>Локация</th>
-            <th>Дата</th>
-            <th>Действия</th>
+            <th>{{ 'ADMIN_PERFORMERS.TH_NAME' | translate }}</th>
+            <th>{{ 'OTHERS.LOCATION_NOT_SPECIFIED' | translate }}</th>
+            <th>📅 {{ 'HEADER.POSTER' | translate }}</th>
+            <th>{{ 'ADMIN_PERFORMERS.TH_ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -21,21 +21,37 @@
             <tr [class.vip-paid-row]="ev.isVip">
               <td>
                 <strong>{{ ev.title }}</strong>
-                @if (ev.isVip) { <span class="money-badge" style="color: #ffd700; margin-left: 10px;">💰 ОПЛАЧЕНО VIP</span> }
+                @if (ev.isVip) { 
+                  <span class="money-badge" style="color: #ffd700; margin-left: 10px;">
+                    💰 {{ 'EVENT_APPROVED' | translate }} VIP
+                  </span> 
+                }
               </td>
               <td>📍 {{ ev.locationName }} ({{ ev.city }})</td>
               <td>📅 {{ ev.startDate | date:'dd.MM.yyyy HH:mm' }}</td>
               <td class="actions">
                 @if (ev.isVip) {
-                  <button class="btn-approve-vip" (click)="approve(ev.id, true)">💎 Подтвердить VIP</button>
+                  <button class="btn-approve-vip" (click)="approve(ev.id || ev.eventId, true)">
+                    💎 {{ 'SUCCESS.EVENT_VIP_TOGGLED' | translate }}
+                  </button>
                 } @else {
-                  <button class="btn-approve" (click)="approve(ev.id, false)">Одобрить</button>
-                  <button class="btn-approve-vip" style="background: #eedd82" (click)="approve(ev.id, true)">Сделать VIP нахаляву</button>
+                  <button class="btn-approve" (click)="approve(ev.id || ev.eventId, false)">
+                    {{ 'ADMIN_PERFORMERS.BTN_VERIFY' | translate }}
+                  </button>
+                  <button class="btn-approve-vip" style="background: #eedd82" (click)="approve(ev.id || ev.eventId, true)">
+                    💎 VIP
+                  </button>
                 }
                 
-                <button class="btn-fix" (click)="sendToFix(ev.id)">🔧 На уточнение</button>
-                <button class="btn-reject" (click)="reject(ev.id)">Нахуй</button>
-                <button class="btn-delete" (click)="deleteEvent(ev.id)">💀 Стереть</button>
+                <button class="btn-fix" (click)="sendToFix(ev.id || ev.eventId)">
+                  🔧 {{ 'SUCCESS.EVENT_SENT_TO_FIX' | translate }}
+                </button>
+                <button class="btn-reject" (click)="reject(ev.id || ev.eventId)">
+                  ❌ {{ 'ADMIN_PERFORMERS.BTN_MERGE' | translate }}
+                </button>
+                <button class="btn-delete" (click)="deleteEvent(ev.id || ev.eventId)">
+                  💀 {{ 'ADMIN_PERFORMERS.BTN_DELETE' | translate }}
+                </button>
               </td>
             </tr>
           }

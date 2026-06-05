@@ -57,6 +57,12 @@
   </div>
 </header>
 
+@if (isEventsPage()) {
+  <div class="global-vip-zone">
+    <app-vip-carousel></app-vip-carousel>
+  </div>
+}
+
 <main class="main-content">
   <router-outlet></router-outlet>
 </main>

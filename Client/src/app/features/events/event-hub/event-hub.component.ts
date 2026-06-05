@@ -26,7 +26,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public isMapReady = signal<boolean>(false);
   public currentSort = signal<'date' | 'location'>('date');
   public currentPage = signal<number>(1);
-  public pageSize = signal<number>(6);
+  public pageSize = signal<number>(8);
   public pagedEvents = computed(() => {
     const startIndex = (this.currentPage() - 1) * this.pageSize();
     return this.filteredEvents().slice(startIndex, startIndex + this.pageSize());

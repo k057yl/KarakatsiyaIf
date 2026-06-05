@@ -93,10 +93,10 @@ namespace Karakatsiya.Controllers
 
             if (!success)
             {
-                return NotFound(new { Message = AppConstants.Errors.VALIDATION_FAILED });
+                return NotFound(new { Message = AppConstants.Errors.PERFORMER_NOT_FOUND });
             }
 
-            return Ok(new { Message = AppConstants.Success.EVENT_CREATED });
+            return Ok(new { Message = AppConstants.Success.CONTACTS_UPDATED });
         }
 
         [HttpPost("{id:guid}/photos/organizer")]
@@ -124,10 +124,14 @@ namespace Karakatsiya.Controllers
 
             if (!result.Success)
             {
-                return BadRequest(new { Message = result.ErrorMessage });
+                return BadRequest(new { Message = result.ErrorMessage ?? AppConstants.Errors.VALIDATION_FAILED });
             }
 
-            return Ok(new { Url = result.Url });
+            return Ok(new
+            {
+                result.Url,
+                Message = AppConstants.Success.AVATAR_UPLOADED
+            });
         }
 
         [HttpGet("calendar/occupied-dates")]

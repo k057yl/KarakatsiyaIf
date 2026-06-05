@@ -25,5 +25,18 @@ export const ASSET_CONSTANTS = {
     
     const index = Math.abs(hash) % this.DEFAULT_AVATARS.length;
     return this.DEFAULT_AVATARS[index];
+  },
+
+  getEventImage(imageUrl: string | null | undefined): string {
+    if (!imageUrl) {
+      return 'assets/images/default1.png';
+    }
+
+    if (imageUrl.startsWith('/uploads')) {
+      const baseHost = environment.apiUrl.replace(/\/api$/, '').replace(/\/api\/$/, '');
+      return `${baseHost}${imageUrl}`;
+    }
+    
+    return imageUrl;
   }
 };
