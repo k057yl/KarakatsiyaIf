@@ -45,15 +45,24 @@ export class VipCarouselComponent implements OnInit, OnDestroy {
   private loadVipEvents(): void {
     this.eventService.getApprovedEvents().subscribe({
       next: (events: any[]) => {
-        const vips = events.filter(e => e.isVip);
+        const now = new Date();
+        
+        const vips = events.filter(e => {
+          const isVip = e.isVip || e.isVipRequested;
+          const eventDate = new Date(e.startDate);
+
+          return isVip && eventDate.getTime() >= now.getTime();
+        });
+
         const shuffled = this.shuffleArray(vips).slice(0, 5);
-        const mappedVips = shuffled.map(e => ({
+        
+        const mappedVips: VipEvent[] = shuffled.map(e => ({
           id: e.id,
           title: e.title,
           city: e.city,
           locationName: e.locationName,
           startDate: e.startDate,
-          imageUrl: e.mainPhotoUrl ? ASSET_CONSTANTS.getEventImage(e.mainPhotoUrl) : null
+          imageUrl: ASSET_CONSTANTS.getEventImage(e.mainPhotoUrl || e.imageUrl)
         }));
 
         this.vipEvents.set(mappedVips);
@@ -62,7 +71,7 @@ export class VipCarouselComponent implements OnInit, OnDestroy {
           this.startAutoPlay();
         }
       },
-      error: (err) => console.error('Ошибка загрузки VIP-карусели', err)
+      error: (err) => console.warn('VIP-карусель ожидает сеть или пуста')
     });
   }
 

@@ -1,61 +1,101 @@
+// src/app/features/events/event-form-modal/event-form-modal.component.scss
+
 .modal-backdrop {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 2000;
+  background: rgba(0, 0, 0, 0.9); // Сделал чуть темнее для лучшего акцента
+  display: flex; align-items: center; justify-content: center; z-index: 2000;
+  // ИСПРАВЛЕНО: Убираем возможный скролл самого боди, если модалка открыта
+  overflow: hidden; 
 }
 
 .modal-window {
-  background: var(--card-bg); width: 95%; max-width: 550px;
-  border-radius: 12px; border: 1px solid var(--border-color); padding: 24px;
+  background: var(--card-bg, #1e1e1e);
+  width: 95%;
+  // ИСПРАВЛЕНО: Зажали ширину, чтобы точно в один столбик, без твоих любимых 2-х в ряд!
+  max-width: 460px; 
+  // ВНЕДРЕНО: Идеальный подгон по высоте (не более 90% экрана)
+  height: auto;
+  max-height: 90vh; 
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #333);
+  padding: 0; // Убрали внешний паддинг, он теперь внутри секций
+  
+  // ВНЕДРЕНО: Превратили модалку в Flexbox, чтобы управлять скроллом центра
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Важно, чтобы скроллился только центр!
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
+// Узкийheader прибит к верху
 header {
-  display: flex; justify-content: space-between; margin-bottom: 20px;
-  h3 { margin: 0; color: var(--primary-color); }
-  .close-x { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 15px 24px; // Паддинги переехали сюда
+  border-bottom: 1px solid var(--border-color, #333);
+  flex-shrink: 0; // Не дает хедеру сжиматься
+  
+  h3 { margin: 0; font-size: 1.3rem; color: var(--primary-color, #ffd700); font-weight: 700; }
+  .close-x {
+    background: none; border: none; color: var(--text-muted, #888);
+    font-size: 28px; cursor: pointer; padding: 0; line-height: 1;
+    transition: color 0.2s;
+    &:hover { color: #fff; }
+  }
 }
 
+// ВНЕДРЕНО: Область с формой или VIP-продажей получает СКРОЛЛ
+app-event-form,
 .vip-upsell-body {
-  padding: 20px;
+  flex: 1; // Занимает всё доступное место в модалке
+  overflow-y: auto; // ИСПРАВЛЕНО: Вот он, долгожданный вертикальный скролл!
+  padding: 24px; // Весь контент формы/апа теперь здесь
+  box-sizing: border-box;
+
+  // Идеально причесанные полосы скролла
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+}
+
+// ВНЕДРЕНО: Если внутри формы вдруг осталась сетка - НАХУЙ, заменяем на стек!
+::ng-deep app-event-form {
+  form {
+    display: flex;
+    flex-direction: column; // СТРОГИЙ СТЕК: ТОЛЬКО ОДИН СТОЛБИК!
+    gap: 15px; // Уменьшили зазор, чтобы влезло больше полей
+  }
+  
+  // Причесали карту внутри скролла
+  ::ng-deep .map-container { height: 220px; border-radius: 8px; border: 1px solid var(--border-color); }
+}
+
+// Блок VIP-продажи (для второй модалки в HTML)
+.vip-upsell-body {
+  padding: 30px; // Чуть больше паддинга для акцента
   text-align: center;
 
-  .success-desc {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-  }
+  .success-desc { font-size: 1.15rem; color: #fff; margin-bottom: 25px; line-height: 1.6; }
 
   .vip-promo-box {
-    background: rgba(255, 215, 0, 0.1);
-    border: 1px solid #ffd700;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 25px;
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px solid rgba(255, 215, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 
-    .promo-title {
-      color: #ffd700;
-      margin: 0 0 10px 0;
-      font-size: 1.2rem;
-    }
-
-    .promo-desc {
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
+    .promo-title { color: #ffd700; margin: 0 0 12px 0; font-size: 1.3rem; font-weight: 800; }
+    .promo-desc { margin: 0; font-size: 0.95rem; color: var(--text-muted, #ccc); line-height: 1.5; }
   }
 
+  // ВНЕДРЕНО: Кнопки в VIP-продаже тоже фиксируем
   .actions {
     display: flex;
     gap: 15px;
     justify-content: center;
-  }
-
-  .btn-vip-pay {
-    background: linear-gradient(45deg, #ffd700, #ffaa00);
-    color: #000;
-    font-weight: bold;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    border-top: 1px solid var(--border-color, #333);
+    padding-top: 20px;
+    margin-top: auto; // Прижимает к низу секции
   }
 }

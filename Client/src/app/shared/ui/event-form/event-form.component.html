@@ -91,13 +91,23 @@
   </div>
 
   <div class="field">
+    <label>Название локации</label>
     <input formControlName="locationName" [placeholder]="'EVENT_MODAL.LOC_NAME_PLACEHOLDER' | translate" />
   </div>
 
-  <div class="field-row">
+  <div class="field">
+    <label>Город</label>
     <input formControlName="city" [placeholder]="'EVENT_MODAL.CITY_PLACEHOLDER' | translate" />
+  </div>
+
+  <div class="field">
+    <label>Улица</label>
     <input formControlName="street" [placeholder]="'EVENT_MODAL.STREET_PLACEHOLDER' | translate" />
-    <input formControlName="houseNumber" [placeholder]="'EVENT_MODAL.HOUSE_PLACEHOLDER' | translate" class="small" />
+  </div>
+
+  <div class="field">
+    <label>Дом</label>
+    <input formControlName="houseNumber" [placeholder]="'EVENT_MODAL.HOUSE_PLACEHOLDER' | translate" />
   </div>
 
   <div class="actions">

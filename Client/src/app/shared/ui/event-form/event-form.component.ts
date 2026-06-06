@@ -107,10 +107,7 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     setTimeout(() => {
       const mapContainer = document.getElementById('event-map');
-      if (!mapContainer) {
-        console.error('Контейнер для карты не найден в DOM.');
-        return;
-      }
+      if (!mapContainer) return;
       
       this.initMap();
 
@@ -307,14 +304,18 @@ export class EventFormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.selectedLon = lon;
           this.selectedOsmId = undefined; 
 
-          const displayName = res.displayName || '';
-          const locName = displayName ? displayName.split(',')[0] : ''; 
+          const calculatedLocationName = address.amenity || 
+                                         address.building || 
+                                         address.shop || 
+                                         address.tourism || 
+                                         address.historic || 
+                                         (res.displayName ? res.displayName.split(',')[0] : '');
 
           this.eventForm.patchValue({
-            locationName: locName,
+            locationName: calculatedLocationName,
             city: address.city || address.town || address.village || '',
             street: address.road || '',
-            houseNumber: address.houseNumber || ''
+            houseNumber: address.house_number || address.houseNumber || ''
           });
         }
       },
