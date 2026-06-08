@@ -1,0 +1,63 @@
+<div class="global-vip-zone">
+  <div class="sub-header-container">
+    
+    <div class="left-widget">
+      <div class="rotation-container">
+        @if (authService.currentUser$ | async; as user) {
+          @if (user.role === 'Organizer') {
+            @if (currentSlideIndex() === 0) {
+              <div class="slide-item">🤘 Рома, твои ивенты под контролем. Проверь новые заявки в кабинете.</div>
+            } @else {
+              <div class="slide-item">📈 VIP-статус поднимает охваты просмотров твоих рейвов на 150%.</div>
+            }
+          } @else {
+            @if (currentSlideIndex() === 0) {
+              <div class="slide-item">👋 Рады видеть на Showcase! Ищи лучшие тусы на интерактивной карте.</div>
+            } @else {
+              <div class="slide-item">📅 Добавляй мероприятия в календарь, чтобы не проспать начало.</div>
+            }
+          }
+        } @else {
+          @if (currentSlideIndex() === 0) {
+            <div class="slide-item">🔑 Авторизуйся, чтобы оставлять комментарии и репортить спам.</div>
+          } @else {
+            <div class="slide-item">⚡️ Создавай аккаунт орга и продвигай свои концерты прямо сейчас.</div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="center-carousel">
+      <app-vip-carousel></app-vip-carousel>
+    </div>
+
+    <div class="right-widget">
+      <div class="right-combined-box">
+        <div class="sort-controls-box">
+          <button 
+            type="button"
+            class="btn-outline" 
+            [class.active]="currentSort === 'date'"
+            (click)="changeSort('date')">
+            {{ 'EVENT_LIST.SORT_BY_DATE' | translate }}
+          </button>
+          <button 
+            type="button"
+            class="btn-outline" 
+            [class.active]="currentSort === 'location'"
+            (click)="changeSort('location')">
+            {{ 'EVENT_LIST.SORT_BY_LOCATION' | translate }}
+          </button>
+        </div>
+
+        <div class="legend-row">
+          <span class="badge today">{{ 'EVENT_LIST.TAB_TODAY' | translate }}</span>
+          <span class="badge weekend">{{ 'EVENT_LIST.TAB_THREE_DAYS' | translate }}</span>
+          <span class="badge week">{{ 'EVENT_LIST.TAB_WEEK' | translate }}</span>
+          <span class="badge later">{{ 'ADMIN_PERFORMERS.TAB_ALL' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

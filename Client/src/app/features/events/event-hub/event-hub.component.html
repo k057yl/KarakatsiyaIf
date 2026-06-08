@@ -1,6 +1,5 @@
 <div class="map-page-container">
   
-  <!-- КОЛОНКА 1: Календарь и фильтры (Слева) -->
   <div class="filter-side">
     <div class="calendar-wrapper">
       <app-event-calendar (dateSelected)="filterByCalendarDate($event)"></app-event-calendar>
@@ -10,42 +9,20 @@
       <div class="title-row">
         <h2>{{ 'EVENT_LIST.HUB_TITLE' | translate }}</h2>
         @if (selectedCalendarDate()) {
-          <button class="btn-reset-date" (click)="resetCalendarFilter()">
+          <button type="button" class="btn-reset-date" (click)="resetCalendarFilter()">
             ❌ {{ 'EVENT_LIST.BTN_RESET_DATE' | translate }} ({{ selectedCalendarDate() | date:'dd.MM' }})
           </button>
         }
       </div>
-      
-      <div class="legend">
-        <span class="badge today">{{ 'EVENT_LIST.TAB_TODAY' | translate }}</span>
-        <span class="badge weekend">{{ 'EVENT_LIST.TAB_THREE_DAYS' | translate }}</span>
-        <span class="badge week">{{ 'EVENT_LIST.TAB_WEEK' | translate }}</span>
-        <span class="badge later">{{ 'ADMIN_PERFORMERS.TAB_ALL' | translate }}</span>
-      </div>
 
-      <div class="sort-controls">
-        <button 
-          class="btn-outline" 
-          [class.active]="currentSort() === 'date'"
-          (click)="sortEvents('date')">
-          {{ 'EVENT_LIST.SORT_BY_DATE' | translate }}
-        </button>
-        <button 
-          class="btn-outline" 
-          [class.active]="currentSort() === 'location'"
-          (click)="sortEvents('location')">
-          {{ 'EVENT_LIST.SORT_BY_LOCATION' | translate }}
-        </button>
-      </div>
+      <div class="category-vip-zone"></div>
     </div>
   </div>
 
-  <!-- КОЛОНКА 2: Интерактивная карта (Центр) -->
   <div class="map-side">
     <div #mapContainer id="main-events-map" class="full-map"></div>
   </div>
 
-  <!-- КОЛОНКА 3: Список плиток и пагинация (Справа) -->
   <div class="list-side">
     @if (isLoading()) {
       <div class="center-state">{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</div>
@@ -74,11 +51,6 @@
               <p class="org">👤 {{ event.organizerName }}</p>
               <p class="loc">📍 {{ event.locationName }}</p>
               <p class="date">📅 {{ event.startDate | date:'dd.MM HH:mm' }}</p>
-              <div class="actions">
-                <a [routerLink]="['/events', event.id]" class="btn-more" (click)="$event.stopPropagation()">
-                  {{ 'EVENT_LIST.BTN_DETAILS' | translate }}
-                </a>
-              </div>
             </div>
           </div>
         }

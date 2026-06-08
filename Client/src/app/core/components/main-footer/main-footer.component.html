@@ -1,0 +1,9 @@
+<footer class="main-footer">
+  <div class="footer-content">
+    <div class="footer-text" [innerHTML]="'FOOTER.TEXT' | translate"></div>
+    <div class="users-counter-badge">
+      <span class="pulse-indicator"></span>
+      Online: <strong>{{ activeUsersOnline() }}</strong>
+    </div>
+  </div>
+</footer>

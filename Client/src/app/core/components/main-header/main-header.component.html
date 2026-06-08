@@ -1,0 +1,58 @@
+<header class="main-header">
+  <div class="header-container">
+    <a routerLink="/" class="logo">Showcase</a>
+    
+    <nav class="main-nav">
+      <a routerLink="/events" routerLinkActive="active">{{ 'HEADER.POSTER' | translate }}</a>
+      <a routerLink="/archive" routerLinkActive="active">{{ 'HEADER.ARCHIVE' | translate }}</a>
+
+      <div class="auth-buttons">
+        @if (authService.currentUser$ | async; as user) {
+          
+          @switch (user.role) {
+            @case ('SuperAdmin') {
+              <a routerLink="/admin" class="btn-admin" routerLinkActive="active">
+                {{ 'HEADER.ADMIN_BTN' | translate }}
+              </a>
+            }
+            @case ('Organizer') {
+              <a routerLink="/organizer/dashboard" class="btn-dashboard" routerLinkActive="active">
+                {{ 'HEADER.DASHBOARD_BTN' | translate }}
+              </a>
+            }
+            @case ('PendingOrganizer') {
+              <span class="status-badge" [title]="'HEADER.STATUS_MODERATION_HINT' | translate">
+                {{ 'HEADER.STATUS_MODERATION' | translate }}
+              </span>
+            }
+            @case ('Visitor') {
+              <a routerLink="/become-organizer" class="btn-highlight">
+                {{ 'HEADER.BECOME_ORGANIZER' | translate }}
+              </a>
+            }
+          }
+
+          <div class="lang-switcher">
+            <button (click)="languageChanged.emit('uk')">UA</button>
+            <button (click)="languageChanged.emit('ru')">RU</button>
+            <button (click)="languageChanged.emit('en')">EN</button>
+          </div>
+
+          <a routerLink="/profile" class="user-email profile-link" [title]="'HEADER.PROFILE_HINT' | translate">
+            ⚙️ {{ user.email }}
+          </a>
+
+          <button (click)="logout()" class="btn-outline">{{ 'HEADER.LOGOUT_BTN' | translate }}</button>
+
+        } @else {
+          <a routerLink="/auth/login" class="btn-link">{{ 'HEADER.LOGIN' | translate }}</a>
+          <a routerLink="/auth/register" class="btn-primary">{{ 'HEADER.REGISTER' | translate }}</a>
+        }
+
+        <button class="theme-toggle-btn" (click)="themeToggled.emit()">
+          {{ currentTheme === 'dark' ? '☀️' : '🌙' }}
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>

@@ -27,6 +27,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public currentSort = signal<'date' | 'location'>('date');
   public currentPage = signal<number>(1);
   public pageSize = signal<number>(8);
+
   public pagedEvents = computed(() => {
     const startIndex = (this.currentPage() - 1) * this.pageSize();
     return this.filteredEvents().slice(startIndex, startIndex + this.pageSize());
@@ -103,28 +104,44 @@ export class EventHubComponent implements OnInit, OnDestroy {
 
   public filterByCalendarDate(dateStr: string): void {
     this.selectedCalendarDate.set(dateStr);
-    this.currentPage.set(1);
-    
-    const allEvents = this.events();
-    const filtered = allEvents.filter(e => {
-      const eDate = new Date(e.startDate);
-      const year = eDate.getFullYear();
-      const month = String(eDate.getMonth() + 1).padStart(2, '0');
-      const day = String(eDate.getDate()).padStart(2, '0');
-      const formattedEventDate = `${year}-${month}-${day}`;
-      
-      return formattedEventDate === dateStr;
-    });
-
-    this.filteredEvents.set(filtered);
-    this.sortEvents(this.currentSort());
+    this.applyFiltersAndSort();
   }
 
   public resetCalendarFilter(): void {
     this.selectedCalendarDate.set(null);
+    this.applyFiltersAndSort();
+  }
+
+  public onSortExternalChanged(criteria: 'date' | 'location'): void {
+    this.currentSort.set(criteria);
+    this.applyFiltersAndSort();
+  }
+
+  private applyFiltersAndSort(): void {
     this.currentPage.set(1);
-    this.filteredEvents.set(this.events());
-    this.sortEvents(this.currentSort());
+    let result = this.events();
+
+    const dateStr = this.selectedCalendarDate();
+    if (dateStr) {
+      result = result.filter(e => {
+        const eDate = new Date(e.startDate);
+        const year = eDate.getFullYear();
+        const month = String(eDate.getMonth() + 1).padStart(2, '0');
+        const day = String(eDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}` === dateStr;
+      });
+    }
+
+    const criteria = this.currentSort();
+    result = [...result].sort((a, b) => {
+      if (criteria === 'date') {
+        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+      } else {
+        return a.locationName.localeCompare(b.locationName);
+      }
+    });
+
+    this.filteredEvents.set(result);
   }
 
   private renderMarkers(L: any, eventList: any[]): void {
@@ -213,20 +230,6 @@ export class EventHubComponent implements OnInit, OnDestroy {
         marker.openPopup();
       }
     }
-  }
-
-  public sortEvents(criteria: 'date' | 'location'): void {
-    this.currentSort.set(criteria);
-    
-    const sorted = [...this.filteredEvents()].sort((a, b) => {
-      if (criteria === 'date') {
-        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
-      } else {
-        return a.locationName.localeCompare(b.locationName);
-      }
-    });
-
-    this.filteredEvents.set(sorted);
   }
 
   public changePage(page: number): void {
