@@ -49,7 +49,7 @@
             <div class="tile-body">
               <h3>{{ event.title }}</h3>
               <p class="org">👤 {{ event.organizerName }}</p>
-              <p class="loc">📍 {{ event.locationName }}</p>
+              <p class="loc">📍 {{ event.locationName || event.city }}</p>
               <p class="date">📅 {{ event.startDate | date:'dd.MM HH:mm' }}</p>
             </div>
           </div>

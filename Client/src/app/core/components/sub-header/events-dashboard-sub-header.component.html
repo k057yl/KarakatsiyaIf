@@ -33,22 +33,42 @@
 
     <div class="right-widget">
       <div class="right-combined-box">
-        <div class="sort-controls-box">
-          <button 
-            type="button"
-            class="btn-outline" 
-            [class.active]="currentSort === 'date'"
-            (click)="changeSort('date')">
-            {{ 'EVENT_LIST.SORT_BY_DATE' | translate }}
-          </button>
-          <button 
-            type="button"
-            class="btn-outline" 
-            [class.active]="currentSort === 'location'"
-            (click)="changeSort('location')">
-            {{ 'EVENT_LIST.SORT_BY_LOCATION' | translate }}
-          </button>
+        
+        <div class="filter-top-row">
+          <div class="sort-controls-box">
+            <button 
+              type="button"
+              class="btn-outline" 
+              [class.active]="currentSort === 'date'"
+              (click)="changeSort('date')">
+              {{ 'EVENT_LIST.SORT_BY_DATE' | translate }}
+            </button>
+            <button 
+              type="button"
+              class="btn-outline" 
+              [class.active]="currentSort === 'location'"
+              (click)="changeSort('location')">
+              {{ 'EVENT_LIST.SORT_BY_LOCATION' | translate }}
+            </button>
+          </div>
+
+          <select 
+            class="custom-select" 
+            [(ngModel)]="selectedCategoryId" 
+            (change)="onCategoryChange()">
+            <option value="">{{ 'EVENT_MODAL.FIELD_CAT_PLACEHOLDER' | translate }}</option>
+            @for (cat of categoriesList; track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
         </div>
+
+        <input 
+          type="text" 
+          class="custom-input" 
+          [(ngModel)]="searchLocationQuery" 
+          (input)="onLocationChange()"
+          [placeholder]="'EVENT_MODAL.LOC_NAME_PLACEHOLDER' | translate" />
 
         <div class="legend-row">
           <span class="badge today">{{ 'EVENT_LIST.TAB_TODAY' | translate }}</span>
@@ -56,6 +76,7 @@
           <span class="badge week">{{ 'EVENT_LIST.TAB_WEEK' | translate }}</span>
           <span class="badge later">{{ 'ADMIN_PERFORMERS.TAB_ALL' | translate }}</span>
         </div>
+
       </div>
     </div>
 

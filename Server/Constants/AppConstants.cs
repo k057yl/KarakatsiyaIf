@@ -16,6 +16,8 @@
             public const string DEV_DOMAIN = "https://karakatsiya.local";
             public const string PWA_MOBILE = "http://192.168.1.50:4200";
             public const string CORS_POLICY_NAME = "AllowAngular";
+            //public const string CORS_POLICY_NAME = "KarakatsiyaCorsPolicy";
+            public const string GEO_RATE_LIMITER_POLICY = "GeoProxyRateLimiterPolicy";
         }
 
         public static class Config

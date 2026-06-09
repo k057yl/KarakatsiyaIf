@@ -7,8 +7,8 @@
 }
 
 .filter-side {
-  background: var(--card-bg, #1e1e1e);
-  border-right: 1px solid var(--border-color, #333);
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -57,8 +57,8 @@
 }
 
 .list-side {
-  background: var(--card-bg, #1e1e1e);
-  border-left: 1px solid var(--border-color, #333);
+  background: var(--card-bg);
+  border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -78,12 +78,12 @@
     &::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
   }
 
-  .center-state { padding: 40px; text-align: center; color: var(--text-muted, #888); font-weight: bold; }
+  .center-state { padding: 40px; text-align: center; color: var(--text-muted); font-weight: bold; }
 }
 
 .event-tile-mini-card {
-  background: var(--input-bg, #252525);
-  border: 1px solid var(--border-color, #333);
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -92,12 +92,12 @@
   flex-direction: column;
   height: 220px;
 
-  &:hover { border-color: var(--primary-color, #ffd700); transform: translateY(-2px); }
+  &:hover { border-color: var(--primary-color); transform: translateY(-2px); }
   
   &.active {
-    border-color: var(--primary-color, #ffd700);
-    box-shadow: 0 0 0 2px var(--primary-color, #ffd700);
-    background: var(--card-bg, #1e1e1e);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+    background: var(--card-bg);
   }
 
   .tile-image-header {
@@ -123,22 +123,22 @@
     flex: 1;
     min-height: 0;
 
-    h3 { margin: 0 0 4px 0; font-size: 0.9rem; color: var(--text-main, #fff); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    p { margin: 1px 0; font-size: 0.75rem; color: var(--text-muted, #888); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .date { font-weight: bold; color: var(--text-main, #fff); margin-top: auto; font-size: 0.85rem; }
+    h3 { margin: 0 0 4px 0; font-size: 0.9rem; color: var(--text-main); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    p { margin: 1px 0; font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .date { font-weight: bold; color: var(--text-main); margin-top: auto; font-size: 0.85rem; }
   }
 }
 
 .title-row { 
   display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px; 
-  h2 { margin: 0; font-size: 1.2rem; color: var(--text-main, #fff); } 
+  h2 { margin: 0; font-size: 1.2rem; color: var(--text-main); } 
 }
 
 .btn-reset-date { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; padding: 4px 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.75rem; }
 
 .pagination-controls {
   display: flex; justify-content: center; align-items: center; gap: 15px;
-  padding: 12px 15px; border-top: 1px solid var(--border-color, #333); background: #161616;
+  padding: 12px 15px; border-top: 1px solid var(--border-color); background: #161616;
   flex-shrink: 0;
 
   button {

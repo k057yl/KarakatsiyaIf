@@ -62,6 +62,20 @@ export class AppComponent implements OnInit {
     }
   }
 
+  public onCategoryChanged(catId: string): void {
+    if (this.activeHubComponent) {
+      this.activeHubComponent.selectedCategoryId.set(catId);
+      this.activeHubComponent.onFilterChange();
+    }
+  }
+
+  public onLocationChanged(query: string): void {
+    if (this.activeHubComponent) {
+      this.activeHubComponent.searchLocationQuery.set(query);
+      this.activeHubComponent.onFilterChange();
+    }
+  }
+
   public onLanguageChanged(languageCode: string): void {
     this.translateService.use(languageCode);
     if (isPlatformBrowser(this.platformId)) {

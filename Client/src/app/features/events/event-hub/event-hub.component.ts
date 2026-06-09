@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal, OnDestroy, afterNextRender, ElementRef, viewChild, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { EventService } from '../services/event.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { EventCalendarComponent } from '../event-calendar/event-calendar.component';
@@ -9,7 +8,7 @@ import type * as LType from 'leaflet';
 @Component({
   selector: 'app-event-hub',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, EventCalendarComponent],
+  imports: [CommonModule, TranslateModule, EventCalendarComponent],
   templateUrl: './event-hub.component.html',
   styleUrls: ['./event-hub.component.scss']
 })
@@ -20,8 +19,13 @@ export class EventHubComponent implements OnInit, OnDestroy {
 
   public events = signal<any[]>([]);
   public filteredEvents = signal<any[]>([]);
+  public categoriesList = signal<any[]>([]);
+
   public selectedEventId = signal<string | null>(null);
   public selectedCalendarDate = signal<string | null>(null);
+  public selectedCategoryId = signal<string>('');
+  public searchLocationQuery = signal<string>('');
+
   public isLoading = signal<boolean>(true);
   public isMapReady = signal<boolean>(false);
   public currentSort = signal<'date' | 'location'>('date');
@@ -62,6 +66,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.loadCategories();
     this.loadEvents();
   }
 
@@ -70,6 +75,13 @@ export class EventHubComponent implements OnInit, OnDestroy {
       this.map.remove();
     }
     this.markerMap.clear();
+  }
+
+  private loadCategories(): void {
+    this.eventService.getCategories().subscribe({
+      next: (cats) => this.categoriesList.set(cats),
+      error: (err) => console.error(err)
+    });
   }
 
   private loadEvents(): void {
@@ -112,6 +124,10 @@ export class EventHubComponent implements OnInit, OnDestroy {
     this.applyFiltersAndSort();
   }
 
+  public onFilterChange(): void {
+    this.applyFiltersAndSort();
+  }
+
   public onSortExternalChanged(criteria: 'date' | 'location'): void {
     this.currentSort.set(criteria);
     this.applyFiltersAndSort();
@@ -132,12 +148,25 @@ export class EventHubComponent implements OnInit, OnDestroy {
       });
     }
 
+    const catId = this.selectedCategoryId();
+    if (catId) {
+      result = result.filter(e => e.categoryId === catId);
+    }
+
+    const locQuery = this.searchLocationQuery().toLowerCase().trim();
+    if (locQuery) {
+      result = result.filter(e => 
+        (e.locationName && e.locationName.toLowerCase().includes(locQuery)) ||
+        (e.city && e.city.toLowerCase().includes(locQuery))
+      );
+    }
+
     const criteria = this.currentSort();
     result = [...result].sort((a, b) => {
       if (criteria === 'date') {
         return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
       } else {
-        return a.locationName.localeCompare(b.locationName);
+        return (a.locationName || '').localeCompare(b.locationName || '');
       }
     });
 
@@ -176,7 +205,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
         .bindPopup(`
           <div class="map-popup">
             <h4 style="margin:0 0 5px 0; font-size:1rem;">${event.title}</h4>
-            <p style="margin:0 0 10px 0; font-size:0.85rem; color:#555;">${event.locationName}</p>
+            <p style="margin:0 0 10px 0; font-size:0.85rem; color:#555;">${event.locationName || event.city}</p>
             <a href="/events/${event.id}" style="font-weight:bold; color:#007bff; text-decoration:none;">Подробнее</a>
           </div>
         `);
