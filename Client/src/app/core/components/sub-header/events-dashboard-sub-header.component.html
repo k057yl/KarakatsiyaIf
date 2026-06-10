@@ -6,22 +6,24 @@
         @if (authService.currentUser$ | async; as user) {
           @if (user.role === 'Organizer') {
             @if (currentSlideIndex() === 0) {
-              <div class="slide-item">🤘 Рома, твои ивенты под контролем. Проверь новые заявки в кабинете.</div>
+              <div class="slide-item">{{ 'HEADER_WIDGET.ORG_SLIDE_1' | translate }}</div>
             } @else {
-              <div class="slide-item">📈 VIP-статус поднимает охваты просмотров твоих рейвов на 150%.</div>
+              <div class="slide-item">{{ 'HEADER_WIDGET.ORG_SLIDE_2' | translate }}</div>
             }
-          } @else {
+          }
+          
+          @if (user.role !== 'Organizer') {
             @if (currentSlideIndex() === 0) {
-              <div class="slide-item">👋 Рады видеть на Showcase! Ищи лучшие тусы на интерактивной карте.</div>
+              <div class="slide-item">{{ 'HEADER_WIDGET.USER_SLIDE_1' | translate }}</div>
             } @else {
-              <div class="slide-item">📅 Добавляй мероприятия в календарь, чтобы не проспать начало.</div>
+              <div class="slide-item">{{ 'HEADER_WIDGET.USER_SLIDE_2' | translate }}</div>
             }
           }
         } @else {
           @if (currentSlideIndex() === 0) {
-            <div class="slide-item">🔑 Авторизуйся, чтобы оставлять комментарии и репортить спам.</div>
+            <div class="slide-item">{{ 'HEADER_WIDGET.GUEST_SLIDE_1' | translate }}</div>
           } @else {
-            <div class="slide-item">⚡️ Создавай аккаунт орга и продвигай свои концерты прямо сейчас.</div>
+            <div class="slide-item">{{ 'HEADER_WIDGET.GUEST_SLIDE_2' | translate }}</div>
           }
         }
       </div>

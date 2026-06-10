@@ -4,6 +4,10 @@ import { AuthService } from '../../features/auth/services/auth.service';
 import { catchError, throwError } from 'rxjs';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
+    return next(req);
+  }
+
   const authService = inject(AuthService);
 
   return next(req).pipe(

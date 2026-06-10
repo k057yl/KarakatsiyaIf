@@ -5,6 +5,10 @@ import { environment } from '../../../environments/environment';
 import { take } from 'rxjs';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+  if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
+    return next(req);
+  }
+
   const authService = inject(AuthService);
   const apiUrl = environment.apiUrl;
 
