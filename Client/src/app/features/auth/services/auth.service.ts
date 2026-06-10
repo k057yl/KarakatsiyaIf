@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, VerifyCodeRequest } from '../dtos/auth.dto';
@@ -7,6 +8,7 @@ import { AuthResponse, LoginRequest, RegisterRequest, VerifyCodeRequest } from '
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private router = inject(Router);
   private apiUrl = `${environment.apiUrl}/auth`;
   
   private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
@@ -45,6 +47,7 @@ export class AuthService {
       localStorage.removeItem('karakatsiya_user');
     }
     this.currentUserSubject.next(null);
+    this.router.navigate(['/']);
   }
 
   public isSuperAdmin(): boolean {

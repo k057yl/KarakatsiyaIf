@@ -36,6 +36,9 @@
               "src/styles/styles.scss"
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "leaflet"
+            ],
             "server": "src/main.server.ts",
             "prerender": true,
             "ssr": {
@@ -52,8 +55,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "30kB"
                 }
               ],
               "outputHashing": "all"
