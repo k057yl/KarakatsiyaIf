@@ -28,9 +28,13 @@ export class EventsDashboardSubHeaderComponent implements OnInit, OnDestroy {
   public currentSlideIndex = signal<number>(0);
   public selectedCategoryId = signal<string>('');
   public searchLocationQuery = signal<string>('');
+  
+  public isBrowser = false;
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
+    if (this.isBrowser) {
       this.rotationSub = interval(12000).subscribe(() => {
         this.currentSlideIndex.update(idx => (idx === 0 ? 1 : 0));
       });

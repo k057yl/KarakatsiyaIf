@@ -19,6 +19,26 @@
     margin: 0 auto;
     padding: 0 20px;
   }
+
+  // === ЖЕЛЕЗОБЕТОННЫЙ АНТИ-ГИДРАЦИОННЫЙ ЩИТ ===
+  &:not(.app-hydrated) {
+    .auth-logged {
+      display: none !important;
+    }
+  }
+
+  &.app-hydrated {
+    .auth-logged ~ .auth-guest {
+      display: none !important;
+    }
+    
+    .auth-logged, .auth-guest {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
 }
 
 // КРАСНЫЙ БЛОК
@@ -55,6 +75,9 @@
     color: var(--text-main);
     text-decoration: none;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     transition: color 0.2s;
 
     &:hover, &.active {
@@ -63,9 +86,8 @@
   }
 
   .profile-link {
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
   }
 }
@@ -192,6 +214,9 @@
     color: var(--text-main);
     text-decoration: none;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     transition: color 0.2s;
 
     &:hover {
@@ -211,6 +236,9 @@
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: filter 0.2s;
 
   &:hover {
@@ -227,6 +255,9 @@
   cursor: pointer;
   font-weight: 500;
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: background-color 0.2s, border-color 0.2s;
 
   &:hover {
@@ -243,6 +274,9 @@
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .btn-dashboard {
@@ -253,6 +287,9 @@
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .btn-highlight {
@@ -263,6 +300,9 @@
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .status-badge {
@@ -275,6 +315,7 @@
   border: 1px solid rgba(255, 204, 0, 0.25);
   display: inline-flex;
   align-items: center;
+  gap: 4px;
 }
 
 @keyframes fadeIn {

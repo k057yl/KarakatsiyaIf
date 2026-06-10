@@ -3,28 +3,32 @@
     
     <div class="left-widget">
       <div class="rotation-container">
-        @if (authService.currentUser$ | async; as user) {
-          @if (user.role === 'Organizer') {
-            @if (currentSlideIndex() === 0) {
-              <div class="slide-item">{{ 'HEADER_WIDGET.ORG_SLIDE_1' | translate }}</div>
-            } @else {
-              <div class="slide-item">{{ 'HEADER_WIDGET.ORG_SLIDE_2' | translate }}</div>
+        @if (isBrowser) {
+          @if (authService.currentUser$ | async; as user) {
+            @if (user.role === 'Organizer') {
+              @if (currentSlideIndex() === 0) {
+                <div class="slide-item">{{ 'HEADER_WIDGET.ORG_SLIDE_1' | translate }}</div>
+              } @else {
+                <div class="slide-item">{{ 'HEADER_WIDGET.ORG_SLIDE_2' | translate }}</div>
+              }
             }
-          }
-          
-          @if (user.role !== 'Organizer') {
+            
+            @if (user.role !== 'Organizer') {
+              @if (currentSlideIndex() === 0) {
+                <div class="slide-item">{{ 'HEADER_WIDGET.USER_SLIDE_1' | translate }}</div>
+              } @else {
+                <div class="slide-item">{{ 'HEADER_WIDGET.USER_SLIDE_2' | translate }}</div>
+              }
+            }
+          } @else {
             @if (currentSlideIndex() === 0) {
-              <div class="slide-item">{{ 'HEADER_WIDGET.USER_SLIDE_1' | translate }}</div>
+              <div class="slide-item">{{ 'HEADER_WIDGET.GUEST_SLIDE_1' | translate }}</div>
             } @else {
-              <div class="slide-item">{{ 'HEADER_WIDGET.USER_SLIDE_2' | translate }}</div>
+              <div class="slide-item">{{ 'HEADER_WIDGET.GUEST_SLIDE_2' | translate }}</div>
             }
           }
         } @else {
-          @if (currentSlideIndex() === 0) {
-            <div class="slide-item">{{ 'HEADER_WIDGET.GUEST_SLIDE_1' | translate }}</div>
-          } @else {
-            <div class="slide-item">{{ 'HEADER_WIDGET.GUEST_SLIDE_2' | translate }}</div>
-          }
+          <div class="slide-item">&nbsp;</div>
         }
       </div>
     </div>

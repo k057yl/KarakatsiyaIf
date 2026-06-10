@@ -1,4 +1,4 @@
-<header class="main-header">
+<header class="main-header" [class.app-hydrated]="true">
   <div class="header-container">
     
     <div class="block-red">
@@ -8,109 +8,113 @@
     <nav class="main-nav">
       
       @if (authService.currentUser$ | async; as user) {
-        <div class="block-yellow">
-          <a routerLink="/events" routerLinkActive="active" [title]="'HEADER.POSTER_HINT' | translate">
-            {{ 'HEADER.POSTER' | translate }}
-          </a>
-          <a routerLink="/archive" routerLinkActive="active" [title]="'HEADER.ARCHIVE_HINT' | translate">
-            {{ 'HEADER.ARCHIVE' | translate }}
-          </a>
+        <div class="auth-logged">
+          <div class="block-yellow">
+            <a routerLink="/events" routerLinkActive="active" [title]="'HEADER.POSTER_HINT' | translate">
+              🎸 {{ 'HEADER.POSTER' | translate }}
+            </a>
+            <a routerLink="/archive" routerLinkActive="active" [title]="'HEADER.ARCHIVE_HINT' | translate">
+              📦 {{ 'HEADER.ARCHIVE' | translate }}
+            </a>
 
-          @switch (user.role) {
-            @case ('SuperAdmin') {
-              <a routerLink="/admin" class="btn-admin" routerLinkActive="active" [title]="'HEADER.ADMIN_HINT' | translate">
-                {{ 'HEADER.ADMIN_BTN' | translate }}
-              </a>
+            @switch (user.role) {
+              @case ('SuperAdmin') {
+                <a routerLink="/admin" class="btn-admin" routerLinkActive="active" [title]="'HEADER.ADMIN_HINT' | translate">
+                  ⚡ {{ 'HEADER.ADMIN_BTN' | translate }}
+                </a>
+              }
+              @case ('Organizer') {
+                <a routerLink="/organizer/dashboard" class="btn-dashboard" routerLinkActive="active" [title]="'HEADER.DASHBOARD_HINT' | translate">
+                  🚀 {{ 'HEADER.DASHBOARD_BTN' | translate }}
+                </a>
+              }
+              @case ('PendingOrganizer') {
+                <span class="status-badge" [title]="'HEADER.STATUS_MODERATION_HINT' | translate">
+                  ⏳ {{ 'HEADER.STATUS_MODERATION' | translate }}
+                </span>
+              }
+              @case ('Visitor') {
+                <a routerLink="/become-organizer" class="btn-highlight" [title]="'HEADER.BECOME_ORGANIZER_HINT' | translate">
+                  👑 {{ 'HEADER.BECOME_ORGANIZER' | translate }}
+                </a>
+              }
             }
-            @case ('Organizer') {
-              <a routerLink="/organizer/dashboard" class="btn-dashboard" routerLinkActive="active" [title]="'HEADER.DASHBOARD_HINT' | translate">
-                {{ 'HEADER.DASHBOARD_BTN' | translate }}
-              </a>
-            }
-            @case ('PendingOrganizer') {
-              <span class="status-badge" [title]="'HEADER.STATUS_MODERATION_HINT' | translate">
-                {{ 'HEADER.STATUS_MODERATION' | translate }}
-              </span>
-            }
-            @case ('Visitor') {
-              <a routerLink="/become-organizer" class="btn-highlight" [title]="'HEADER.BECOME_ORGANIZER_HINT' | translate">
-                {{ 'HEADER.BECOME_ORGANIZER' | translate }}
-              </a>
-            }
-          }
 
-          <a routerLink="/profile" class="profile-link" [title]="'HEADER.PROFILE_HINT' | translate">
-            ⚙️
-          </a>
-        </div>
-
-        <div class="block-green">
-          <span class="user-welcome">
-            {{ 'HEADER.WELCOME_USER' | translate }} <span class="user-email">{{ user.email }}</span>
-          </span>
-
-          <button class="theme-toggle-btn" (click)="themeToggled.emit()" [title]="'HEADER.THEME_TOGGLE_HINT' | translate">
-            {{ currentTheme === 'dark' ? '☀️' : '🌙' }}
-          </button>
-
-          <div class="lang-dropdown" [class.open]="isLangMenuOpen" [title]="'HEADER.LANG_SELECT_HINT' | translate">
-            <button class="dropdown-trigger" (click)="toggleLangMenu($event)">
-              🌐 {{ currentLang.toUpperCase() }} <span class="arrow">▼</span>
-            </button>
-            
-            @if (isLangMenuOpen) {
-              <ul class="dropdown-menu">
-                <li><button (click)="selectLang('uk')" [title]="'HEADER.LANG_UA_HINT' | translate">UA (Українська)</button></li>
-                <li><button (click)="selectLang('ru')" [title]="'HEADER.LANG_RU_HINT' | translate">RU (Русский)</button></li>
-                <li><button (click)="selectLang('en')" [title]="'HEADER.LANG_EN_HINT' | translate">EN (English)</button></li>
-              </ul>
-            }
+            <a routerLink="/profile" class="profile-link" [title]="'HEADER.PROFILE_HINT' | translate">
+              ⚙️ {{ 'HEADER.PROFILE_HINT' | translate }}
+            </a>
           </div>
-        </div>
 
-        <div class="block-blue">
-          <button (click)="logout()" class="btn-outline" [title]="'HEADER.LOGOUT_HINT' | translate">
-            {{ 'HEADER.LOGOUT_BTN' | translate }}
-          </button>
+          <div class="block-green">
+            <span class="user-welcome">
+              {{ 'HEADER.WELCOME_USER' | translate }} <span class="user-email">👤 {{ user.email }}</span>
+            </span>
+
+            <button class="theme-toggle-btn" (click)="themeToggled.emit()" [title]="'HEADER.THEME_TOGGLE_HINT' | translate">
+              {{ currentTheme === 'dark' ? '☀️' : '🌙' }}
+            </button>
+
+            <div class="lang-dropdown" [class.open]="isLangMenuOpen" [title]="'HEADER.LANG_SELECT_HINT' | translate">
+              <button class="dropdown-trigger" (click)="toggleLangMenu($event)">
+                🌐 {{ getActiveLang() }} <span class="arrow">▼</span>
+              </button>
+              
+              @if (isLangMenuOpen) {
+                <ul class="dropdown-menu">
+                  <li><button (click)="selectLang('uk')" [title]="'HEADER.LANG_UA_HINT' | translate">UA (Українська)</button></li>
+                  <li><button (click)="selectLang('ru')" [title]="'HEADER.LANG_RU_HINT' | translate">RU (Русский)</button></li>
+                  <li><button (click)="selectLang('en')" [title]="'HEADER.LANG_EN_HINT' | translate">EN (English)</button></li>
+                </ul>
+              }
+            </div>
+          </div>
+
+          <div class="block-blue">
+            <button (click)="logout()" class="btn-outline" [title]="'HEADER.LOGOUT_HINT' | translate">
+              🚪 {{ 'HEADER.LOGOUT_BTN' | translate }}
+            </button>
+          </div>
         </div>
 
       } @else {
-        <div class="block-yellow">
-          <a routerLink="/events" routerLinkActive="active" [title]="'HEADER.POSTER_HINT' | translate">
-            {{ 'HEADER.POSTER' | translate }}
-          </a>
-          <a routerLink="/archive" routerLinkActive="active" [title]="'HEADER.ARCHIVE_HINT' | translate">
-            {{ 'HEADER.ARCHIVE' | translate }}
-          </a>
-        </div>
-
-        <div class="block-green">
-          <button class="theme-toggle-btn" (click)="themeToggled.emit()" [title]="'HEADER.THEME_TOGGLE_HINT' | translate">
-            {{ currentTheme === 'dark' ? '☀️' : '🌙' }}
-          </button>
-
-          <div class="lang-dropdown" [class.open]="isLangMenuOpen" [title]="'HEADER.LANG_SELECT_HINT' | translate">
-            <button class="dropdown-trigger" (click)="toggleLangMenu($event)">
-              🌐 {{ currentLang.toUpperCase() }} <span class="arrow">▼</span>
-            </button>
-            
-            @if (isLangMenuOpen) {
-              <ul class="dropdown-menu">
-                <li><button (click)="selectLang('uk')" [title]="'HEADER.LANG_UA_HINT' | translate">UA (Українська)</button></li>
-                <li><button (click)="selectLang('ru')" [title]="'HEADER.LANG_RU_HINT' | translate">RU (Русский)</button></li>
-                <li><button (click)="selectLang('en')" [title]="'HEADER.LANG_EN_HINT' | translate">EN (English)</button></li>
-              </ul>
-            }
+        <div class="auth-guest">
+          <div class="block-yellow">
+            <a routerLink="/events" routerLinkActive="active" [title]="'HEADER.POSTER_HINT' | translate">
+              🎸 {{ 'HEADER.POSTER' | translate }}
+            </a>
+            <a routerLink="/archive" routerLinkActive="active" [title]="'HEADER.ARCHIVE_HINT' | translate">
+              📦 {{ 'HEADER.ARCHIVE' | translate }}
+            </a>
           </div>
-        </div>
 
-        <div class="block-blue">
-          <a routerLink="/auth/login" class="btn-link" [title]="'HEADER.LOGIN_HINT' | translate">
-            {{ 'HEADER.LOGIN' | translate }}
-          </a>
-          <a routerLink="/auth/register" class="btn-primary" [title]="'HEADER.REGISTER_HINT' | translate">
-            {{ 'HEADER.REGISTER' | translate }}
-          </a>
+          <div class="block-green">
+            <button class="theme-toggle-btn" (click)="themeToggled.emit()" [title]="'HEADER.THEME_TOGGLE_HINT' | translate">
+              {{ currentTheme === 'dark' ? '☀️' : '🌙' }}
+            </button>
+
+            <div class="lang-dropdown" [class.open]="isLangMenuOpen" [title]="'HEADER.LANG_SELECT_HINT' | translate">
+              <button class="dropdown-trigger" (click)="toggleLangMenu($event)">
+                🌐 {{ getActiveLang() }} <span class="arrow">▼</span>
+              </button>
+              
+              @if (isLangMenuOpen) {
+                <ul class="dropdown-menu">
+                  <li><button (click)="selectLang('uk')" [title]="'HEADER.LANG_UA_HINT' | translate">UA (Українська)</button></li>
+                  <li><button (click)="selectLang('ru')" [title]="'HEADER.LANG_RU_HINT' | translate">RU (Русский)</button></li>
+                  <li><button (click)="selectLang('en')" [title]="'HEADER.LANG_EN_HINT' | translate">EN (English)</button></li>
+                </ul>
+              }
+            </div>
+          </div>
+
+          <div class="block-blue">
+            <a routerLink="/auth/login" class="btn-link" [title]="'HEADER.LOGIN_HINT' | translate">
+              🔑 {{ 'HEADER.LOGIN' | translate }}
+            </a>
+            <a routerLink="/auth/register" class="btn-primary" [title]="'HEADER.REGISTER_HINT' | translate">
+              📝 {{ 'HEADER.REGISTER' | translate }}
+            </a>
+          </div>
         </div>
       }
 

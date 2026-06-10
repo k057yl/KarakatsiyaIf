@@ -1,22 +1,27 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { AuthService } from '../../features/auth/services/auth.service';
-import { catchError, throwError } from 'rxjs';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
-    return next(req);
-  }
-
   const authService = inject(AuthService);
 
   return next(req).pipe(
-    catchError(err => {
-      if (err.status === 401) {
-        authService.logout();
+    catchError((error: HttpErrorResponse) => {
+
+      if (error.status === 401) {
+        console.warn('[Error Interceptor] Словлен 401. Вычищаем сессию...');
+
+        if (typeof window !== 'undefined') {
+          authService.logout();
+        }
       }
-      
-      const error = err.error?.message || err.statusText;
+
+      if (error.status === 0) {
+        console.error('[Error Interceptor] Сетевая ошибка или сервер недоступен (Status 0). Не логаутим.');
+      }
+
       return throwError(() => error);
     })
   );

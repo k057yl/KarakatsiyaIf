@@ -1,7 +1,7 @@
 import { Component, inject, Input, Output, EventEmitter, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
@@ -13,6 +13,7 @@ import { AuthService } from '../../../features/auth/services/auth.service';
 })
 export class MainHeaderComponent implements OnInit {
   public authService = inject(AuthService);
+  private translate = inject(TranslateService);
 
   @Input() currentTheme = 'dark';
   @Input() currentLang = 'uk';
@@ -22,6 +23,10 @@ export class MainHeaderComponent implements OnInit {
   public isLangMenuOpen = false;
 
   ngOnInit(): void {
+  }
+
+  public getActiveLang(): string {
+    return (this.translate.currentLang || this.translate.defaultLang || 'uk').toUpperCase();
   }
 
   public toggleLangMenu(event: Event): void {
