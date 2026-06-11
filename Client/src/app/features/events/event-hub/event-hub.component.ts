@@ -3,12 +3,20 @@ import { CommonModule } from '@angular/common';
 import { EventService } from '../services/event.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { EventCalendarComponent } from '../event-calendar/event-calendar.component';
+import { EventsDashboardSubHeaderComponent } from '../../../core/components/sub-header/events-dashboard-sub-header.component';
+import { MapLegendComponent } from '../../../shared/ui/map-legend/map-legend.component';
 import type * as LType from 'leaflet';
 
 @Component({
   selector: 'app-event-hub',
   standalone: true,
-  imports: [CommonModule, TranslateModule, EventCalendarComponent],
+  imports: [
+    CommonModule, 
+    TranslateModule, 
+    EventCalendarComponent, 
+    EventsDashboardSubHeaderComponent,
+    MapLegendComponent
+  ],
   templateUrl: './event-hub.component.html',
   styleUrls: ['./event-hub.component.scss']
 })
@@ -25,6 +33,8 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public selectedCalendarDate = signal<string | null>(null);
   public selectedCategoryId = signal<string>('');
   public searchLocationQuery = signal<string>('');
+  
+  public currentTimeFilter = signal<string>('all');
 
   public isLoading = signal<boolean>(true);
   public isMapReady = signal<boolean>(false);
@@ -133,6 +143,21 @@ export class EventHubComponent implements OnInit, OnDestroy {
     this.applyFiltersAndSort();
   }
 
+  public onCategoryExternalChanged(catId: string): void {
+    this.selectedCategoryId.set(catId);
+    this.applyFiltersAndSort();
+  }
+
+  public onLocationExternalChanged(query: string): void {
+    this.searchLocationQuery.set(query);
+    this.applyFiltersAndSort();
+  }
+
+  public onTimeFilterChanged(filterType: string): void {
+    this.currentTimeFilter.set(filterType);
+    this.applyFiltersAndSort();
+  }
+
   private applyFiltersAndSort(): void {
     this.currentPage.set(1);
     let result = this.events();
@@ -159,6 +184,23 @@ export class EventHubComponent implements OnInit, OnDestroy {
         (e.locationName && e.locationName.toLowerCase().includes(locQuery)) ||
         (e.city && e.city.toLowerCase().includes(locQuery))
       );
+    }
+
+    const timeFilter = this.currentTimeFilter();
+    if (timeFilter !== 'all') {
+      const now = new Date();
+      result = result.filter(e => {
+        const eventDate = new Date(e.startDate);
+        const diffTime = eventDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) return false;
+
+        if (timeFilter === 'today') return diffDays <= 1;
+        if (timeFilter === 'weekend') return diffDays <= 3;
+        if (timeFilter === 'week') return diffDays <= 7;
+        return true;
+      });
     }
 
     const criteria = this.currentSort();

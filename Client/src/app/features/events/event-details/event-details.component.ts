@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EventService } from '../services/event.service';
 import { CommentService } from '../services/comment.service';
 import { AuthService } from '../../auth/services/auth.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { PerformerInfoModalComponent } from './performer-info-modal/performer-info-modal.component';
 import { PerformerDetails } from '../dtos/performer-details.dto';
@@ -22,11 +22,15 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   private readonly eventService = inject(EventService);
   private readonly commentService = inject(CommentService);
   public readonly authService = inject(AuthService);
+  private readonly translateService = inject(TranslateService);
   private readonly injector = inject(Injector);
 
   private mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
   public eventDetails = signal<any>(null);
+
+  public currentPhotoUrl = signal<string | null>(null);
+
   public isLoading = signal<boolean>(true);
   public errorMessage = signal<string>('');
 
@@ -77,18 +81,30 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   private loadEventDetails(id: string): void {
     this.eventService.getEventDetails(id).subscribe({
       next: (data) => {
+        let mainPhoto = '';
         if (data && data.photos && data.photos.length > 0) {
           const main = data.photos.find((p: any) => p.isMain);
-          data.mainPhotoUrl = main ? main.imageUrl : data.photos[0].imageUrl;
+          mainPhoto = main ? main.imageUrl : data.photos[0].imageUrl;
+          data.mainPhotoUrl = mainPhoto;
         }
+        
         this.eventDetails.set(data);
+        
+        if (mainPhoto) {
+          this.currentPhotoUrl.set(mainPhoto);
+        }
+        
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.errorMessage.set(err.error?.message || 'ERRORS.SERVICE_UNAVAILABLE');
+        this.errorMessage.set(err.error?.message);
         this.isLoading.set(false);
       }
     });
+  }
+  
+  public changePhoto(photoUrl: string): void {
+    this.currentPhotoUrl.set(photoUrl);
   }
 
   public canLeaveComment(startDate: string | null | undefined): boolean {
@@ -100,6 +116,19 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     const diffHours = diffMs / (1000 * 60 * 60);
 
     return diffHours >= 1;
+  }
+
+  public getMarkerColor(dateStr: string): string {
+    const now = new Date();
+    const eventDate = new Date(dateStr);
+    const diffTime = eventDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return '#6c757d'; 
+    if (diffDays <= 1) return '#dc3545'; 
+    if (diffDays <= 3) return '#ffc107'; 
+    if (diffDays <= 7) return '#28a745'; 
+    return '#007bff'; 
   }
 
   public sendComment(): void {
@@ -127,15 +156,21 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   public reportComment(commentId: string): void {
-    const reason = window.prompt('Какая причина жалобы? (Спам, мат, оскорбления, реклама крипты):');
+    const promptMsg = this.translateService.instant('EVENT_DETAILS.REPORT_PROMPT');
+    const reason = window.prompt(promptMsg);
+    
     if (!reason || !reason.trim()) return;
 
     this.commentService.reportComment(commentId, reason.trim()).subscribe({
       next: () => {
-        window.alert('Жалоба отправлена на стол Суперадмину. Разберёмся!');
+        const successMsg = this.translateService.instant('EVENT_DETAILS.REPORT_SUCCESS');
+        window.alert(successMsg);
       },
       error: (err) => {
-        window.alert(err.error?.message || 'Не удалось отправить жалобу.');
+        const fallbackError = this.translateService.instant('ERRORS.SERVICE_UNAVAILABLE');
+        const errorKey = err.error?.message;
+        const errorMsg = errorKey ? this.translateService.instant(errorKey) : fallbackError;
+        window.alert(errorMsg);
       }
     });
   }

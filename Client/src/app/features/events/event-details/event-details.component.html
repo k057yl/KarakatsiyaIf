@@ -1,16 +1,16 @@
 <div class="details-container">
   @if (isLoading()) {
-    <div class="loading-spinner">{{ 'ADMIN_PERFORMERS.LOADING' | translate }}</div>
+    <div class="loading-spinner">Загрузка данных...</div>
   } @else if (errorMessage()) {
-    <div class="error-msg">{{ errorMessage() | translate }}</div>
-    <a routerLink="/events" class="btn-outline">{{ 'EVENT_MODAL.CANCEL_BTN' | translate }}</a>
+    <div class="error-msg">Произошла ошибка при загрузке.</div>
+    <a routerLink="/events" class="btn-outline">Отмена</a>
   } @else {
     @if (eventDetails(); as event) {
       <div class="event-header">
-        <a routerLink="/events" class="back-link">← {{ 'ADMIN_PERFORMERS.TAB_PENDING' | translate }}</a>
+        <a routerLink="/events" class="back-link">← Назад</a>
         <h1>{{ event.title }}</h1>
         <div class="event-meta">
-          <span class="organizer">👤 {{ 'OTHERS.ORGANIZER_NOT_SPECIFIED' | translate }}: {{ event.organizerName }}</span>
+          <span class="organizer">👤 Организатор: {{ event.organizerName || 'Не указан' }}</span>
           <span class="date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</span>
           <span class="views">👀 {{ event.viewsCount || 0 }}</span>
         </div>
@@ -18,69 +18,85 @@
 
       <div class="event-content">
         <div class="main-info">
-          <div class="cover-image-container">
-            @if (event.photos && event.photos.length > 0) {
-              <img [src]="event.mainPhotoUrl || event.photos[0].imageUrl" alt="Event Cover" class="cover-image" />
-            } @else {
-              <div class="cover-image-placeholder">
-                 Rhine 🖼️ {{ 'EVENT_MODAL.ERROR_NO_MAIN_PHOTO' | translate }}
-              </div>
-            }
-          </div>
           
-          <div class="description-block">
-            <h3>{{ 'EVENT_MODAL.FIELD_DESC_LABEL' | translate }}</h3>
-            <div [innerHTML]="event.description" class="html-content"></div>
-          </div>
+          <div class="fixed-info-grid">
+            
+            <div class="grid-cell cover-image-container">
+              @if (currentPhotoUrl()) {
+                <img [src]="currentPhotoUrl()" alt="Event Cover" class="cover-image" />
+              } @else {
+                <div class="cover-image-placeholder">
+                  🖼️ Изображение отсутствует
+                </div>
+              }
+            </div>
 
-          @if ((event.performers || event.Performers); as eventPerformers) {
-            @if (eventPerformers.length > 0) {
-              <div class="performers-block">
-                <h3>{{ 'EVENT_DETAILS.PERFORMERS_TITLE' | translate }} 🤘</h3>
-                <div class="performers-grid">
-                  @for (perf of eventPerformers; track perf.id) {
-                    <div class="performer-card-mini" (click)="openPerformerInfo(perf)">
-                      <div class="avatar-wrapper">
-                        <img [src]="getAvatar(perf.avatarUrl, perf.id)" [alt]="perf.name" />
-                      </div>
-                      <span class="name">{{ perf.name }}</span>
+            <div class="grid-cell gallery-block">
+              <h3>Другие фото</h3>
+              @if (event.photos && event.photos.length > 0) {
+                <div class="gallery-mini-grid">
+                  @for (photo of event.photos; track photo.publicId) {
+                    <div class="thumb-wrapper" [class.active]="currentPhotoUrl() === photo.imageUrl" (click)="changePhoto(photo.imageUrl)">
+                      <img [src]="photo.imageUrl" alt="Gallery photo" class="gallery-thumb" />
                     </div>
                   }
                 </div>
-              </div>
-            }
-          }
+              } @else {
+                <div class="empty-placeholder">Дополнительные фотографии отсутствуют</div>
+              }
+            </div>
 
-          @if (event.photos && event.photos.length > 1) {
-            <div class="gallery-block">
-              <h3>{{ 'EVENT_MODAL.FIELD_PHOTO_LABEL' | translate }}</h3>
-              <div class="gallery-grid">
-                @for (photo of event.photos; track photo.publicId) {
-                  @if (!photo.isMain) {
-                    <img [src]="photo.imageUrl" alt="Gallery photo" class="gallery-thumb" />
+            <div class="grid-cell description-block">
+              <h3>Описание</h3>
+              <div class="scrollable-content">
+                <div [innerHTML]="event.description" class="html-content"></div>
+              </div>
+            </div>
+
+            <div class="grid-cell performers-block">
+              <h3>Участники</h3>
+              <div class="scrollable-content">
+                @if ((event.performers || event.Performers); as eventPerformers) {
+                  @if (eventPerformers.length > 0) {
+                    <div class="performers-grid">
+                      @for (perf of eventPerformers; track perf.id) {
+                        <div class="performer-card-mini" (click)="openPerformerInfo(perf)">
+                          <div class="avatar-wrapper">
+                            <img [src]="getAvatar(perf.avatarUrl, perf.id)" [alt]="perf.name" />
+                          </div>
+                          <span class="name">{{ perf.name }}</span>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="empty-placeholder">Список участников пуст</div>
                   }
+                } @else {
+                  <div class="empty-placeholder">Список участников пуст</div>
                 }
               </div>
             </div>
-          }
+          </div>
 
           @if (event.externalTicketUrl || event.contactLinks) {
             <div class="links-block">
-              <h3>{{ 'EVENT_DETAILS.PERFORMER_LINKS' | translate }}</h3>
-              @if (event.externalTicketUrl) {
-                <a [href]="event.externalTicketUrl" target="_blank" class="btn-primary">🎟️ {{ 'EVENT_MODAL.PAY_VIP_BTN' | translate }}</a>
-              }
-              @if (event.contactLinks) {
-                <p class="contacts-text">{{ event.contactLinks }}</p>
-              }
+              <h3>Ссылки и соцсети</h3>
+              <div class="links-flex">
+                @if (event.externalTicketUrl) {
+                  <a [href]="event.externalTicketUrl" target="_blank" class="btn-primary">Оплатить VIP</a>
+                }
+                @if (event.contactLinks) {
+                  <p class="contacts-text">{{ event.contactLinks }}</p>
+                }
+              </div>
             </div>
           }
         </div>
 
         <div class="sidebar-info">
           <div class="location-card">
-            <h3>{{ 'OTHERS.LOCATION_NOT_SPECIFIED' | translate }}</h3>
-            <p class="location-title"><strong>{{ event.locationName }}</strong></p>
+            <h3>📍 По локации</h3>
+            <p class="location-title"><strong>{{ event.locationName || 'Место проведения не указано' }}</strong></p>
             <p class="location-address">{{ event.city }}, {{ event.street }} {{ event.houseNumber }}</p>
             <div #mapContainer id="event-map" class="map-container"></div>
           </div>
@@ -96,7 +112,8 @@
                   [ngModel]="commentText()" 
                   (ngModelChange)="commentText.set($event)" 
                   rows="3"
-                  maxlength="1000">
+                  maxlength="1000"
+                  placeholder="Напишите ваш комментарий...">
                 </textarea>
                 
                 <div class="form-footer">
@@ -115,13 +132,13 @@
                     (click)="sendComment()" 
                     class="btn-submit-comment" 
                     [disabled]="!commentText().trim() || isCommentSubmitting()">
-                    {{ (isCommentSubmitting() ? 'EVENT_MODAL.SUBMITTING_BTN' : 'CREATE_EVENT_BTN') | translate }}
+                    {{ isCommentSubmitting() ? 'Отправка...' : 'Оставить комментарий' }}
                   </button>
                 </div>
               </div>
             } @else {
               <div class="comment-lock-notice">
-                🔒 {{ 'EVENT_DETAILS.COMMENTS_LOCKED_HINT' | translate }}
+                🔒 Добавление комментариев заблокировано. Обсуждение открывается через 1 час после начала события.
               </div>
             }
           } @else {
@@ -150,23 +167,24 @@
                     <button 
                       class="btn-report-comment" 
                       (click)="reportComment(comment.id)" 
-                      title="Пожаловаться на комментарий">
+                      title="Пожаловаться">
                       🚩
                     </button>
                   </div>
-                  
                   <p class="comment-text">{{ comment.text }}</p>
                 </div>
               }
             </div>
           } @else {
             <div class="no-comments">
-              {{ 'EVENT_DETAILS.NO_COMMENTS' | translate }}
+              Комментариев пока нет. Напишите первый.
             </div>
           }
         </div>
       </div>
-    } } </div>
+    }
+  }
+</div>
 
 @if (activePerformer(); as perf) {
   <app-performer-info-modal

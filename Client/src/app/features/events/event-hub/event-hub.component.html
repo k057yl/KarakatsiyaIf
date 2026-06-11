@@ -1,3 +1,11 @@
+<app-events-dashboard-sub-header 
+  [currentSort]="currentSort()"
+  [categoriesList]="categoriesList()"
+  (sortChanged)="onSortExternalChanged($event)"
+  (categoryChanged)="onCategoryExternalChanged($event)"
+  (locationChanged)="onLocationExternalChanged($event)">
+</app-events-dashboard-sub-header>
+
 <div class="map-page-container">
   
   <div class="filter-side">
@@ -14,12 +22,16 @@
           </button>
         }
       </div>
-
       <div class="category-vip-zone"></div>
     </div>
   </div>
 
   <div class="map-side">
+    <app-map-legend
+      [activeFilter]="currentTimeFilter()"
+      (filterChanged)="onTimeFilterChanged($event)">
+    </app-map-legend>
+    
     <div #mapContainer id="main-events-map" class="full-map"></div>
   </div>
 

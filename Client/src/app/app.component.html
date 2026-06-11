@@ -4,18 +4,8 @@
   (themeToggled)="onThemeToggled()">
 </app-main-header>
 
-@if (isEventsPage()) {
-  <app-events-dashboard-sub-header 
-    [currentSort]="activeHubComponent ? activeHubComponent.currentSort() : 'date'"
-    [categoriesList]="activeHubComponent ? activeHubComponent.categoriesList() : []"
-    (sortChanged)="onSortChanged($event)"
-    (categoryChanged)="onCategoryChanged($event)"
-    (locationChanged)="onLocationChanged($event)">
-  </app-events-dashboard-sub-header>
-}
-
 <main class="main-content">
-  <router-outlet (activate)="onRouteActivated($event)"></router-outlet>
+  <router-outlet></router-outlet>
 </main>
 
 <app-main-footer></app-main-footer>

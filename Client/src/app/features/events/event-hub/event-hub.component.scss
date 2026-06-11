@@ -48,12 +48,17 @@
 }
 
 .map-side {
-  width: 100%; 
-  height: 100%; 
-  position: relative; 
-  min-height: 0; 
-  
-  .full-map { width: 100%; height: 100%; position: absolute; inset: 0; z-index: 1; }
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Или какая фиксированная высота у тебя задана для этого блока */
+  min-height: 0;
+  width: 100%;
+}
+
+.full-map {
+  flex: 1; /* Карта заберёт всё свободное место под легендой */
+  width: 100%;
+  min-height: 0;
 }
 
 .list-side {

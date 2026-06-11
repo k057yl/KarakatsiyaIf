@@ -1,0 +1,37 @@
+<div class="map-legend-container">
+  <button 
+    type="button" 
+    class="legend-marker today" 
+    [class.active]="activeFilter === 'today'"
+    (click)="selectFilter('today')">
+    <div class="marker-pin"><span class="pin-hole"></span></div>
+    <span class="marker-label">{{ 'EVENT_LIST.TAB_TODAY' | translate }}</span>
+  </button>
+  
+  <button 
+    type="button" 
+    class="legend-marker weekend" 
+    [class.active]="activeFilter === 'weekend'"
+    (click)="selectFilter('weekend')">
+    <div class="marker-pin"><span class="pin-hole"></span></div>
+    <span class="marker-label">{{ 'EVENT_LIST.TAB_THREE_DAYS' | translate }}</span>
+  </button>
+  
+  <button 
+    type="button" 
+    class="legend-marker week" 
+    [class.active]="activeFilter === 'week'"
+    (click)="selectFilter('week')">
+    <div class="marker-pin"><span class="pin-hole"></span></div>
+    <span class="marker-label">{{ 'EVENT_LIST.TAB_WEEK' | translate }}</span>
+  </button>
+  
+  <button 
+    type="button" 
+    class="legend-marker later" 
+    [class.active]="activeFilter === 'all'"
+    (click)="selectFilter('all')">
+    <div class="marker-pin"><span class="pin-hole"></span></div>
+    <span class="marker-label">{{ 'EVENT_LIST.TAB_BIG_WEEK' | translate }}</span>
+  </button>
+</div>

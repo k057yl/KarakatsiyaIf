@@ -4,10 +4,9 @@ import { filter } from 'rxjs/operators';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { MainHeaderComponent } from './core/components/main-header/main-header.component';
 import { MainFooterComponent } from './core/components/main-footer/main-footer.component';
-import { EventsDashboardSubHeaderComponent } from './core/components/sub-header/events-dashboard-sub-header.component';
-import { EventHubComponent } from './features/events/event-hub/event-hub.component';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +16,7 @@ import { EventHubComponent } from './features/events/event-hub/event-hub.compone
     RouterOutlet,
     MainHeaderComponent,
     MainFooterComponent,
-    EventsDashboardSubHeaderComponent
+    TranslateModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
@@ -31,7 +30,6 @@ export class AppComponent implements OnInit {
   
   public isEventsPage = signal<boolean>(false);
   public currentTheme = 'dark';
-  public activeHubComponent: EventHubComponent | null = null;
 
   public ngOnInit(): void {
     this.initializeLocalization();
@@ -46,34 +44,6 @@ export class AppComponent implements OnInit {
       const url = event.urlAfterRedirects;
       this.isEventsPage.set(url === '/' || url === '/events' || url.startsWith('/events?'));
     });
-  }
-
-  public onRouteActivated(component: any): void {
-    if (component instanceof EventHubComponent) {
-      this.activeHubComponent = component;
-    } else {
-      this.activeHubComponent = null;
-    }
-  }
-
-  public onSortChanged(criteria: 'date' | 'location'): void {
-    if (this.activeHubComponent) {
-      this.activeHubComponent.onSortExternalChanged(criteria);
-    }
-  }
-
-  public onCategoryChanged(catId: string): void {
-    if (this.activeHubComponent) {
-      this.activeHubComponent.selectedCategoryId.set(catId);
-      this.activeHubComponent.onFilterChange();
-    }
-  }
-
-  public onLocationChanged(query: string): void {
-    if (this.activeHubComponent) {
-      this.activeHubComponent.searchLocationQuery.set(query);
-      this.activeHubComponent.onFilterChange();
-    }
   }
 
   public onLanguageChanged(languageCode: string): void {

@@ -1,0 +1,66 @@
+.map-legend-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 0;
+  background-color: var(--card-bg, #1e1e1e);
+  border-top: 1px solid var(--border-color, #444);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.legend-marker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted, #aaa);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  .marker-pin {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .pin-hole {
+    width: 5px;
+    height: 5px;
+    background-color: var(--card-bg, #1e1e1e);
+    border-radius: 50%;
+  }
+
+  &.today .marker-pin { background-color: #dc3545; }
+  &.weekend .marker-pin { background-color: #ffc107; }
+  &.week .marker-pin { background-color: #28a745; }
+  &.later .marker-pin { background-color: #007bff; }
+
+  &:hover, &.active {
+    color: var(--text-main, #fff);
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--border-color, #444);
+
+    &.today .marker-pin { box-shadow: 0 0 10px rgba(220, 53, 69, 0.8); }
+    &.weekend .marker-pin { box-shadow: 0 0 10px rgba(255, 193, 7, 0.8); }
+    &.week .marker-pin { box-shadow: 0 0 10px rgba(40, 167, 69, 0.8); }
+    &.later .marker-pin { box-shadow: 0 0 10px rgba(0, 123, 255, 0.8); }
+    
+    .marker-pin {
+      transform: rotate(-45deg) scale(1.1);
+    }
+  }
+}
