@@ -47,14 +47,14 @@
               class="btn-outline" 
               [class.active]="currentSort === 'date'"
               (click)="changeSort('date')">
-              {{ 'EVENT_LIST.SORT_BY_DATE' | translate }}
+              {{ 'FILTERS.SORT_BY_DATE' | translate }}
             </button>
             <button 
               type="button"
               class="btn-outline" 
               [class.active]="currentSort === 'location'"
               (click)="changeSort('location')">
-              {{ 'EVENT_LIST.SORT_BY_LOCATION' | translate }}
+              {{ 'FILTERS.SORT_BY_LOCATION' | translate }}
             </button>
           </div>
 
@@ -62,7 +62,7 @@
             class="custom-select" 
             [(ngModel)]="selectedCategoryId" 
             (change)="onCategoryChange()">
-            <option value="">{{ 'EVENT_MODAL.FIELD_CAT_PLACEHOLDER' | translate }}</option>
+            <option value="">{{ 'FILTERS.SELECT_CATEGORY' | translate }}</option>
             @for (cat of categoriesList; track cat.id) {
               <option [value]="cat.id">{{ cat.name }}</option>
             }
@@ -74,7 +74,7 @@
           class="custom-input" 
           [(ngModel)]="searchLocationQuery" 
           (input)="onLocationChange()"
-          [placeholder]="'EVENT_MODAL.LOC_NAME_PLACEHOLDER' | translate" />
+          [placeholder]="'FILTERS.SORT_BY_LOCATION_PLACEHOLDER' | translate" />
       </div>
     </div>
   </div>

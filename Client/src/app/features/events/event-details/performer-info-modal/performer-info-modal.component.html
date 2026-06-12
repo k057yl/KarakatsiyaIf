@@ -10,13 +10,34 @@
     </div>
 
     <div class="perf-modal-body">
-      <h4>{{ 'EVENT_DETAILS.PERFORMER_BIO' | translate }}</h4>
+      <h4>{{ 'PERFORMERS_MODAL.PERFORMER_BIO' | translate }}</h4>
       <p class="bio-text">
-        {{ performer.description || ('EVENT_DETAILS.PERFORMER_NO_BIO' | translate) }}
+        {{ performer.description || ('PERFORMERS_MODAL.PERFORMER_NO_BIO' | translate) }}
       </p>
 
+      <h4 class="events-title">{{ 'PERFORMERS_MODAL.PERFORMER_EVENTS' | translate }}</h4>
+      <div class="perf-events-list">
+        @if (isLoadingEvents()) {
+          <div class="mini-loading">{{ 'PERFORMERS_MODAL.LOADING_EVENTS' | translate }}</div>
+        } @else if (performerEvents().length > 0) {
+          <div class="events-scroll-container">
+            @for (event of performerEvents(); track event.id) {
+              <a [routerLink]="['/events', event.id]" class="mini-event-row" (click)="close()">
+                <div class="event-row-info">
+                  <span class="event-row-title">{{ event.title }}</span>
+                  <span class="event-row-meta">📍 {{ event.locationName || event.city }}</span>
+                </div>
+                <span class="event-row-date">📅 {{ event.startDate | date:'dd.MM HH:mm' }}</span>
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="empty-events-notice">{{ 'PERFORMERS_MODAL.NO_EVENTS' | translate }}</div>
+        }
+      </div>
+
       @if (performer.instagramUrl || performer.telegramUrl || performer.youtubeUrl) {
-        <h4 class="links-title">{{ 'EVENT_DETAILS.PERFORMER_LINKS' | translate }}</h4>
+        <h4 class="links-title">{{ 'PERFORMERS_MODAL.PERFORMER_LINKS' | translate }}</h4>
         <div class="perf-socials-grid">
           @if (performer.instagramUrl) {
             <a [href]="instagramLink" target="_blank" class="social-btn insta">Instagram</a>

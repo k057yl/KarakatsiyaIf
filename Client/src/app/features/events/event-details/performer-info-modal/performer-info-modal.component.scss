@@ -13,9 +13,9 @@
     background: #1c1c1c;
     border: 1px solid #333;
     width: 100%;
-    max-width: 450px;
+    max-width: 460px;
     border-radius: 14px;
-    padding: 30px;
+    padding: 24px;
     position: relative;
     color: #fff;
     box-shadow: 0 15px 35px rgba(0,0,0,0.6);
@@ -34,13 +34,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 12px;
+    margin-bottom: 20px;
     text-align: center;
 
     .perf-modal-avatar {
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       overflow: hidden;
       border: 2px solid var(--primary-color, #ffd700);
@@ -49,27 +49,101 @@
       img { width: 100%; height: 100%; object-fit: cover; }
     }
 
-    h2 { margin: 0; font-weight: 800; font-size: 1.6rem; color: #fff; }
+    h2 { margin: 0; font-weight: 800; font-size: 1.5rem; color: #fff; }
   }
 
   .perf-modal-body {
-    h4 { margin: 0 0 8px 0; font-size: 1rem; color: var(--primary-color, #ffd700); text-transform: uppercase; letter-spacing: 0.5px; }
-    .bio-text { color: #ccc; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; white-space: pre-line; }
-    .links-title { margin-top: 20px; }
+    h4 { margin: 0 0 8px 0; font-size: 0.95rem; color: var(--primary-color, #ffd700); text-transform: uppercase; letter-spacing: 0.5px; }
+    .bio-text { color: #ccc; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; max-height: 100px; overflow-y: auto; white-space: pre-line; padding-right: 4px; }
+    
+    .events-title { margin-top: 16px; }
+    
+    /* СТИЛИЗАЦИЯ СПИСКА КОНЦЕРТОВ */
+    .perf-events-list {
+      background: #242424;
+      border-radius: 8px;
+      border: 1px solid #333;
+      padding: 8px;
+      margin-bottom: 20px;
+      
+      .mini-loading, .empty-events-notice {
+        padding: 12px;
+        text-align: center;
+        color: #777;
+        font-size: 0.85rem;
+        font-style: italic;
+      }
+      
+      .events-scroll-container {
+        max-height: 130px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-right: 4px;
+      }
+      
+      .mini-event-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 10px;
+        background: #1c1c1c;
+        border: 1px solid #2e2e2e;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #fff;
+        transition: all 0.15s ease-in-out;
+        
+        &:hover {
+          border-color: var(--primary-color, #ffd700);
+          background: #262626;
+        }
+        
+        .event-row-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow: hidden;
+          
+          .event-row-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .event-row-meta {
+            font-size: 0.75rem;
+            color: #888;
+          }
+        }
+        
+        .event-row-date {
+          font-size: 0.8rem;
+          color: var(--primary-color, #ffd700);
+          font-weight: 600;
+          white-space: nowrap;
+          margin-left: 10px;
+        }
+      }
+    }
+
+    .links-title { margin-top: 16px; }
 
     .perf-socials-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
 
       .social-btn {
-        padding: 10px;
+        padding: 8px;
         text-align: center;
         border-radius: 6px;
         text-decoration: none;
         font-weight: bold;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         transition: transform 0.1s;
 
         &:hover { transform: translateY(-1px); }
