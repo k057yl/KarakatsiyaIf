@@ -13,9 +13,6 @@
             <a routerLink="/events" routerLinkActive="active" [title]="'HEADER.POSTER_HINT' | translate">
               🎸 {{ 'HEADER.POSTER' | translate }}
             </a>
-            <a routerLink="/archive" routerLinkActive="active" [title]="'HEADER.ARCHIVE_HINT' | translate">
-              📦 {{ 'HEADER.ARCHIVE' | translate }}
-            </a>
 
             @switch (user.role) {
               @case ('SuperAdmin') {
@@ -81,9 +78,6 @@
           <div class="block-yellow">
             <a routerLink="/events" routerLinkActive="active" [title]="'HEADER.POSTER_HINT' | translate">
               🎸 {{ 'HEADER.POSTER' | translate }}
-            </a>
-            <a routerLink="/archive" routerLinkActive="active" [title]="'HEADER.ARCHIVE_HINT' | translate">
-              📦 {{ 'HEADER.ARCHIVE' | translate }}
             </a>
           </div>
 

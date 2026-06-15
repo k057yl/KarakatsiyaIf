@@ -9,20 +9,44 @@
 <div class="map-page-container">
   
   <div class="filter-side">
-    <div class="calendar-wrapper">
-      <app-event-calendar (dateSelected)="filterByCalendarDate($event)"></app-event-calendar>
+    <div class="filter-top-section">
+      <div class="calendar-wrapper">
+        <app-event-calendar (dateSelected)="filterByCalendarDate($event)"></app-event-calendar>
+      </div>
+
+      <div class="filter-controls-box">
+        @if (selectedCalendarDate()) {
+          <div class="title-row">
+            <button type="button" class="btn-reset-date" (click)="resetCalendarFilter()">
+              ❌ {{ 'EVENT_LIST.BTN_RESET_DATE' | translate }} ({{ selectedCalendarDate() | date:'dd.MM' }})
+            </button>
+          </div>
+        }
+        <div class="category-vip-zone"></div>
+      </div>
     </div>
 
-    <div class="filter-controls-box">
-      <div class="title-row">
-        <h2>{{ 'EVENT_LIST.HUB_TITLE' | translate }}</h2>
-        @if (selectedCalendarDate()) {
-          <button type="button" class="btn-reset-date" (click)="resetCalendarFilter()">
-            ❌ {{ 'EVENT_LIST.BTN_RESET_DATE' | translate }} ({{ selectedCalendarDate() | date:'dd.MM' }})
-          </button>
-        }
-      </div>
-      <div class="category-vip-zone"></div>
+    <div class="filter-bottom-section">
+      @if (promoEvent(); as promoItem) {
+        <div class="past-event-promo-card" (click)="selectEvent(promoItem.id, true)">
+          <div class="promo-badge">{{ promoItem.badgeKey | translate }}</div>
+          
+          <div class="promo-image">
+            @if (promoItem.mainPhotoUrl) {
+              <img [src]="promoItem.mainPhotoUrl" alt="Cover" />
+            } @else {
+              <div class="no-img-placeholder">{{ 'EVENT_HUB.NO_IMAGE' | translate }}</div>
+            }
+          </div>
+          
+          <div class="promo-body">
+            <h3>{{ promoItem.title }}</h3>
+            <p class="org">👤 {{ promoItem.organizerName }}</p>
+            <p class="loc">📍 {{ promoItem.locationName || promoItem.city }}</p>
+            <p class="date">📅 {{ promoItem.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
+          </div>
+        </div>
+      }
     </div>
   </div>
 

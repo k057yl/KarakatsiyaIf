@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { EventCalendarComponent } from '../event-calendar/event-calendar.component';
 import { EventsDashboardSubHeaderComponent } from '../../../core/components/sub-header/events-dashboard-sub-header.component';
 import { MapLegendComponent } from '../../../shared/ui/map-legend/map-legend.component';
+import { RouterLink } from '@angular/router';
 import type * as LType from 'leaflet';
 
 @Component({
@@ -15,7 +16,8 @@ import type * as LType from 'leaflet';
     TranslateModule, 
     EventCalendarComponent, 
     EventsDashboardSubHeaderComponent,
-    MapLegendComponent
+    MapLegendComponent,
+    RouterLink
   ],
   templateUrl: './event-hub.component.html',
   styleUrls: ['./event-hub.component.scss']
@@ -26,6 +28,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   private mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
   public events = signal<any[]>([]);
+  public archiveEvents = signal<any[]>([]);
   public filteredEvents = signal<any[]>([]);
   public categoriesList = signal<any[]>([]);
 
@@ -45,6 +48,24 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public pagedEvents = computed(() => {
     const startIndex = (this.currentPage() - 1) * this.pageSize();
     return this.filteredEvents().slice(startIndex, startIndex + this.pageSize());
+  });
+
+  public promoEvent = computed(() => {
+    const past = this.archiveEvents();
+    if (past.length > 0) {
+      return {
+        ...past[0],
+        badgeKey: 'EVENT_HUB.PAST_EVENT'
+      };
+    }
+    const all = this.events();
+    if (all.length > 0) {
+      return {
+        ...all[0],
+        badgeKey: 'EVENT_HUB.RECOMMENDED_EVENT'
+      };
+    }
+    return null;
   });
 
   public totalEventsCount = computed(() => this.filteredEvents().length);
@@ -78,6 +99,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.loadCategories();
     this.loadEvents();
+    this.loadArchive();
   }
 
   public ngOnDestroy(): void {
@@ -104,6 +126,15 @@ export class EventHubComponent implements OnInit, OnDestroy {
       error: () => {
         this.isLoading.set(false);
       }
+    });
+  }
+
+  private loadArchive(): void {
+    this.eventService.getArchivedEvents().subscribe({
+      next: (data) => {
+        this.archiveEvents.set(data);
+      },
+      error: (err) => console.error('Ошибка загрузки архива', err)
     });
   }
 
