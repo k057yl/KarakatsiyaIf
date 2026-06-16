@@ -12,5 +12,6 @@
         bool IsVip, 
         string? MainPhotoUrl, 
         Guid? CategoryId = null, 
-        string CategoryName = "");
+        string CategoryName = "",
+        List<PerformerMiniDto>? Performers = null);
 }

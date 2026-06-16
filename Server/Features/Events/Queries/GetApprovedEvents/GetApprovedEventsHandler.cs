@@ -20,6 +20,8 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                 .Include(e => e.Photos)
                 .Include(e => e.Location)
                 .Include(e => e.Category)
+                .Include(e => e.EventPerformers)
+                    .ThenInclude(ep => ep.Performer)
                 .Where(e => e.Status == EventStatus.Approved && e.StartDate >= now)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventDto(
@@ -36,7 +38,14 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                     e.Photos.Where(p => p.IsMain).Select(p => p.ImageUrl).FirstOrDefault()
                         ?? e.Photos.Select(p => p.ImageUrl).FirstOrDefault(),
                     e.CategoryId,
-                    e.Category != null ? e.Category.Name : string.Empty
+                    e.Category != null ? e.Category.Name : string.Empty,
+                    e.EventPerformers
+                        .Where(ep => ep.Performer != null)
+                        .Select(ep => new PerformerMiniDto(
+                            ep.Performer.Id,
+                            ep.Performer.Name,
+                            ep.Performer.AvatarUrl
+                        )).ToList()
                 ))
                 .ToListAsync(cancellationToken);
         }

@@ -15,9 +15,12 @@
           </div>
           
           <div class="slide-info">
-            <span class="slide-date">📅 {{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</span>
-            <h2 class="slide-title">{{ event.title }}</h2>
-            <p class="slide-location">📍 {{ event.locationName }} ({{ event.city }})</p>
+            <div class="slide-date">{{ event.startDate | date:'dd.MM.yyyy HH:mm' }}</div>
+            
+            <div class="slide-text-row">
+              <h2 class="slide-title">{{ event.title }}</h2>
+              <p class="slide-location">📍 {{ event.locationName }} ({{ event.city }})</p>
+            </div>
           </div>
         </div>
       }

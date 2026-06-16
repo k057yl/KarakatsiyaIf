@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,8 +11,9 @@ import { ASSET_CONSTANTS } from '../../../../core/constants/asset-constants';
   standalone: true,
   imports: [CommonModule, TranslateModule, RouterLink],
   templateUrl: './performer-info-modal.component.html',
-  styleUrls: ['./performer-info-modal.component.scss']})
-export class PerformerInfoModalComponent implements OnInit {
+  styleUrls: ['./performer-info-modal.component.scss']
+})
+export class PerformerInfoModalComponent {
   @Input({ required: true }) performer!: PerformerDetails;
   @Output() closeModal = new EventEmitter<void>();
 
@@ -46,18 +47,20 @@ export class PerformerInfoModalComponent implements OnInit {
       : `https://youtube.com/${this.performer.youtubeUrl}`;
   }
 
-  public ngOnInit(): void {
-    this.loadPerformerEvents();
+  constructor() {
+    afterNextRender(() => {
+      this.loadPerformerEvents();
+    });
   }
 
   private loadPerformerEvents(): void {
     this.eventService.getApprovedEvents().subscribe({
       next: (events) => {
-        const now = new Date();
+        const now = new Date().getTime();
         const filtered = events.filter((e: any) => {
           const hasPerformer = (e.performers || e.Performers || [])
             .some((p: any) => p.id === this.performer.id);
-          const isFuture = new Date(e.startDate).getTime() > now.getTime();
+          const isFuture = new Date(e.startDate).getTime() > now;
           return hasPerformer && isFuture;
         });
         

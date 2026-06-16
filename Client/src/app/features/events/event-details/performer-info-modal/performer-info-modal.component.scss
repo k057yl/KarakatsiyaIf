@@ -1,161 +1,252 @@
 .perf-modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3000;
+  z-index: 9999;
+}
 
-  .perf-modal-card {
-    background: #1c1c1c;
-    border: 1px solid #333;
-    width: 100%;
-    max-width: 460px;
-    border-radius: 14px;
-    padding: 24px;
-    position: relative;
-    color: #fff;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    animation: scaleUp 0.15s ease-out;
+.perf-modal-card {
+  background: var(--card-bg, #1a1a1a);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: fadeInModal 0.25s ease-out;
+}
 
-    .close-btn {
-      position: absolute;
-      top: 15px; right: 20px;
-      background: none; border: none;
-      color: #888; font-size: 1.8rem; cursor: pointer;
-      &:hover { color: #fff; }
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--text-muted, #888);
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 10;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--text-main, #fff);
+  }
+}
+
+.perf-modal-header {
+  padding: 24px 24px 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-color, #333);
+  background: rgba(255, 255, 255, 0.01);
+
+  .perf-modal-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--primary-color, #ffd700);
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
 
-  .perf-modal-header {
+  h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-main, #fff);
+    font-weight: 800;
+  }
+}
+
+.perf-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+  }
+
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--primary-color, #ffd700);
+    font-weight: 700;
+  }
+
+  .bio-text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-muted, #b3b3b3);
+    white-space: pre-line;
+  }
+}
+
+// СЕКЦИЯ БЛИЖАЙШИХ ВЫСТУПЛЕНИЙ
+.perf-events-list {
+  background: var(--input-bg, #111);
+  border: 1px solid var(--border-color, #222);
+  border-radius: 10px;
+  overflow: hidden;
+
+  .mini-loading, .empty-events-notice {
+    padding: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted, #666);
+    font-weight: 600;
+  }
+
+  // Фиксированный контейнер скролла для выступлений
+  .events-scroll-container {
+    max-height: 180px; // Вмещает ровно 3 строки без растягивания модалки
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    text-align: center;
 
-    .perf-modal-avatar {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid var(--primary-color, #ffd700);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-
-      img { width: 100%; height: 100%; object-fit: cover; }
+    &::-webkit-scrollbar {
+      width: 5px;
     }
-
-    h2 { margin: 0; font-weight: 800; font-size: 1.5rem; color: #fff; }
+    &::-webkit-scrollbar-thumb {
+      background: #252525;
+      border-radius: 3px;
+    }
   }
 
-  .perf-modal-body {
-    h4 { margin: 0 0 8px 0; font-size: 0.95rem; color: var(--primary-color, #ffd700); text-transform: uppercase; letter-spacing: 0.5px; }
-    .bio-text { color: #ccc; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; max-height: 100px; overflow-y: auto; white-space: pre-line; padding-right: 4px; }
-    
-    .events-title { margin-top: 16px; }
-    
-    /* СТИЛИЗАЦИЯ СПИСКА КОНЦЕРТОВ */
-    .perf-events-list {
-      background: #242424;
-      border-radius: 8px;
-      border: 1px solid #333;
-      padding: 8px;
-      margin-bottom: 20px;
-      
-      .mini-loading, .empty-events-notice {
-        padding: 12px;
-        text-align: center;
-        color: #777;
-        font-size: 0.85rem;
-        font-style: italic;
-      }
-      
-      .events-scroll-container {
-        max-height: 130px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        padding-right: 4px;
-      }
-      
-      .mini-event-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 10px;
-        background: #1c1c1c;
-        border: 1px solid #2e2e2e;
-        border-radius: 6px;
-        text-decoration: none;
-        color: #fff;
-        transition: all 0.15s ease-in-out;
-        
-        &:hover {
-          border-color: var(--primary-color, #ffd700);
-          background: #262626;
-        }
-        
-        .event-row-info {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          overflow: hidden;
-          
-          .event-row-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          .event-row-meta {
-            font-size: 0.75rem;
-            color: #888;
-          }
-        }
-        
-        .event-row-date {
-          font-size: 0.8rem;
-          color: var(--primary-color, #ffd700);
-          font-weight: 600;
-          white-space: nowrap;
-          margin-left: 10px;
-        }
+  // Строка ивента в стиле Showcase
+  .mini-event-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background-color 0.15s ease-in-out;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.03);
+
+      .event-row-title {
+        color: var(--primary-color, #ffd700);
       }
     }
 
-    .links-title { margin-top: 16px; }
+    .event-row-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0; // Для правильного обрезания длинного текста
+    }
 
-    .perf-socials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 10px;
-      margin-top: 8px;
+    .event-row-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main, #fff);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.15s;
+    }
 
-      .social-btn {
-        padding: 8px;
-        text-align: center;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 0.8rem;
-        transition: transform 0.1s;
+    .event-row-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted, #777);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        &:hover { transform: translateY(-1px); }
-        &.insta { background: #e1306c; color: #fff; }
-        &.tg { background: #0088cc; color: #fff; }
-        &.yt { background: #ff0000; color: #fff; }
-      }
+    .event-row-date {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary-color, #ffd700);
+      background: rgba(255, 215, 0, 0.06);
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      margin-left: 12px;
     }
   }
 }
 
-@keyframes scaleUp {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+// СОЦСЕТИ
+.perf-socials-grid {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+
+  .social-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: transform 0.15s, opacity 0.15s;
+
+    &:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    &.insta {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      color: #fff;
+    }
+    &.tg {
+      background: #0088cc;
+      color: #fff;
+    }
+    &.yt {
+      background: #ff0000;
+      color: #fff;
+    }
+  }
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

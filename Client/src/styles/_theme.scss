@@ -9,6 +9,8 @@
   --border-color: #d1d5db;
   --input-bg: #f9fafb;
   
+  --accent-yellow: #d9a700;
+
   --error-text: #dc2626;
   --error-bg: #fee2e2;
   --error-border: #f87171;
@@ -22,7 +24,9 @@
     --text-muted: #aaaaaa;
     --border-color: #444444;
     --input-bg: #2a2a2a;
-    
+
+    --accent-yellow: #ffd700;
+
     --error-text: #ff4c4c;
     --error-bg: rgba(255, 76, 76, 0.15);
     --error-border: #ff4c4c;
@@ -37,6 +41,8 @@
   --border-color: #d1d5db;
   --input-bg: #f9fafb;
   
+  --accent-yellow: #d9a700;
+  
   --error-text: #dc2626;
   --error-bg: #fee2e2;
   --error-border: #f87171;
@@ -50,15 +56,9 @@
   --border-color: #444444;
   --input-bg: #2a2a2a;
   
+  --accent-yellow: #ffd700;
+  
   --error-text: #ff4c4c;
   --error-bg: rgba(255, 76, 76, 0.15);
   --error-border: #ff4c4c;
-}
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  transition: background-color 0.3s, color 0.3s;
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
 }

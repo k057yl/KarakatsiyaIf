@@ -28,7 +28,7 @@ export class EventHubComponent implements OnInit, OnDestroy {
   private mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
   public events = signal<any[]>([]);
-  public archiveEvents = signal<any[]>([]);
+  public archiveEvents = signal<any[]>([]); 
   public filteredEvents = signal<any[]>([]);
   public categoriesList = signal<any[]>([]);
 
@@ -43,7 +43,10 @@ export class EventHubComponent implements OnInit, OnDestroy {
   public isMapReady = signal<boolean>(false);
   public currentSort = signal<'date' | 'location'>('date');
   public currentPage = signal<number>(1);
-  public pageSize = signal<number>(8);
+  public pageSize = signal<number>(6);
+
+  private promoRotationTimer?: number;
+  public currentPromoIndex = signal<number>(0);
 
   public pagedEvents = computed(() => {
     const startIndex = (this.currentPage() - 1) * this.pageSize();
@@ -51,20 +54,26 @@ export class EventHubComponent implements OnInit, OnDestroy {
   });
 
   public promoEvent = computed(() => {
-    const past = this.archiveEvents();
-    if (past.length > 0) {
+    const archive = this.archiveEvents();
+
+    if (archive.length > 0) {
+      const index = this.currentPromoIndex() % archive.length;
+
       return {
-        ...past[0],
+        ...archive[index],
         badgeKey: 'EVENT_HUB.PAST_EVENT'
       };
     }
-    const all = this.events();
-    if (all.length > 0) {
+
+    const active = this.events();
+
+    if (active.length > 0) {
       return {
-        ...all[0],
+        ...active[0],
         badgeKey: 'EVENT_HUB.RECOMMENDED_EVENT'
       };
     }
+
     return null;
   });
 
@@ -83,6 +92,10 @@ export class EventHubComponent implements OnInit, OnDestroy {
         this.initBlankMap(container);
         this.isMapReady.set(true);
       }
+
+      this.loadEvents();
+      this.loadArchive();
+      this.startPromoRotation();
     });
 
     effect(() => {
@@ -98,14 +111,17 @@ export class EventHubComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.loadCategories();
-    this.loadEvents();
-    this.loadArchive();
   }
 
   public ngOnDestroy(): void {
     if (this.map) {
       this.map.remove();
     }
+
+    if (this.promoRotationTimer) {
+      clearInterval(this.promoRotationTimer);
+    }
+
     this.markerMap.clear();
   }
 
@@ -132,10 +148,31 @@ export class EventHubComponent implements OnInit, OnDestroy {
   private loadArchive(): void {
     this.eventService.getArchivedEvents().subscribe({
       next: (data) => {
-        this.archiveEvents.set(data);
+        const limitedData = data ? data.slice(0, 20) : [];
+        this.archiveEvents.set(limitedData);
+
+        if (limitedData.length > 0) {
+          this.currentPromoIndex.set(
+            Math.floor(Math.random() * limitedData.length)
+          );
+        }
       },
-      error: (err) => console.error('Ошибка загрузки архива', err)
+      error: (err) => console.error(err)
     });
+  }
+
+  private startPromoRotation(): void {
+    this.promoRotationTimer = window.setInterval(() => {
+      const archiveCount = this.archiveEvents().length;
+
+      if (archiveCount <= 1) {
+        return;
+      }
+
+      this.currentPromoIndex.update(i => {
+        return (i + 1) % archiveCount;
+      });
+    }, 30000);
   }
 
   private initBlankMap(container: HTMLDivElement): void {

@@ -41,6 +41,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   public activePerformer = signal<PerformerDetails | null>(null);
 
   private map: any;
+  private currentMarker: any;
 
   constructor() {
     afterNextRender(() => {
@@ -49,7 +50,12 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           const data = this.eventDetails();
           const container = this.mapContainer()?.nativeElement;
 
-          if (data && data.latitude && data.longitude && container && !this.map) {
+          if (data && data.latitude && data.longitude && container) {
+            if (this.map) {
+              this.map.remove();
+              this.map = null;
+              this.currentMarker = null;
+            }
             await this.initMap(container, data.latitude, data.longitude);
           }
         });
@@ -58,14 +64,16 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    const eventId = this.route.snapshot.paramMap.get('id');
-    
-    if (eventId) {
-      this.loadEventDetails(eventId);
-    } else {
-      this.errorMessage.set('ERRORS.EVENT_NOT_FOUND');
-      this.isLoading.set(false);
-    }
+    this.route.paramMap.subscribe(params => {
+      const eventId = params.get('id');
+      if (eventId) {
+        this.isLoading.set(true);
+        this.loadEventDetails(eventId);
+      } else {
+        this.errorMessage.set('ERRORS.EVENT_NOT_FOUND');
+        this.isLoading.set(false);
+      }
+    });
   }
 
   public ngOnDestroy(): void {

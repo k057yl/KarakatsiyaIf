@@ -18,6 +18,8 @@ namespace Karakatsiya.Features.Events.Queries.GetArchivedEvents
             return await _context.Events
                 .AsNoTracking()
                 .Include(e => e.Photos)
+                .Include(e => e.EventPerformers)
+                    .ThenInclude(ep => ep.Performer)
                 .Where(e => e.Status == EventStatus.Approved && e.StartDate < now)
                 .OrderByDescending(e => e.StartDate)
                 .Select(e => new EventDto(
@@ -32,7 +34,16 @@ namespace Karakatsiya.Features.Events.Queries.GetArchivedEvents
                     e.Location != null ? e.Location.Address.Longitude : null,
                     e.IsVip,
                     e.Photos.Where(p => p.IsMain).Select(p => p.ImageUrl).FirstOrDefault()
-                        ?? e.Photos.Select(p => p.ImageUrl).FirstOrDefault()
+                        ?? e.Photos.Select(p => p.ImageUrl).FirstOrDefault(),
+                    null,
+                    string.Empty,
+                    e.EventPerformers
+                        .Where(ep => ep.Performer != null)
+                        .Select(ep => new PerformerMiniDto(
+                            ep.Performer.Id,
+                            ep.Performer.Name,
+                            ep.Performer.AvatarUrl
+                        )).ToList()
                 ))
                 .ToListAsync(cancellationToken);
         }

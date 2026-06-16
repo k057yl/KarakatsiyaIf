@@ -28,24 +28,33 @@
 
     <div class="filter-bottom-section">
       @if (promoEvent(); as promoItem) {
-        <div class="past-event-promo-card" (click)="selectEvent(promoItem.id, true)">
-          <div class="promo-badge">{{ promoItem.badgeKey | translate }}</div>
-          
-          <div class="promo-image">
-            @if (promoItem.mainPhotoUrl) {
-              <img [src]="promoItem.mainPhotoUrl" alt="Cover" />
-            } @else {
-              <div class="no-img-placeholder">{{ 'EVENT_HUB.NO_IMAGE' | translate }}</div>
-            }
+        @for (item of [promoItem]; track item.id) {
+          <div class="past-event-promo-card">
+            
+            <a routerLink="/archive" class="promo-header-link" [title]="'HEADER.ARCHIVE_HINT' | translate">
+              <span class="badge-text">📦 {{ item.badgeKey | translate }}</span>
+              <span class="arrow-link">Перейти в архив →</span>
+            </a>
+            
+            <div class="promo-card-clickable-body" (click)="selectEvent(item.id, true)">
+              <div class="promo-image">
+                @if (item.mainPhotoUrl) {
+                  <img [src]="item.mainPhotoUrl" alt="Cover" />
+                } @else {
+                  <div class="no-img-placeholder">{{ 'EVENT_HUB.NO_IMAGE' | translate }}</div>
+                }
+              </div>
+              
+              <div class="promo-body">
+                <h3>{{ item.title }}</h3>
+                <p class="org">👤 {{ item.organizerName }}</p>
+                <p class="loc">📍 {{ item.locationName || item.city }}</p>
+                <p class="date">📅 {{ item.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
+              </div>
+            </div>
+
           </div>
-          
-          <div class="promo-body">
-            <h3>{{ promoItem.title }}</h3>
-            <p class="org">👤 {{ promoItem.organizerName }}</p>
-            <p class="loc">📍 {{ promoItem.locationName || promoItem.city }}</p>
-            <p class="date">📅 {{ promoItem.startDate | date:'dd.MM.yyyy HH:mm' }}</p>
-          </div>
-        </div>
+        }
       }
     </div>
   </div>
