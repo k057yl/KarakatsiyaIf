@@ -17,11 +17,7 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
 
             return await _context.Events
                 .AsNoTracking()
-                .Include(e => e.Photos)
-                .Include(e => e.Location)
-                .Include(e => e.Category)
-                .Include(e => e.EventPerformers)
-                    .ThenInclude(ep => ep.Performer)
+                .AsSplitQuery()
                 .Where(e => e.Status == EventStatus.Approved && e.StartDate >= now)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventDto(
@@ -29,9 +25,9 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                     e.Title,
                     e.StartDate,
                     e.Location != null ? e.Location.Name : Constants.AppConstants.General.NOT_NAME,
-                    e.Location != null ? e.Location.Address.City : string.Empty,
-                    e.Location != null ? e.Location.Address.Street : string.Empty,
-                    e.Location != null ? e.Location.Address.HouseNumber : string.Empty,
+                    e.Location != null ? (e.Location.Address.City ?? string.Empty) : string.Empty,
+                    e.Location != null ? (e.Location.Address.Street ?? string.Empty) : string.Empty,
+                    e.Location != null ? (e.Location.Address.HouseNumber ?? string.Empty) : string.Empty,
                     e.Location != null ? e.Location.Address.Latitude : null,
                     e.Location != null ? e.Location.Address.Longitude : null,
                     e.IsVip,
@@ -42,7 +38,7 @@ namespace Karakatsiya.Features.Events.Queries.GetApprovedEvents
                     e.EventPerformers
                         .Where(ep => ep.Performer != null)
                         .Select(ep => new PerformerMiniDto(
-                            ep.Performer.Id,
+                            ep.Performer!.Id,
                             ep.Performer.Name,
                             ep.Performer.AvatarUrl
                         )).ToList()

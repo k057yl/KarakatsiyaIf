@@ -17,21 +17,20 @@ namespace Karakatsiya.Features.Admin.Queries.GetPendingOrganizers
 
         public async Task<List<PendingOrganizerDto>> Handle(GetPendingOrganizersQuery request, CancellationToken cancellationToken)
         {
-            var pendingUsers = await _context.Users
+            return await _context.Users
                 .AsNoTracking()
-                .Include(u => u.OrganizerProfile)
                 .Where(u => u.Role == UserRole.PendingOrganizer && u.OrganizerProfile != null)
+                .Select(u => new PendingOrganizerDto(
+                    u.Id,
+                    u.OrganizerProfile!.Id,
+                    u.OrganizerProfile.Name,
+                    u.OrganizerProfile.Contacts.Phone,
+                    u.OrganizerProfile.Contacts.Email,
+                    u.OrganizerProfile.Contacts.Telegram,
+                    u.OrganizerProfile.CreatedAt
+                ))
                 .ToListAsync(cancellationToken);
-
-            return pendingUsers.Select(u => new PendingOrganizerDto(
-                UserId: u.Id,
-                OrganizerId: u.OrganizerProfile!.Id,
-                Name: u.OrganizerProfile.Name,
-                Phone: u.OrganizerProfile.Contacts.Phone,
-                Email: u.OrganizerProfile.Contacts.Email,
-                Telegram: u.OrganizerProfile.Contacts.Telegram,
-                AppliedAt: u.OrganizerProfile.CreatedAt
-            )).ToList();
+                
         }
     }
 }

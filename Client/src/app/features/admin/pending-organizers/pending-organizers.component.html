@@ -41,14 +41,14 @@
         </tr>
       </thead>
       <tbody>
-        @for (org of organizers(); track org.id) {
+        @for (org of organizers(); track org.organizerId) {
           <tr>
             <td><strong>👑 {{ org.name }}</strong></td>
             <td><code>{{ org.email }}</code></td>
             <td>{{ org.phone || '—' }}</td>
             <td class="actions-cell">
               @if (!org.isApproved) {
-                <button class="btn-verify" (click)="approve(org.id)">
+                <button class="btn-verify" (click)="approve(org.organizerId)">
                   {{ 'SUCCESS.REQUEST_APPROVED' | translate }}
                 </button>
               } @else {
@@ -56,7 +56,7 @@
                   {{ 'ADMIN_PERFORMERS.BTN_EDIT' | translate }}
                 </button>
               }
-              <button class="btn-delete" (click)="deleteOrganizer(org.id)">
+              <button class="btn-delete" (click)="deleteOrganizer(org.organizerId)">
                 ×
               </button>
             </td>

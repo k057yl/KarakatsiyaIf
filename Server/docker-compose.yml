@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  karakatsiya-db:
+    image: postgres:16-alpine
+    container_name: karakatsiya_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Alesha
+      POSTGRES_DB: KRKTS
+    ports:
+      - "5433:5432"
+    volumes:
+      - karakatsiya_pgdata:/var/lib/postgresql/data
+
+volumes:
+  karakatsiya_pgdata:

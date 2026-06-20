@@ -4,17 +4,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
+import { AdminOrganizer } from '../dtos/admin.dto';
 
-interface AdminOrganizer {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  website?: string;
-  telegram?: string;
-  instagram?: string;
-  isApproved: boolean;
-}
 
 @Component({
   selector: 'app-admin-organizers',
@@ -80,8 +71,8 @@ export class PendingOrganizersComponent implements OnInit {
     this.loadOrganizers();
   }
 
-  public approve(id: string) {
-    this.http.post(`${this.apiUrl}/${id}/approve`, {}).subscribe({
+  public approve(organizerId: string) {
+    this.http.post(`${this.apiUrl}/${organizerId}/approve`, {}).subscribe({
       next: () => this.loadOrganizers(),
       error: (err: HttpErrorResponse) => alert(err.error?.message || 'Error')
     });
@@ -101,8 +92,8 @@ export class PendingOrganizersComponent implements OnInit {
 
   public submitEdit() {
     if (this.editForm.invalid || !this.selectedOrganizer()) return;
-    
-    const id = this.selectedOrganizer()!.id;
+
+    const id = this.selectedOrganizer()!.organizerId;
     const payload = { id, ...this.editForm.getRawValue() };
 
     this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
@@ -114,13 +105,13 @@ export class PendingOrganizersComponent implements OnInit {
     });
   }
 
-  public deleteOrganizer(id: string) {
+  public deleteOrganizer(organizerId: string) {
     const confirmMsg = this.translate.instant('ADMIN_ORGANIZERS.DELETE_CONFIRM');
     if (!confirm(confirmMsg)) return;
 
-    this.http.delete(`${this.apiUrl}/${id}`).subscribe({
+    this.http.delete(`${this.apiUrl}/${organizerId}`).subscribe({
       next: () => {
-        this.organizers.update(list => list.filter(o => o.id !== id));
+        this.organizers.update(list => list.filter(o => o.organizerId !== organizerId));
       },
       error: (err: HttpErrorResponse) => alert(err.error?.message || 'Error')
     });

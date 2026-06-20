@@ -19,8 +19,8 @@ namespace Karakatsiya.Features.Admin.Queries.GetAllPerformers
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
-                var search = request.SearchTerm.ToLower().Trim();
-                query = query.Where(p => p.Name.ToLower().Contains(search));
+                var search = $"%{request.SearchTerm.Trim()}%";
+                query = query.Where(p => EF.Functions.ILike(p.Name, search));
             }
 
             return await query

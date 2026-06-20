@@ -18,19 +18,21 @@ namespace Karakatsiya.Features.Geo.Queries
 
         public async Task<OsmReverseResponseDto> Handle(GetAddressByCoordsQuery request, CancellationToken cancellationToken)
         {
-            var client = _httpClientFactory.CreateClient();
-
-            var userAgent = _configuration[$"GeoSettings:{AppConstants.Config.GEO_USER_AGENT}"] ?? "KarakatsiyaApp/1.0";
-            client.DefaultRequestHeaders.Add("User-Agent", userAgent);
+            using var client = _httpClientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
 
             var latStr = request.Latitude.ToString(CultureInfo.InvariantCulture);
             var lonStr = request.Longitude.ToString(CultureInfo.InvariantCulture);
-
             var url = $"https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={latStr}&lon={lonStr}&addressdetails=1";
+
+            using var message = new HttpRequestMessage(HttpMethod.Get, url);
+
+            var userAgent = _configuration[$"GeoSettings:{AppConstants.Config.GEO_USER_AGENT}"] ?? "KarakatsiyaApp/1.0";
+            message.Headers.TryAddWithoutValidation("User-Agent", userAgent);
 
             try
             {
-                var response = await client.GetAsync(url, cancellationToken);
+                using var response = await client.SendAsync(message, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {

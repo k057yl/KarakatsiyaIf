@@ -13,5 +13,5 @@
         string? MainPhotoUrl, 
         Guid? CategoryId = null, 
         string CategoryName = "",
-        List<PerformerMiniDto>? Performers = null);
+        IReadOnlyCollection<PerformerMiniDto>? Performers = null);
 }

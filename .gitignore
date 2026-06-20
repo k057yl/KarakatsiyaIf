@@ -1,5 +1,5 @@
 # ==========================================
-# 1. .NET / Visual Studio
+# 1. .NET / Visual Studio / Rider
 # ==========================================
 bin/
 obj/
@@ -9,26 +9,37 @@ out/
 *.user
 *.userosscache
 *.sln.docstates
+*.suo
+*.vshost.*
+*.vshost.*.manifest
+*.clr
+*.patch
 
-# Секреты и настройки (не светим ключи БД и JWT!)
-server/**/appsettings.Development.json
-server/**/appsettings.Local.json
+# Секреты и локальные настройки (тотальный бан на слив ключей)
+appsettings.Development.json
+appsettings.Local.json
+appsettings.json.user
 secrets.json
+.microsoft.dotnet.secret-manager.id.txt
+
+# Локальное хранилище медиа (не пушим тестовые фотки и аватарки в репу!)
+**/wwwroot/uploads/
+**/wwwroot/user-photos/
 
 # ==========================================
 # 2. Angular / Node.js
 # ==========================================
-client/node_modules/
-client/.angular/
-client/dist/
-client/.editorconfig
-client/.browserslistrc
+node_modules/
+.angular/
+dist/
+.nx/
 
 # Логи и кэш npm
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .npm/
+.eslintcache
 
 # ==========================================
 # 3. IDE / Editors
@@ -38,9 +49,14 @@ yarn-error.log*
 *.swp
 *.bak
 *.tmp
+*.suo
+*.ntvs*
+*.njsproj
 
 # ==========================================
 # 4. OS Junk
 # ==========================================
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini

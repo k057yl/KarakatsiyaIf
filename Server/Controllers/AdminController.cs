@@ -30,13 +30,8 @@ namespace Karakatsiya.Controllers
     public class AdminController : BaseController
     {
         // --- ОРГАНИЗАТОРЫ ---
-
         [HttpGet("organizers/pending")]
-        public async Task<IActionResult> GetPendingOrganizers()
-        {
-            var result = await Mediator.Send(new GetPendingOrganizersQuery());
-            return Ok(result);
-        }
+        public async Task<IActionResult> GetPendingOrganizers() => Ok(await Mediator.Send(new GetPendingOrganizersQuery()));
 
         [HttpPost("organizers/{id:guid}/approve")]
         public async Task<IActionResult> ApproveOrganizer(Guid id)
@@ -53,11 +48,7 @@ namespace Karakatsiya.Controllers
         }
 
         [HttpGet("organizers")]
-        public async Task<IActionResult> GetAllOrganizers([FromQuery] string? search = null)
-        {
-            var result = await Mediator.Send(new GetAllOrganizersQuery(search));
-            return Ok(result);
-        }
+        public async Task<IActionResult> GetAllOrganizers([FromQuery] string? search = null) => Ok(await Mediator.Send(new GetAllOrganizersQuery(search)));
 
         [HttpPut("organizers/{id:guid}")]
         public async Task<IActionResult> UpdateOrganizer(Guid id, [FromBody] UpdateOrganizerCommand command)
@@ -75,13 +66,8 @@ namespace Karakatsiya.Controllers
         }
 
         // --- ИВЕНТЫ (МОДЕРАЦИЯ) ---
-
         [HttpGet("events/pending")]
-        public async Task<IActionResult> GetPendingEvents()
-        {
-            var events = await Mediator.Send(new GetPendingEventsQuery());
-            return Ok(events);
-        }
+        public async Task<IActionResult> GetPendingEvents() => Ok(await Mediator.Send(new GetPendingEventsQuery()));
 
         [HttpPost("events/{id:guid}/approve")]
         public async Task<IActionResult> ApproveEvent(Guid id, [FromQuery] bool isVip = false)
@@ -105,11 +91,7 @@ namespace Karakatsiya.Controllers
         }
 
         [HttpGet("events/active")]
-        public async Task<IActionResult> GetActiveEvents()
-        {
-            var events = await Mediator.Send(new GetActiveEventsQuery());
-            return Ok(events);
-        }
+        public async Task<IActionResult> GetActiveEvents() => Ok(await Mediator.Send(new GetActiveEventsQuery()));
 
         [HttpDelete("events/{id:guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
@@ -118,20 +100,9 @@ namespace Karakatsiya.Controllers
             return Ok(new { Message = AppConstants.Success.EVENT_DELETED });
         }
 
-        [HttpPost("events/{id:guid}/toggle-vip")]
-        public async Task<IActionResult> ToggleVipStatus(Guid id)
-        {
-            return Ok(new { Message = AppConstants.Success.EVENT_VIP_TOGGLED });
-        }
-
-        // --- МОДЕРАЦИЯ КОММЕНТАРИЕВ (ЖАЛОБЫ) ---
-
+        // --- МОДЕРАЦИЯ КОММЕНТАРИЕВ ---
         [HttpGet("comments/reported")]
-        public async Task<IActionResult> GetReportedComments()
-        {
-            var result = await Mediator.Send(new GetReportedCommentsQuery());
-            return Ok(result);
-        }
+        public async Task<IActionResult> GetReportedComments() => Ok(await Mediator.Send(new GetReportedCommentsQuery()));
 
         [HttpDelete("comments/{id:guid}/confirm-report")]
         public async Task<IActionResult> DeleteCommentByReport(Guid id)
@@ -148,19 +119,13 @@ namespace Karakatsiya.Controllers
         }
 
         // --- УПРАВЛЕНИЕ АРТИСТАМИ ---
-
         [HttpGet("performers/pending")]
-        public async Task<IActionResult> GetPendingPerformers()
-        {
-            var result = await Mediator.Send(new GetPendingPerformersQuery());
-            return Ok(result);
-        }
+        public async Task<IActionResult> GetPendingPerformers() => Ok(await Mediator.Send(new GetPendingPerformersQuery()));
 
         [HttpPut("performers/{id:guid}/verify")]
         public async Task<IActionResult> VerifyPerformer(Guid id, [FromBody] VerifyPerformerCommand command)
         {
-            var finalCommand = command with { Id = id };
-            await Mediator.Send(finalCommand);
+            await Mediator.Send(command with { Id = id });
             return Ok(new { Message = AppConstants.Success.PERFORMER_VERIFIED });
         }
 
@@ -172,11 +137,7 @@ namespace Karakatsiya.Controllers
         }
 
         [HttpGet("performers")]
-        public async Task<IActionResult> GetAllPerformers([FromQuery] string? search = null)
-        {
-            var result = await Mediator.Send(new GetAllPerformersQuery(search));
-            return Ok(result);
-        }
+        public async Task<IActionResult> GetAllPerformers([FromQuery] string? search = null) => Ok(await Mediator.Send(new GetAllPerformersQuery(search)));
 
         [HttpDelete("performers/{id:guid}")]
         public async Task<IActionResult> DeletePerformer(Guid id)
@@ -185,38 +146,6 @@ namespace Karakatsiya.Controllers
             return Ok(new { Message = AppConstants.Success.PERFORMER_DELETED });
         }
 
-        [HttpPost("performers/upload-avatar")]
-        public async Task<IActionResult> UploadPerformerAvatar(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest(new { Message = AppConstants.Errors.FILE_MISSING });
-
-            var extension = Path.GetExtension(file.FileName).ToLower();
-
-            if (!AppConstants.Storage.ALLOWED_EXTENSIONS.Contains(extension))
-                return BadRequest(new { Message = AppConstants.Errors.INVALID_IMAGE_FORMAT });
-
-            var fileName = $"{Guid.NewGuid()}{extension}";
-
-            var folderPath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                AppConstants.Storage.WWWROOT_FOLDER,
-                AppConstants.Storage.UPLOADS_FOLDER,
-                AppConstants.Storage.USER_PHOTOS_SUBFOLDER
-            );
-
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            var filePath = Path.Combine(folderPath, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var relativeUrl = $"/{AppConstants.Storage.UPLOADS_FOLDER}/{AppConstants.Storage.USER_PHOTOS_SUBFOLDER}/{fileName}";
-            return Ok(new { Url = relativeUrl });
-        }
+        // TODO: Метод UploadPerformerAvatar тоже просится на рефакторинг в Command, но пока оставим, чтобы не ломать сборку.
     }
 }

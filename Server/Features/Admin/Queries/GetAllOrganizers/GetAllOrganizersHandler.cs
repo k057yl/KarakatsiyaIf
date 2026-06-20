@@ -15,13 +15,13 @@ namespace Karakatsiya.Features.Admin.Queries.GetAllOrganizers
 
         public async Task<List<AdminOrganizerViewModel>> Handle(GetAllOrganizersQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Organizers.Include(o => o.User).AsNoTracking();
+            var query = _context.Organizers.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
-                var search = request.SearchTerm.ToLower().Trim();
-                query = query.Where(o => o.Name.ToLower().Contains(search) ||
-                                         (o.Contacts.Email != null && o.Contacts.Email.ToLower().Contains(search)));
+                var search = $"%{request.SearchTerm.Trim()}%";
+                query = query.Where(o => EF.Functions.ILike(o.Name, search) ||
+                                         (o.Contacts.Email != null && EF.Functions.ILike(o.Contacts.Email, search)));
             }
 
             return await query

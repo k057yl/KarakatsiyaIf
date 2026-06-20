@@ -17,7 +17,7 @@ namespace Karakatsiya.Features.Admin.Queries.GetCategories
         {
             return await _context.EventCategories
                 .AsNoTracking()
-                .Select(c => new CategoryViewModel(c.Id, c.Name, c.Slug, c.Icon))
+                .Select(c => new CategoryViewModel(c.Id, c.Name, c.Slug, c.Icon ?? string.Empty))
                 .ToListAsync(cancellationToken);
         }
     }

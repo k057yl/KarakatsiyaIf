@@ -24,12 +24,12 @@ namespace Karakatsiya.Features.Events.Queries.GetOccupiedDates
                 .Where(e => e.Status == EventStatus.Approved &&
                             e.StartDate >= startDate &&
                             e.StartDate < endDate)
-                .Select(e => e.StartDate)
+                .Select(e => e.StartDate.Date)
+                .Distinct()
                 .ToListAsync(cancellationToken);
 
             return dates
                 .Select(d => d.ToString("yyyy-MM-dd"))
-                .Distinct()
                 .ToList();
         }
     }

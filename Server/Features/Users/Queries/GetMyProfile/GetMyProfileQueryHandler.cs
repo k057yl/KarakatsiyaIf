@@ -17,37 +17,22 @@ namespace Karakatsiya.Features.Users.Queries.GetMyProfile
 
         public async Task<UserProfileDto?> Handle(GetMyProfileQuery request, CancellationToken ct)
         {
-            var rawData = await _db.Users
+            return await _db.Users
                 .Where(u => u.Id == request.UserId)
-                .Select(u => new
-                {
+                .Select(u => new UserProfileDto(
                     u.Id,
                     u.Email,
                     u.Nickname,
                     u.TelegramChatId,
-                    Phone = u.Contacts != null ? u.Contacts.Phone : null,
-                    EmailContact = u.Contacts != null ? u.Contacts.Email : null,
-                    Website = u.Contacts != null ? u.Contacts.Website : null,
-                    Telegram = u.Contacts != null ? u.Contacts.Telegram : null,
-                    Instagram = u.Contacts != null ? u.Contacts.Instagram : null
-                })
+                    new ContactInfo(
+                        u.Contacts!.Phone,
+                        u.Contacts.Email,
+                        u.Contacts.Website,
+                        u.Contacts.Telegram,
+                        u.Contacts.Instagram
+                    )
+                ))
                 .FirstOrDefaultAsync(ct);
-
-            if (rawData == null) return null;
-
-            return new UserProfileDto(
-                rawData.Id,
-                rawData.Email,
-                rawData.Nickname,
-                rawData.TelegramChatId,
-                new ContactInfo(
-                    rawData.Phone,
-                    rawData.EmailContact,
-                    rawData.Website,
-                    rawData.Telegram,
-                    rawData.Instagram
-                )
-            );
         }
     }
 }
