@@ -16,15 +16,14 @@ namespace Karakatsiya.Features.Events.Commands.DeleteEvent
 
         public async Task Handle(DeleteEventCommand request, CancellationToken cancellationToken)
         {
-            var @event = await _context.Events
-                .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
+            var updatedRows = await _context.Events
+                .Where(e => e.Id == request.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.IsDeleted, true), cancellationToken);
 
-            if (@event == null)
+            if (updatedRows == 0)
+            {
                 throw new KeyNotFoundException(AppConstants.Errors.EVENT_NOT_FOUND);
-
-            @event.IsDeleted = true;
-
-            await _context.SaveChangesAsync(cancellationToken);
+            }
         }
     }
 }

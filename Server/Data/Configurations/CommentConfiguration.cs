@@ -15,6 +15,9 @@ namespace Karakatsiya.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(AppConstants.Validation.MAX_COMMENT_LENGTH);
 
+            builder.HasIndex(x => x.EventId)
+                .HasDatabaseName("idx_comments_event_id");
+
             builder.HasOne(x => x.Event)
                 .WithMany(e => e.Comments)
                 .HasForeignKey(x => x.EventId)

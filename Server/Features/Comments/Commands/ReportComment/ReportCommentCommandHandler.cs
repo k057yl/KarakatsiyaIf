@@ -18,10 +18,12 @@ namespace Karakatsiya.Features.Comments.Commands.ReportComment
         public async Task<(bool Success, string MessageKey)> Handle(ReportCommentCommand request, CancellationToken ct)
         {
             var commentExists = await _db.Comments.AnyAsync(c => c.Id == request.CommentId, ct);
-            if (!commentExists) return (false, AppConstants.Errors.EVENT_NOT_FOUND);
+            if (!commentExists) return (false, AppConstants.Errors.COMMENT_NOT_FOUND);
 
             var alreadyReported = await _db.CommentReports
-                .AnyAsync(r => r.CommentId == request.CommentId && r.ReporterId == request.ReporterId && !r.IsResolved, ct);
+                .AnyAsync(r => r.CommentId == request.CommentId
+                            && r.ReporterId == request.ReporterId
+                            && !r.IsResolved, ct);
 
             if (alreadyReported) return (true, AppConstants.Success.REQUEST_APPROVED);
 
@@ -30,7 +32,8 @@ namespace Karakatsiya.Features.Comments.Commands.ReportComment
                 Id = Guid.NewGuid(),
                 CommentId = request.CommentId,
                 ReporterId = request.ReporterId,
-                Reason = request.Reason
+                Reason = request.Reason,
+                IsResolved = false
             };
 
             _db.CommentReports.Add(report);

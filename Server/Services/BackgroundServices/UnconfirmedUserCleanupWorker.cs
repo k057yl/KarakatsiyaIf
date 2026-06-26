@@ -30,6 +30,7 @@ namespace Karakatsiya.Services.BackgroundServices
                     var now = DateTime.UtcNow;
                     var emailCutoff = now.AddHours(-24);
                     var pendingCutoff = now.AddDays(-7);
+                    var photoCutoff = now.AddHours(-1);
 
                     var usersToDelete = await context.Users
                         .Where(u => !u.IsEmailVerified
@@ -68,6 +69,15 @@ namespace Karakatsiya.Services.BackgroundServices
                     if (usersToDelete.Any() || usersToDowngrade.Any())
                     {
                         await context.SaveChangesAsync(stoppingToken);
+                    }
+
+                    var deletedPhotosCount = await context.EventPhotos
+                        .Where(p => !p.IsApproved && p.CreatedAt < photoCutoff)
+                        .ExecuteDeleteAsync(stoppingToken);
+
+                    if (deletedPhotosCount > 0)
+                    {
+                        _logger.LogInformation("Garbage collector cleared {Count} unapproved zombie photos from database.", deletedPhotosCount);
                     }
                 }
                 catch (Exception ex)

@@ -25,10 +25,10 @@ namespace Karakatsiya.Features.Organizers.Commands.ApplyForOrganizer
                 .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 
             if (user == null)
-                throw new Exception(AppConstants.Errors.USER_NOT_FOUND);
+                throw new InvalidOperationException(AppConstants.Errors.USER_NOT_FOUND);
 
             if (user.Role == UserRole.Organizer || user.Role == UserRole.PendingOrganizer)
-                throw new Exception(AppConstants.Errors.ALREADY_APPLIED_OR_ADMIN);
+                throw new InvalidOperationException(AppConstants.Errors.ALREADY_APPLIED_OR_ADMIN);
 
             var contactInfo = new ContactInfo(
                 Phone: request.Phone,
@@ -49,6 +49,7 @@ namespace Karakatsiya.Features.Organizers.Commands.ApplyForOrganizer
             {
                 var newOrganizer = new Organizer
                 {
+                    Id = Guid.NewGuid(),
                     UserId = request.UserId,
                     Name = request.Name,
                     Contacts = contactInfo,

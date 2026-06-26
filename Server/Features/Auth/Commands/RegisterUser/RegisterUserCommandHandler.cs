@@ -45,12 +45,21 @@ namespace Karakatsiya.Features.Auth.Commands.RegisterUser
             _db.Users.Add(user);
             await _db.SaveChangesAsync(ct);
 
-            await _emailService.SendEmailAsync(
-                user.Email,
-                "EMAIL_VERIFICATION_SUBJECT",
-                "EMAIL_VERIFICATION_BODY",
-                code,
-                AppConstants.Security.OTP_EXPIRY_MINUTES);
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailService.SendEmailAsync(
+                        user.Email,
+                        "EMAIL_VERIFICATION_SUBJECT",
+                        "EMAIL_VERIFICATION_BODY",
+                        code,
+                        AppConstants.Security.OTP_EXPIRY_MINUTES);
+                }
+                catch (Exception ex)
+                {
+                }
+            }, ct);
 
             return (true, AppConstants.Success.VERIFICATION_CODE_SENT);
         }

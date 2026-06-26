@@ -32,34 +32,44 @@ namespace Karakatsiya.Features.Events.Commands.RejectEvent
                 throw new InvalidOperationException(AppConstants.Errors.EVENT_NOT_FOUND);
 
             ev.Status = request.IsToFix ? EventStatus.Pending : EventStatus.Rejected;
+
             await _context.SaveChangesAsync(cancellationToken);
 
             if (ev.Organizer != null)
             {
-                var reasonText = !string.IsNullOrWhiteSpace(request.Reason)
-                    ? request.Reason
-                    : AppConstants.Others.LOCATION_NOT_SPECIFIED;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var reasonText = !string.IsNullOrWhiteSpace(request.Reason)
+                            ? request.Reason
+                            : AppConstants.Others.LOCATION_NOT_SPECIFIED;
 
-                var tgTemplateKey = request.IsToFix
-                    ? AppConstants.Success.NOTIFICATION_EVENT_REJECT_BODY
-                    : AppConstants.Success.NOTIFICATION_EVENT_REJECTED_FINAL_BODY;
+                        var tgTemplateKey = request.IsToFix
+                            ? AppConstants.Success.NOTIFICATION_EVENT_REJECT_BODY
+                            : AppConstants.Success.NOTIFICATION_EVENT_REJECTED_FINAL_BODY;
 
-                var tgTemplate = _localizer[tgTemplateKey].Value;
-                var tgMessage = string.Format(tgTemplate, ev.Title, reasonText);
-                var emailSubjKey = request.IsToFix ? "EMAIL_EVENT_REJECT_SUBJECT" : "EMAIL_EVENT_REJECTED_FINAL_SUBJECT";
-                var emailBodyKey = request.IsToFix ? "EMAIL_EVENT_REJECT_BODY" : "EMAIL_EVENT_REJECTED_FINAL_BODY";
+                        var tgTemplate = _localizer[tgTemplateKey].Value;
+                        var tgMessage = string.Format(tgTemplate, ev.Title, reasonText);
+                        var emailSubjKey = request.IsToFix ? "EMAIL_EVENT_REJECT_SUBJECT" : "EMAIL_EVENT_REJECTED_FINAL_SUBJECT";
+                        var emailBodyKey = request.IsToFix ? "EMAIL_EVENT_REJECT_BODY" : "EMAIL_EVENT_REJECTED_FINAL_BODY";
 
-                var emailSubject = _localizer[emailSubjKey].Value;
-                var emailBodyTemplate = _localizer[emailBodyKey].Value;
-                var emailBody = string.Format(emailBodyTemplate, ev.Title, reasonText);
+                        var emailSubject = _localizer[emailSubjKey].Value;
+                        var emailBodyTemplate = _localizer[emailBodyKey].Value;
+                        var emailBody = string.Format(emailBodyTemplate, ev.Title, reasonText);
 
-                await _dispatcher.SendAsync(
-                    userId: ev.Organizer.UserId,
-                    message: tgMessage,
-                    emailSubject: emailSubject,
-                    emailBody: emailBody,
-                    cancellationToken: cancellationToken
-                );
+                        await _dispatcher.SendAsync(
+                            userId: ev.Organizer.UserId,
+                            message: tgMessage,
+                            emailSubject: emailSubject,
+                            emailBody: emailBody,
+                            cancellationToken: CancellationToken.None
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                });
             }
         }
     }

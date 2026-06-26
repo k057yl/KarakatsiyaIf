@@ -15,6 +15,9 @@ namespace Karakatsiya.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(AppConstants.Validation.MAX_REASON_LENGTH);
 
+            builder.HasIndex(x => new { x.CommentId, x.ReporterId, x.IsResolved })
+                .HasDatabaseName("idx_comment_reports_lookup");
+
             builder.HasOne(x => x.Comment)
                 .WithMany()
                 .HasForeignKey(x => x.CommentId)

@@ -1,6 +1,7 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
 using Karakatsiya.Data.Entities.Audience;
+using Karakatsiya.Features.Events.Dtos;
 using Karakatsiya.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,21 @@ namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
                 return new UploadPhotoResultDto(false, null, AppConstants.Errors.VALIDATION_FAILED);
             }
 
+            var eventPhoto = new EventPhoto
+            {
+                Id = Guid.NewGuid(),
+                EventId = ev.Id,
+                UserId = request.UserId,
+                ImageUrl = "pending",
+                PublicId = null,
+                IsMain = request.IsMain,
+                IsApproved = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.EventPhotos.Add(eventPhoto);
+            await _context.SaveChangesAsync(cancellationToken);
+
             var uploadResult = await _photoService.AddPhotoAsync(request.File, request.IsMain);
 
             if (uploadResult.Error != null)
@@ -58,21 +74,15 @@ namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
                 return new UploadPhotoResultDto(false, null, uploadResult.Error.Message);
             }
 
-            var eventPhoto = new EventPhoto
-            {
-                Id = Guid.NewGuid(),
-                EventId = ev.Id,
-                UserId = request.UserId,
-                ImageUrl = uploadResult.SecureUrl.ToString(),
-                PublicId = uploadResult.PublicId,
-                IsMain = request.IsMain,
-                IsApproved = true
-            };
+            await _context.EventPhotos
+                .Where(p => p.Id == eventPhoto.Id)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(p => p.ImageUrl, uploadResult.SecureUrl.ToString())
+                .SetProperty(p => p.PublicId, uploadResult.PublicId)
+                .SetProperty(p => p.IsApproved, true),
+                cancellationToken);
 
-            _context.EventPhotos.Add(eventPhoto);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return new UploadPhotoResultDto(true, eventPhoto.ImageUrl, null);
+            return new UploadPhotoResultDto(true, uploadResult.SecureUrl.ToString(), null);
         }
     }
 }

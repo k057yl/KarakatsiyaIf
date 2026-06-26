@@ -33,7 +33,7 @@ namespace Karakatsiya.Features.Performers.Commands.CreatePerformer
             }
 
             var exists = await _context.Performers
-                .AnyAsync(p => p.Name.ToLower() == cleanName.ToLower(), cancellationToken);
+                .AnyAsync(p => EF.Functions.ILike(p.Name, cleanName), cancellationToken);
 
             if (exists)
             {

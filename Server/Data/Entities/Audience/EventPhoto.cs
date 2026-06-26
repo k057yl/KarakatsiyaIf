@@ -16,5 +16,7 @@ namespace Karakatsiya.Data.Entities.Audience
 
         public bool IsMain { get; set; } = false;
         public bool IsApproved { get; set; } = false;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

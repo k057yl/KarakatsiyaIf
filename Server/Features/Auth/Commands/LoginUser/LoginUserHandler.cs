@@ -20,14 +20,17 @@ namespace Karakatsiya.Features.Auth.Commands.LoginUser
 
         public async Task<(bool Success, string? Token, string? Email, string? Role, string MessageKey)> Handle(LoginUserCommand request, CancellationToken ct)
         {
+            const string dummyHash = "$2a$11$KeXvLOmI7mI9.Z4L9A3QSeVf3yDby8C2v.X7r5E1q6h5K1LwZ2XPy";
+
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email, ct);
 
-            if (user == null || !user.IsEmailVerified)
-            {
-                return (false, null, null, null, AppConstants.Errors.INVALID_CREDENTIALS);
-            }
+            string hashToVerify = user != null && !string.IsNullOrEmpty(user.PasswordHash)
+                ? user.PasswordHash
+                : dummyHash;
 
-            if (string.IsNullOrEmpty(user.PasswordHash) || !BC.Verify(request.Password, user.PasswordHash))
+            bool isPasswordValid = BC.Verify(request.Password, hashToVerify);
+
+            if (user == null || !user.IsEmailVerified || !isPasswordValid)
             {
                 return (false, null, null, null, AppConstants.Errors.INVALID_CREDENTIALS);
             }

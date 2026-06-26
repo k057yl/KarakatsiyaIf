@@ -50,13 +50,22 @@ namespace Karakatsiya.Features.Events.Commands.ApproveEvent
                 var emailBodyTemplate = _localizer["EMAIL_EVENT_APPROVED_BODY"].Value;
                 var emailBody = string.Format(emailBodyTemplate, ev.Title);
 
-                await _dispatcher.SendAsync(
-                    userId: ev.Organizer.UserId,
-                    message: tgMessage,
-                    emailSubject: emailSubject,
-                    emailBody: emailBody,
-                    cancellationToken: cancellationToken
-                );
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _dispatcher.SendAsync(
+                            userId: ev.Organizer.UserId,
+                            message: tgMessage,
+                            emailSubject: emailSubject,
+                            emailBody: emailBody,
+                            cancellationToken: CancellationToken.None
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                });
             }
         }
     }

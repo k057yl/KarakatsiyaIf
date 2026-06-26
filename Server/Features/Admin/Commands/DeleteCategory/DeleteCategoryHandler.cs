@@ -16,16 +16,14 @@ namespace Karakatsiya.Features.Admin.Commands.DeleteCategory
 
         public async Task Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _context.EventCategories
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+            var deletedRows = await _context.EventCategories
+                .Where(c => c.Id == request.Id)
+                .ExecuteDeleteAsync(cancellationToken);
 
-            if (category == null)
+            if (deletedRows == 0)
             {
                 throw new InvalidOperationException(AppConstants.Errors.CATEGORY_NOT_EXIST);
             }
-
-            _context.EventCategories.Remove(category);
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

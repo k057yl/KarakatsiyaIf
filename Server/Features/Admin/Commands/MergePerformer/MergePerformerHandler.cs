@@ -17,41 +17,26 @@ namespace Karakatsiya.Features.Admin.Commands.MergePerformer
 
         public async Task Handle(MergePerformerCommand request, CancellationToken cancellationToken)
         {
-            var source = await _context.Performers
-                .FirstOrDefaultAsync(p => p.Id == request.SourceId, cancellationToken);
+            var sourceExists = await _context.Performers.AnyAsync(p => p.Id == request.SourceId, cancellationToken);
+            var targetExists = await _context.Performers.AnyAsync(p => p.Id == request.TargetId, cancellationToken);
 
-            var target = await _context.Performers
-                .FirstOrDefaultAsync(p => p.Id == request.TargetId, cancellationToken);
-
-            if (source == null || target == null)
+            if (!sourceExists || !targetExists)
             {
                 throw new InvalidOperationException(AppConstants.Errors.PERFORMER_MERGE_FAILED);
             }
 
-            var oldLinks = await _context.EventPerformers
+            await _context.EventPerformers
+                .Where(ep => ep.PerformerId == request.SourceId &&
+                             _context.EventPerformers.Any(targetEp => targetEp.EventId == ep.EventId && targetEp.PerformerId == request.TargetId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _context.EventPerformers
                 .Where(ep => ep.PerformerId == request.SourceId)
-                .ToListAsync(cancellationToken);
+                .ExecuteUpdateAsync(s => s.SetProperty(ep => ep.PerformerId, request.TargetId), cancellationToken);
 
-            foreach (var link in oldLinks)
-            {
-                var alreadyExists = await _context.EventPerformers
-                    .AnyAsync(ep => ep.EventId == link.EventId && ep.PerformerId == request.TargetId, cancellationToken);
-
-                if (!alreadyExists)
-                {
-                    _context.EventPerformers.Add(new EventPerformer
-                    {
-                        EventId = link.EventId,
-                        PerformerId = request.TargetId
-                    });
-                }
-
-                _context.EventPerformers.Remove(link);
-            }
-
-            _context.Performers.Remove(source);
-
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.Performers
+                .Where(p => p.Id == request.SourceId)
+                .ExecuteDeleteAsync(cancellationToken);
         }
     }
 }

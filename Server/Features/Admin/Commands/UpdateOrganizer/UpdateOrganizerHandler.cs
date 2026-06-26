@@ -24,14 +24,14 @@ namespace Karakatsiya.Features.Admin.Commands.UpdateOrganizer
                 throw new InvalidOperationException(AppConstants.Errors.ORGANIZER_NOT_FOUND);
             }
 
-            organizer.Name = request.Name.Trim();
+            organizer.Name = request.Name;
             organizer.Contacts = organizer.Contacts with
             {
-                Phone = request.Phone?.Trim(),
-                Email = request.Email?.Trim(),
-                Website = request.Website?.Trim(),
-                Telegram = request.Telegram?.Trim(),
-                Instagram = request.Instagram?.Trim()
+                Phone = request.Phone,
+                Email = request.Email,
+                Website = request.Website,
+                Telegram = request.Telegram,
+                Instagram = request.Instagram
             };
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -124,6 +124,7 @@
             public const string PERFORMER_ALREADY_EXISTS = "ERRORS.PERFORMER_ALREADY_EXISTS";
             public const string FILE_MISSING = "ERRORS.FILE_MISSING";
             public const string INVALID_IMAGE_FORMAT = "ERRORS.INVALID_IMAGE_FORMAT";
+            public const string COMMENT_NOT_FOUND = "ERRORS.COMMENT_NOT_FOUND";
         }
 
         public static class Success

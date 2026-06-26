@@ -15,6 +15,8 @@ namespace Karakatsiya.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(AppConstants.Validation.MAX_NAME_LENGTH);
 
+            builder.HasIndex(x => x.OsmId).IsUnique();
+
             builder.OwnsOne(x => x.Address, a =>
             {
                 a.Property(p => p.City)

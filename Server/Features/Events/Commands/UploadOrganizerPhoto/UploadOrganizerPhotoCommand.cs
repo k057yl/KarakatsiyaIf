@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Karakatsiya.Features.Events.Dtos;
+using MediatR;
 
 namespace Karakatsiya.Features.Events.Commands.UploadOrganizerPhoto
 {

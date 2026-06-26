@@ -1,5 +1,6 @@
 ﻿using Karakatsiya.Constants;
 using Karakatsiya.Data;
+using Karakatsiya.Features.Admin.Commands.DeletePerformer;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +17,14 @@ namespace Karakatsiya.Features.Admin.Commands.DeleteOrganizer
 
         public async Task Handle(DeleteOrganizerCommand request, CancellationToken cancellationToken)
         {
-            var organizer = await _context.Organizers
-                .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
+            var deletedRows = await _context.Organizers
+                .Where(c => c.Id == request.Id)
+                .ExecuteDeleteAsync(cancellationToken);
 
-            if (organizer == null)
+            if (deletedRows == 0)
             {
                 throw new InvalidOperationException(AppConstants.Errors.ORGANIZER_NOT_FOUND);
             }
-
-            _context.Organizers.Remove(organizer);
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }
