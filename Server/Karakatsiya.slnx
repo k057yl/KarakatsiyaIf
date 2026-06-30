@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../UnitTests/UnitTests.csproj" Id="3db2b954-ef53-486d-8afd-228d1ccd9cac" />
   <Project Path="Karakatsiya.csproj" />
 </Solution>
